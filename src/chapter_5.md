@@ -27,7 +27,7 @@ Javascript
 
 ## Reference:
 - [JS FFI](https://rustwasm.github.io/docs/book/reference/js-ffi.html)
-- [WebAssembly.instantiateStreaming()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming)
+- [WebAssembly.instantiate()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate)
 <script>
 (async () => {
     var importObject = {};
