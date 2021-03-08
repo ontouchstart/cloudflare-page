@@ -202,11 +202,10 @@ pub fn answer() -&gt; u32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;The answer is {instance.exports.answer()}&lt;/h2&gt;
+    &lt;h2&gt;The answer is ` + instance.exports.answer() + `&lt;/h2&gt;
     See details in the console log.
     `
 })();
-
 </code></pre>
 <div id="answer"></div>
 <h2 id="reference"><a class="header" href="#reference">Reference:</a></h2>
@@ -222,7 +221,7 @@ pub fn answer() -&gt; u32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    <h2 id="the-answer-is-instanceexportsanswer"><a class="header" href="#the-answer-is-instanceexportsanswer">The answer is {instance.exports.answer()}</a></h2>
+    <h2 id="the-answer-is---instanceexportsanswer--"><a class="header" href="#the-answer-is---instanceexportsanswer--">The answer is ` + instance.exports.answer() + `</a></h2>
     See details in the console log.
     `
 })();

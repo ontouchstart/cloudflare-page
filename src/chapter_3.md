@@ -17,11 +17,10 @@ Javascript
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    <h2>The answer is ${instance.exports.answer()}</h2>
+    <h2>The answer is ` + instance.exports.answer() + `</h2>
     See details in the console log.
     `
 })();
-
 ```
 
 <div id="answer"></div>
@@ -37,7 +36,7 @@ Javascript
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    <h2>The answer is ${instance.exports.answer()}</h2>
+    <h2>The answer is ` + instance.exports.answer() + `</h2>
     See details in the console log.
     `
 })();
