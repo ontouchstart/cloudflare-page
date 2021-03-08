@@ -11,7 +11,7 @@ Javascript
 (async () => {
     const response = await fetch('wasm/link_section/link_section.wasm');
     const mod = await WebAssembly.compileStreaming(response);
-    const sections = await WebAssembly.Module.customSections(mod, "hello");
+    const sections = await WebAssembly.Module.customSections(mod, "data");
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
     document.getElementById('answer').innerHTML = `

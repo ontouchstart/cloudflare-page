@@ -180,7 +180,7 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 <pre><code class="language-javascript">(async () =&gt; {
     const response = await fetch('wasm/link_section/link_section.wasm');
     const mod = await WebAssembly.compileStreaming(response);
-    const sections = await WebAssembly.Module.customSections(mod, &quot;hello&quot;);
+    const sections = await WebAssembly.Module.customSections(mod, &quot;data&quot;);
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
     document.getElementById('answer').innerHTML = `
@@ -208,6 +208,7 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     `
 })();
 </script>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
