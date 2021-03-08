@@ -5,6 +5,9 @@ multilingual = false
 src = "src"
 title = "ontouchstart.pages.dev"
 [preprocessor]
+[preprocessor.katex]
+macros = "katex/macros.txt"
+
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 [output]
