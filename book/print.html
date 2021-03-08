@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">3.</strong> Chapter 3</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">3.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">4.</strong> Chapter 4</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -220,6 +220,45 @@ pub fn answer() -&gt; u32 {
     document.getElementById('answer').innerHTML = `
     <h2 id="the-answer-is-instanceexportsanswer"><a class="header" href="#the-answer-is-instanceexportsanswer">The answer is ${instance.exports.answer()}</a></h2>
     See details in the console log.
+    `
+})();
+</script><h1 id="wasm-custom-sections-read-only"><a class="header" href="#wasm-custom-sections-read-only">WASM Custom Sections (Read Only)</a></h1>
+<p><code>src/lib.js</code></p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[link_section = &quot;data&quot;]
+pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Javascript</p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const response = await fetch('wasm/link_section/link_section.wasm');
+    const mod = await WebAssembly.compileStreaming(response);
+    const sections = await WebAssembly.Module.customSections(mod, &quot;hello&quot;);
+    const decoder = new TextDecoder();
+    const text = decoder.decode(sections[0]);
+    document.getElementById('answer').innerHTML = `
+    &lt;h2&gt;${text}&lt;/h2&gt;
+    `
+})();
+</code></pre>
+<div id="answer"></div>
+<h2 id="reference-1"><a class="header" href="#reference-1">Reference:</a></h2>
+<ul>
+<li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html#custom-sections">JS FFI Custom Sections</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
+</ul>
+<script>
+(async () => {
+    const response = await fetch('wasm/link_section/link_section.wasm');
+    const mod = await WebAssembly.compileStreaming(response);
+    const sections = await WebAssembly.Module.customSections(mod, "data");
+    const decoder = new TextDecoder();
+    const text = decoder.decode(sections[0]);
+    console.log({ response, mod, sections })
+    document.getElementById('answer').innerHTML = `
+    <h2 id="text"><a class="header" href="#text">${text}</a></h2>
     `
 })();
 </script>
