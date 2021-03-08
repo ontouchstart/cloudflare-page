@@ -181,10 +181,8 @@ pub fn double(x: u32) -&gt; u32 {
 <p>Javascript</p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
-    const response = await fetch('wasm/double/double.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({response, bytes, instance});
+    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/double/double.wasm'), importObject);
+    console.log({instance});
     document.getElementById('answer').innerHTML = `
     &lt;h2&gt;42 + 42 = ${instance.exports.double(42)}&lt;/h2&gt;
     See details in the console log.
@@ -195,15 +193,13 @@ pub fn double(x: u32) -&gt; u32 {
 <h2 id="reference"><a class="header" href="#reference">Reference:</a></h2>
 <ul>
 <li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming">WebAssembly.instantiateStreaming()</a></li>
 </ul>
 <script>
 (async () => {
     var importObject = {};
-    const response = await fetch('wasm/double/double.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({response, bytes, instance});
+    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/double/double.wasm'), importObject);
+    console.log({instance});
     document.getElementById('answer').innerHTML = `
     <h2 id="42--42--instanceexportsdouble42"><a class="header" href="#42--42--instanceexportsdouble42">42 + 42 = ${instance.exports.double(42)}</a></h2>
     See details in the console log.
