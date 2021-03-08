@@ -29,8 +29,8 @@ Javascript
 
 ## Reference:
 - [JS FFI Custom Sections](https://rustwasm.github.io/docs/book/reference/js-ffi.html#custom-sections)
-- []()
 - [WebAssembly.Module() constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/Module)
+- [WebAssembly.Module.customSections()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/customSections)
 <script>
 (async () => {
     var importObject = {};

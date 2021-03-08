@@ -58,7 +58,8 @@ function arraySum(array, instance) {
 ## Reference:
 - [Passing arrays to Rust WebAssembly modules](https://radu-matei.com/blog/practical-guide-to-wasm-memory/#passing-arrays-to-rust-webassembly-modules)
 - [JS FFI](https://rustwasm.github.io/docs/book/reference/js-ffi.html)
-- [WebAssembly.instantiateStreaming()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiateStreaming)
+- [WebAssembly.instantiate()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate)
+
 <script>
 function copyMemory(data, instance) {
   var ptr = instance.exports.alloc(data.length);
