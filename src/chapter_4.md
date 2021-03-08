@@ -9,11 +9,16 @@ pub static SECTION: [u8; 12] = *b"Hello World!";
 Javascript
 ```javascript
 (async () => {
+    var importObject = {};
     const response = await fetch('wasm/link_section/link_section.wasm');
-    const mod = await WebAssembly.compileStreaming(response);
+    const bytes = await response.arrayBuffer();
+    const mod = new WebAssembly.Module(bytes);
+    
+    console.log({ response, bytes, mod});
     const sections = await WebAssembly.Module.customSections(mod, "data");
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
+    console.log({ response, mod, sections })
     document.getElementById('answer').innerHTML = `
     <h2>${text}</h2>
     `
@@ -31,12 +36,9 @@ Javascript
     var importObject = {};
     const response = await fetch('wasm/link_section/link_section.wasm');
     const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const mod = new WebAssembly.Module(bytes);
     
-    console.log({ response, bytes, instance});
-    /*
-    const response = await fetch('wasm/link_section/link_section.wasm');
-    const mod = await WebAssembly.compileStreaming(response);
+    console.log({ response, bytes, mod});
     const sections = await WebAssembly.Module.customSections(mod, "data");
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
@@ -44,6 +46,5 @@ Javascript
     document.getElementById('answer').innerHTML = `
     <h2>${text}</h2>
     `
-    */
 })();
 </script>

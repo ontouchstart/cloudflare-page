@@ -178,11 +178,16 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 </span></code></pre></pre>
 <p>Javascript</p>
 <pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
     const response = await fetch('wasm/link_section/link_section.wasm');
-    const mod = await WebAssembly.compileStreaming(response);
+    const bytes = await response.arrayBuffer();
+    const mod = new WebAssembly.Module(bytes);
+    
+    console.log({ response, bytes, mod});
     const sections = await WebAssembly.Module.customSections(mod, &quot;data&quot;);
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
+    console.log({ response, mod, sections })
     document.getElementById('answer').innerHTML = `
     &lt;h2&gt;${text}&lt;/h2&gt;
     `
@@ -200,12 +205,9 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     var importObject = {};
     const response = await fetch('wasm/link_section/link_section.wasm');
     const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const mod = new WebAssembly.Module(bytes);
     
-    console.log({ response, bytes, instance});
-    /*
-    const response = await fetch('wasm/link_section/link_section.wasm');
-    const mod = await WebAssembly.compileStreaming(response);
+    console.log({ response, bytes, mod});
     const sections = await WebAssembly.Module.customSections(mod, "data");
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
@@ -213,7 +215,6 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     document.getElementById('answer').innerHTML = `
     <h2 id="text"><a class="header" href="#text">${text}</a></h2>
     `
-    */
 })();
 </script>
 
