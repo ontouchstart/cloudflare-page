@@ -1,4 +1,7 @@
-# WASM Memory
+# WASM Memory without wasm-bindgen
+
+A demo of WASM memory without [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) based on the blog
+[A practical guide to WebAssembly memory](https://radu-matei.com/blog/practical-guide-to-wasm-memory/).
 
 `src/lib.js`
 ```rust
