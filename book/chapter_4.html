@@ -197,6 +197,13 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 </ul>
 <script>
 (async () => {
+    var importObject = {};
+    const response = await fetch('wasm/link_section/link_section.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    
+    console.log({ response, bytes, instance});
+    /*
     const response = await fetch('wasm/link_section/link_section.wasm');
     const mod = await WebAssembly.compileStreaming(response);
     const sections = await WebAssembly.Module.customSections(mod, "data");
@@ -206,6 +213,7 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     document.getElementById('answer').innerHTML = `
     <h2 id="text"><a class="header" href="#text">${text}</a></h2>
     `
+    */
 })();
 </script>
 

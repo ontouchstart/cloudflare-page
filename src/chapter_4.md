@@ -28,6 +28,13 @@ Javascript
 - [WebAssembly.Module.customSections()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/customSections)
 <script>
 (async () => {
+    var importObject = {};
+    const response = await fetch('wasm/link_section/link_section.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    
+    console.log({ response, bytes, instance});
+    /*
     const response = await fetch('wasm/link_section/link_section.wasm');
     const mod = await WebAssembly.compileStreaming(response);
     const sections = await WebAssembly.Module.customSections(mod, "data");
@@ -37,5 +44,6 @@ Javascript
     document.getElementById('answer').innerHTML = `
     <h2>${text}</h2>
     `
+    */
 })();
 </script>

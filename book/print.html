@@ -252,6 +252,13 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 </ul>
 <script>
 (async () => {
+    var importObject = {};
+    const response = await fetch('wasm/link_section/link_section.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    
+    console.log({ response, bytes, instance});
+    /*
     const response = await fetch('wasm/link_section/link_section.wasm');
     const mod = await WebAssembly.compileStreaming(response);
     const sections = await WebAssembly.Module.customSections(mod, "data");
@@ -261,6 +268,7 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     document.getElementById('answer').innerHTML = `
     <h2 id="text"><a class="header" href="#text">${text}</a></h2>
     `
+    */
 })();
 </script>
 <h1 id="call-wasm-function-in-the-browser"><a class="header" href="#call-wasm-function-in-the-browser">Call WASM function in the browser</a></h1>
@@ -277,8 +285,10 @@ pub fn double(x: u32) -&gt; u32 {
 <p>Javascript</p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/double/double.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/double/double.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     &lt;h2&gt;42 + 42 = ${instance.exports.double(42)}&lt;/h2&gt;
     See details in the console log.
@@ -294,8 +304,10 @@ pub fn double(x: u32) -&gt; u32 {
 <script>
 (async () => {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/double/double.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/double/double.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     <h2 id="42--42--instanceexportsdouble42"><a class="header" href="#42--42--instanceexportsdouble42">42 + 42 = ${instance.exports.double(42)}</a></h2>
     See details in the console log.
@@ -340,8 +352,10 @@ pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
 </code></pre>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/memory/memory.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/memory/memory.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     &lt;h2&gt;arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}&lt;/h2&gt;
     See details in the console log.
@@ -371,8 +385,10 @@ function arraySum(array, instance) {
 
 (async () => {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/memory/memory.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/memory/memory.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     <h2 id="arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance"><a class="header" href="#arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance">arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}</a></h2>
     See details in the console log.

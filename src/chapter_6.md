@@ -42,8 +42,10 @@ function arraySum(array, instance) {
 ```javascript
 (async () => {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/memory/memory.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/memory/memory.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     <h2>arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}</h2>
     See details in the console log.
@@ -73,8 +75,10 @@ function arraySum(array, instance) {
 
 (async () => {
     var importObject = {};
-    const { instance } = await WebAssembly.instantiateStreaming(fetch('wasm/memory/memory.wasm'), importObject);
-    console.log({instance});
+    const response = await fetch('wasm/memory/memory.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({ response, bytes, instance});
     document.getElementById('answer').innerHTML = `
     <h2>arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}</h2>
     See details in the console log.
