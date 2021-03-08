@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html" class="active"><strong aria-hidden="true">3.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">4.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">5.</strong> Chapter 5</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html" class="active"><strong aria-hidden="true">3.</strong> Chapter 3</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -167,8 +167,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
-<h1 id="simplest-wasm-in-the-browser-all-local"><a class="header" href="#simplest-wasm-in-the-browser-all-local">Simplest WASM in the Browser (all local)</a></h1>
+                        <h1 id="simplest-wasm-in-the-browser-all-local"><a class="header" href="#simplest-wasm-in-the-browser-all-local">Simplest WASM in the Browser (all local)</a></h1>
 <p><code>src/lib.js</code></p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
@@ -187,7 +186,7 @@ pub fn answer() -&gt; u32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;The answer is ` + instance.exports.answer() + `&lt;/h2&gt;
+    &lt;h2&gt;The answer is ${instance.exports.answer()}&lt;/h2&gt;
     See details in the console log.
     `
 })();
@@ -206,7 +205,7 @@ pub fn answer() -&gt; u32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    <h2 id="the-answer-is---instanceexportsanswer--"><a class="header" href="#the-answer-is---instanceexportsanswer--">The answer is ` + instance.exports.answer() + `</a></h2>
+    <h2 id="the-answer-is-instanceexportsanswer"><a class="header" href="#the-answer-is-instanceexportsanswer">The answer is ${instance.exports.answer()}</a></h2>
     See details in the console log.
     `
 })();
@@ -222,10 +221,6 @@ pub fn answer() -&gt; u32 {
                         
 
                         
-                            <a rel="next" href="chapter_4.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -239,10 +234,6 @@ pub fn answer() -&gt; u32 {
                     </a>
                 
 
-                
-                    <a rel="next" href="chapter_4.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 
@@ -273,10 +264,6 @@ pub fn answer() -&gt; u32 {
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        
-        <script type="text/javascript" src="mermaid.min.js"></script>
-        
-        <script type="text/javascript" src="mermaid-init.js"></script>
         
 
         
