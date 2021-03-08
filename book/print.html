@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">3.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">4.</strong> Chapter 4</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">3.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">4.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">5.</strong> Chapter 5</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -263,7 +263,49 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
     `
 })();
 </script>
-
+<h1 id="call-wasm-function-in-the-browser"><a class="header" href="#call-wasm-function-in-the-browser">Call WASM function in the browser</a></h1>
+<p><code>src/lib.js</code></p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub fn double(x: u32) -&gt; u32 {
+    x + x
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Javascript</p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('wasm/double/double.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({response, bytes, instance});
+    document.getElementById('answer').innerHTML = `
+    &lt;h2&gt;42 + 42 = ${instance.exports.double(42)}&lt;/h2&gt;
+    See details in the console log.
+    `
+})();
+</code></pre>
+<div id="answer"></div>
+<h2 id="reference-2"><a class="header" href="#reference-2">Reference:</a></h2>
+<ul>
+<li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
+</ul>
+<script>
+(async () => {
+    var importObject = {};
+    const response = await fetch('wasm/double/double.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    console.log({response, bytes, instance});
+    document.getElementById('answer').innerHTML = `
+    <h2 id="42--42--instanceexportsdouble42"><a class="header" href="#42--42--instanceexportsdouble42">42 + 42 = ${instance.exports.double(42)}</a></h2>
+    See details in the console log.
+    `
+})();
+</script>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
