@@ -8,3 +8,7 @@ title = "ontouchstart.pages.dev"
 [output]
 [output.html]
 git-repository-url = "https://github.com/ontouchstart/cloudflare-page"
+
+[output.html.playground]
+editable = true
+line-numbers = true
