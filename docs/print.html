@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">2.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">3.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">4.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">5.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">6.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -325,6 +325,32 @@ Also see console log.
 </code></pre>
 <pre id="wasm_memory"></pre>
 <script async src="introduction/js/memory.js"></script>
+<h1 id="wat-wasm-by-hand"><a class="header" href="#wat-wasm-by-hand">WAT: WASM by Hand</a></h1>
+<p>Let's start to learn WASM ground up by hand from</p>
+<ul>
+<li><a href="https://webassembly.github.io/spec/core/text/index.html">The official specification</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format">Understanding WebAssembly text format</a></li>
+</ul>
+<h2 id="empty-module"><a class="header" href="#empty-module">Empty module</a></h2>
+<p><code>chapter_wat/wat/empty_module.wat</code></p>
+<pre><code>(module)
+</code></pre>
+<pre><code class="language-makefile">build:
+	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
+</code></pre>
+<p><code>chapter_wat/js/empty_module.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('chapter_wat/wasm/empty_module.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('Empty WASM Module', {response, bytes, instance, exports});
+})();
+</code></pre>
+<pre><code class="language-markdown">&lt;script src=&quot;chapter_wat/js/empty_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<script src="chapter_wat/js/empty_module.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>

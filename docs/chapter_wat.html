@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Chapter 5 - ontouchstart</title>
+        <title>WAT: WASM by Hand - ontouchstart</title>
         
         
 
@@ -98,7 +98,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html" class="active"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html" class="active"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">4.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">5.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">6.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">7.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,51 +170,45 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="call-wasm-function-in-the-browser"><a class="header" href="#call-wasm-function-in-the-browser">Call WASM function in the browser</a></h1>
-<p><code>wasm/double/src/lib.rs</code></p>
-<pre><pre class="playground"><code class="language-rust edition2018">#[no_mangle]
-pub fn double(x: u32) -&gt; u32 {
-    x + x
-}
-<span class="boring">fn main() {
-</span><span class="boring">   let x = 42;
-</span><span class="boring">   println!(&quot;The double of {} is {}.&quot;, x, double(x));
-</span><span class="boring">}
-</span></code></pre></pre>
-<p><code>wasm/double/index.rs</code></p>
+                        <h1 id="wat-wasm-by-hand"><a class="header" href="#wat-wasm-by-hand">WAT: WASM by Hand</a></h1>
+<p>Let's start to learn WASM ground up by hand from</p>
+<ul>
+<li><a href="https://webassembly.github.io/spec/core/text/index.html">The official specification</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format">Understanding WebAssembly text format</a></li>
+</ul>
+<h2 id="empty-module"><a class="header" href="#empty-module">Empty module</a></h2>
+<p><code>chapter_wat/wat/empty_module.wat</code></p>
+<pre><code>(module)
+</code></pre>
+<pre><code class="language-makefile">build:
+	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
+</code></pre>
+<p><code>chapter_wat/js/empty_module.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
-    const response = await fetch('wasm/double/double.wasm');
+    const response = await fetch('chapter_wat/wasm/empty_module.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
-    const x = 42;
-    document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;The double of ${x} is ${instance.exports.double(x)}.&lt;/h2&gt;
-    See details in the console log.
-    `
+    const { exports } = instance;
+    console.log('Empty WASM Module', {response, bytes, instance, exports});
 })();
 </code></pre>
-<div id="answer"></div>
-<h2 id="reference"><a class="header" href="#reference">Reference:</a></h2>
-<ul>
-<li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
-</ul>
-<script src="wasm/double/index.js"></script>
+<pre><code class="language-markdown">&lt;script src=&quot;chapter_wat/js/empty_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<script src="chapter_wat/js/empty_module.js"></script>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="chapter_4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="chapter_6.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -226,13 +220,13 @@ pub fn double(x: u32) -&gt; u32 {
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="chapter_4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="chapter_6.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
