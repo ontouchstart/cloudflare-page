@@ -1,26 +1,16 @@
 # Simplest WASM in the Browser (all local)
 
-`src/lib.js`
+`wasm/simplest_wasm/src/lib.rs`
 ```rust
-#[no_mangle]
-pub fn answer() -> u32 {
-	42
-}
+{{#include wasm/simplest_wasm/src/lib.rs}}
+# fn main() {
+#    println!("The anwser is {}.", answer());
+# }
 ```
 
-Javascript
+`wasm/simplest_wasm/index.js`
 ```javascript
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/simplest_wasm/simplest_wasm.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2>The answer is ${instance.exports.answer()}</h2>
-    See details in the console log.
-    `
-})();
+{{#include wasm/simplest_wasm/index.js}}
 ```
 
 <div id="answer"></div>
@@ -28,16 +18,4 @@ Javascript
 ## Reference:
 - [JS FFI](https://rustwasm.github.io/docs/book/reference/js-ffi.html)
 - [WebAssembly.instantiate()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate)
-<script>
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/simplest_wasm/simplest_wasm.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2>The answer is ${instance.exports.answer()}</h2>
-    See details in the console log.
-    `
-})();
-</script>
+<script src="wasm/simplest_wasm/index.js"></script>

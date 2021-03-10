@@ -1,8 +1,6 @@
 build:
-	make -C wasm/simplest_wasm
-	make -C wasm/link_section
-	make -C wasm/double
-	make -C wasm/memory
+	make -C src/wasm/simplest_wasm
+	make -C src/wasm/link_section
+	make -C src/wasm/double
+	make -C src/wasm/memory
 	mdbook build
-	cp -r wasm book
-

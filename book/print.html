@@ -173,25 +173,28 @@
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>
-<div id="output">Output</div>
-<script>
-  (async () => {
-    const output_html = await (await fetch('https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev/')).text();
+<p><code>chapter_2.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const api = 'https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev/';
+    const output_html = await (
+        await fetch(api)
+    ).text();
     document.getElementById('output').innerHTML = output_html;
-  })();
-</script>
+})();
+</code></pre>
+<div id="output">Output</div>
+<script src="chapter_2.js">
 <h1 id="simplest-wasm-in-the-browser-all-local"><a class="header" href="#simplest-wasm-in-the-browser-all-local">Simplest WASM in the Browser (all local)</a></h1>
-<p><code>src/lib.js</code></p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[no_mangle]
+<p><code>wasm/simplest_wasm/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust">#[no_mangle]
 pub fn answer() -&gt; u32 {
 	42
 }
-<span class="boring">}
+<span class="boring">fn main() {
+</span><span class="boring">   println!(&quot;The anwser is {}.&quot;, answer());
+</span><span class="boring">}
 </span></code></pre></pre>
-<p>Javascript</p>
+<p><code>wasm/simplest_wasm/index.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
     const response = await fetch('wasm/simplest_wasm/simplest_wasm.wasm');
@@ -199,7 +202,7 @@ pub fn answer() -&gt; u32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({response, bytes, instance});
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;The answer is ${instance.exports.answer()}&lt;/h2&gt;
+    &lt;h2&gt;The answer is ${instance.exports.answer()}.&lt;/h2&gt;
     See details in the console log.
     `
 })();
@@ -210,36 +213,23 @@ pub fn answer() -&gt; u32 {
 <li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
 </ul>
-<script>
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/simplest_wasm/simplest_wasm.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2 id="the-answer-is-instanceexportsanswer"><a class="header" href="#the-answer-is-instanceexportsanswer">The answer is ${instance.exports.answer()}</a></h2>
-    See details in the console log.
-    `
-})();
-</script><h1 id="wasm-custom-sections-read-only"><a class="header" href="#wasm-custom-sections-read-only">WASM Custom Sections (Read Only)</a></h1>
-<p><code>src/lib.js</code></p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[link_section = &quot;data&quot;]
+<script src="wasm/simplest_wasm/index.js"></script><h1 id="wasm-custom-sections-read-only"><a class="header" href="#wasm-custom-sections-read-only">WASM Custom Sections (Read Only)</a></h1>
+<p><code>wasm/link_section/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust">#[link_section = &quot;data&quot;]
 pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
-<span class="boring">}
+<span class="boring">fn main() {
+</span><span class="boring">   println!(&quot;SECTION = {:?}&quot;, SECTION);
+</span><span class="boring">}
 </span></code></pre></pre>
-<p>Javascript</p>
+<p><code>wasm/link_section/index.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
     const response = await fetch('wasm/link_section/link_section.wasm');
     const bytes = await response.arrayBuffer();
-    const mod = new WebAssembly.Module(bytes);
+    const mod = await WebAssembly.compile(bytes);
     
     console.log({ response, bytes, mod});
-    const sections = await WebAssembly.Module.customSections(mod, &quot;data&quot;);
+    const sections = WebAssembly.Module.customSections(mod, &quot;data&quot;);
     const decoder = new TextDecoder();
     const text = decoder.decode(sections[0]);
     console.log({ response, mod, sections })
@@ -255,43 +245,27 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/Module">WebAssembly.Module() constructor</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/customSections">WebAssembly.Module.customSections()</a></li>
 </ul>
-<script>
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/link_section/link_section.wasm');
-    const bytes = await response.arrayBuffer();
-    const mod = new WebAssembly.Module(bytes);
-    
-    console.log({ response, bytes, mod});
-    const sections = await WebAssembly.Module.customSections(mod, "data");
-    const decoder = new TextDecoder();
-    const text = decoder.decode(sections[0]);
-    console.log({ response, mod, sections })
-    document.getElementById('answer').innerHTML = `
-    <h2 id="text"><a class="header" href="#text">${text}</a></h2>
-    `
-})();
-</script>
-<h1 id="call-wasm-function-in-the-browser"><a class="header" href="#call-wasm-function-in-the-browser">Call WASM function in the browser</a></h1>
-<p><code>src/lib.js</code></p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[no_mangle]
+<script src="wasm/link_section/index.js"></script><h1 id="call-wasm-function-in-the-browser"><a class="header" href="#call-wasm-function-in-the-browser">Call WASM function in the browser</a></h1>
+<p><code>wasm/double/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust">#[no_mangle]
 pub fn double(x: u32) -&gt; u32 {
     x + x
 }
-<span class="boring">}
+<span class="boring">fn main() {
+</span><span class="boring">   let x = 42;
+</span><span class="boring">   println!(&quot;The double of {} is {}.&quot;, x, double(x));
+</span><span class="boring">}
 </span></code></pre></pre>
-<p>Javascript</p>
+<p><code>wasm/double/index.rs</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
     const response = await fetch('wasm/double/double.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     console.log({ response, bytes, instance});
+    const x = 42;
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;42 + 42 = ${instance.exports.double(42)}&lt;/h2&gt;
+    &lt;h2&gt;The double of ${x} is ${instance.exports.double(x)}.&lt;/h2&gt;
     See details in the console log.
     `
 })();
@@ -302,66 +276,69 @@ pub fn double(x: u32) -&gt; u32 {
 <li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
 </ul>
-<script>
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/double/double.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2 id="42--42--instanceexportsdouble42"><a class="header" href="#42--42--instanceexportsdouble42">42 + 42 = ${instance.exports.double(42)}</a></h2>
-    See details in the console log.
-    `
-})();
-</script>
+<script src="wasm/double/index.js"></script>
 <h1 id="wasm-memory-without-wasm-bindgen"><a class="header" href="#wasm-memory-without-wasm-bindgen">WASM Memory without wasm-bindgen</a></h1>
 <p>A demo of WASM memory without <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> based on the blog
 <a href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/">A practical guide to WebAssembly memory</a>.</p>
-<p><code>src/lib.js</code></p>
+<p><code>wasm/memory/src/lib.rs </code></p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[no_mangle]
+</span>// https://radu-matei.com/blog/practical-guide-to-wasm-memory/#passing-arrays-to-rust-webassembly-modules
+/// Allocate memory into the module's linear memory
+/// and return the offset to the start of the block.
+#[no_mangle]
 pub fn alloc(len: usize) -&gt; *mut u8 {
+    // create a new mutable buffer with capacity `len`
     let mut buf = Vec::with_capacity(len);
+    // take a mutable pointer to the buffer
     let ptr = buf.as_mut_ptr();
+    // take ownership of the memory block and
+    // ensure that its destructor is not
+    // called when the object goes out of scope
+    // at the end of the function
     std::mem::forget(buf);
+    // return the pointer so the runtime
+    // can write data at this offset
     return ptr;
 }
 
+/// Given a pointer to the start of a byte array and
+/// its length, return the sum of its elements.
 #[no_mangle]
 pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
+    // create a Vec&lt;u8&gt; from the pointer to the
+    // linear memory and the length
     let data = Vec::from_raw_parts(ptr, len, len);
+    // actually compute the sum and return it
     data.iter().sum()
 }
-
 <span class="boring">}
 </span></code></pre></pre>
-<p>Javascript</p>
+<p><code>wasm/memory/index.js</code></p>
 <pre><code class="language-javascript">function copyMemory(data, instance) {
-  var ptr = instance.exports.alloc(data.length);
-  var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
-  mem.set(new Uint8Array(data));
-  return ptr;
+    var ptr = instance.exports.alloc(data.length);
+    var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
+    mem.set(new Uint8Array(data));
+    return ptr;
 }
-</code></pre>
-<pre><code class="language-javascript">function arraySum(array, instance) {
-  var ptr = copyMemory(array, instance);
-  var res = instance.exports.array_sum(ptr, array.length);
-  return res;
+
+function arraySum(array, instance) {
+    var ptr = copyMemory(array, instance);
+    var res = instance.exports.array_sum(ptr, array.length);
+    return res;
 }
-</code></pre>
-<pre><code class="language-javascript">(async () =&gt; {
+
+(async () =&gt; {
     var importObject = {};
     const response = await fetch('wasm/memory/memory.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
+    console.log({ response, bytes, instance });
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}&lt;/h2&gt;
-    See details in the console log.
-    `
+      &lt;h2&gt;arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}&lt;/h2&gt;
+      See details in the console log.
+      `
 })();
 </code></pre>
 <div id="answer"></div>
@@ -371,32 +348,7 @@ pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
 <li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
 </ul>
-<script>
-function copyMemory(data, instance) {
-  var ptr = instance.exports.alloc(data.length);
-  var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
-  mem.set(new Uint8Array(data));
-  return ptr;
-}
-
-function arraySum(array, instance) {
-  var ptr = copyMemory(array, instance);
-  var res = instance.exports.array_sum(ptr, array.length);
-  return res;
-}
-
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/memory/memory.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2 id="arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance"><a class="header" href="#arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance">arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}</a></h2>
-    See details in the console log.
-    `
-})();
-</script><h1 id="hello_rust"><a class="header" href="#hello_rust">hello_rust</a></h1>
+<script src="wasm/memory/index.js"></script><h1 id="hello_rust"><a class="header" href="#hello_rust">hello_rust</a></h1>
 <p><code>rust/hello_rust/src/main.rs</code></p>
 <pre><pre class="playground"><code class="language-rust editable">fn main() {
     println!(&quot;Hello, rust!&quot;);

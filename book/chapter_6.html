@@ -170,50 +170,65 @@
                         <h1 id="wasm-memory-without-wasm-bindgen"><a class="header" href="#wasm-memory-without-wasm-bindgen">WASM Memory without wasm-bindgen</a></h1>
 <p>A demo of WASM memory without <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> based on the blog
 <a href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/">A practical guide to WebAssembly memory</a>.</p>
-<p><code>src/lib.js</code></p>
+<p><code>wasm/memory/src/lib.rs </code></p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[no_mangle]
+</span>// https://radu-matei.com/blog/practical-guide-to-wasm-memory/#passing-arrays-to-rust-webassembly-modules
+/// Allocate memory into the module's linear memory
+/// and return the offset to the start of the block.
+#[no_mangle]
 pub fn alloc(len: usize) -&gt; *mut u8 {
+    // create a new mutable buffer with capacity `len`
     let mut buf = Vec::with_capacity(len);
+    // take a mutable pointer to the buffer
     let ptr = buf.as_mut_ptr();
+    // take ownership of the memory block and
+    // ensure that its destructor is not
+    // called when the object goes out of scope
+    // at the end of the function
     std::mem::forget(buf);
+    // return the pointer so the runtime
+    // can write data at this offset
     return ptr;
 }
 
+/// Given a pointer to the start of a byte array and
+/// its length, return the sum of its elements.
 #[no_mangle]
 pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
+    // create a Vec&lt;u8&gt; from the pointer to the
+    // linear memory and the length
     let data = Vec::from_raw_parts(ptr, len, len);
+    // actually compute the sum and return it
     data.iter().sum()
 }
-
 <span class="boring">}
 </span></code></pre></pre>
-<p>Javascript</p>
+<p><code>wasm/memory/index.js</code></p>
 <pre><code class="language-javascript">function copyMemory(data, instance) {
-  var ptr = instance.exports.alloc(data.length);
-  var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
-  mem.set(new Uint8Array(data));
-  return ptr;
+    var ptr = instance.exports.alloc(data.length);
+    var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
+    mem.set(new Uint8Array(data));
+    return ptr;
 }
-</code></pre>
-<pre><code class="language-javascript">function arraySum(array, instance) {
-  var ptr = copyMemory(array, instance);
-  var res = instance.exports.array_sum(ptr, array.length);
-  return res;
+
+function arraySum(array, instance) {
+    var ptr = copyMemory(array, instance);
+    var res = instance.exports.array_sum(ptr, array.length);
+    return res;
 }
-</code></pre>
-<pre><code class="language-javascript">(async () =&gt; {
+
+(async () =&gt; {
     var importObject = {};
     const response = await fetch('wasm/memory/memory.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
+    console.log({ response, bytes, instance });
     document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}&lt;/h2&gt;
-    See details in the console log.
-    `
+      &lt;h2&gt;arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}&lt;/h2&gt;
+      See details in the console log.
+      `
 })();
 </code></pre>
 <div id="answer"></div>
@@ -223,32 +238,7 @@ pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
 <li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html">JS FFI</a></li>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
 </ul>
-<script>
-function copyMemory(data, instance) {
-  var ptr = instance.exports.alloc(data.length);
-  var mem = new Uint8Array(instance.exports.memory.buffer, ptr, data.length);
-  mem.set(new Uint8Array(data));
-  return ptr;
-}
-
-function arraySum(array, instance) {
-  var ptr = copyMemory(array, instance);
-  var res = instance.exports.array_sum(ptr, array.length);
-  return res;
-}
-
-(async () => {
-    var importObject = {};
-    const response = await fetch('wasm/memory/memory.wasm');
-    const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes, importObject);
-    console.log({ response, bytes, instance});
-    document.getElementById('answer').innerHTML = `
-    <h2 id="arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance"><a class="header" href="#arraysum1-2-3-4-5-instance--arraysum1-2-3-4-5-instance">arraySum([1, 2, 3, 4, 5], instance) = ${arraySum([1, 2, 3, 4, 5], instance)}</a></h2>
-    See details in the console log.
-    `
-})();
-</script>
+<script src="wasm/memory/index.js"></script>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
