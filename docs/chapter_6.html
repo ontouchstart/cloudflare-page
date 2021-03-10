@@ -27,8 +27,6 @@
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
         
-        <link rel="stylesheet" href="css/print.css" media="print">
-        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
@@ -44,6 +42,9 @@
         <!-- Custom theme stylesheets -->
         
 
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         
     </head>
     <body>
@@ -131,10 +132,6 @@
 
                     <div class="right-buttons">
                         
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
-                        </a>
-                        
                         
                         <a href="https://github.com/ontouchstart/cloudflare-page" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
@@ -171,7 +168,7 @@
 <p>A demo of WASM memory without <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> based on the blog
 <a href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/">A practical guide to WebAssembly memory</a>.</p>
 <p><code>wasm/memory/src/lib.rs </code></p>
-<pre><pre class="playground"><code class="language-rust editable">/// https://radu-matei.com/blog/practical-guide-to-wasm-memory
+<pre><pre class="playground"><code class="language-rust editable edition2018">/// https://radu-matei.com/blog/practical-guide-to-wasm-memory
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
 #[no_mangle]

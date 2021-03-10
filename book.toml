@@ -5,13 +5,22 @@ multilingual = false
 src = "src"
 title = "ontouchstart"
 
+[rust]
+edition = "2018"
+
 [build]
 build-dir = "docs"
 
 [output]
+
 [output.html]
+mathjax-support = true
 git-repository-url = "https://github.com/ontouchstart/cloudflare-page"
 
 [output.html.playground]
 editable = true
+copy-js = true
 line-numbers = true
+
+[output.html.print]
+enable = false
