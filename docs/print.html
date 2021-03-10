@@ -367,6 +367,9 @@ ${JSON.stringify({memory}, null, 2)}
 <p>An empty WASM module is nothing but 8 bytes.</p>
 <pre><code class="language-console">$ du src/chapter_wat/wasm/empty_module.wasm
 8       src/chapter_wat/wasm/empty_module.wasm
+$ hexdump src/chapter_wat/wasm/empty_module.wasm
+0000000 00 61 73 6d 01 00 00 00                        
+0000008
 </code></pre>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
