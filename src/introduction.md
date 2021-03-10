@@ -4,7 +4,7 @@ The purpose of this blog is to study low level [rust](https://www.rust-lang.org)
 
 It uses [mdBook as a static site generator](https://jamstack.org/generators/mdbook/) and the source code is on [GitHub](https://github.com/ontouchstart/cloudflare-page).
 
-## Rust code in the browser
+## Rust
 
 ### Use rust playground backend
 
@@ -33,3 +33,23 @@ With the packaged solution, we get things done but don't know much about how it 
 The REST API solution is actually a hack by inspecting the network traffic of the packaged solution in the browser [DevTools](https://developers.google.com/web/tools/chrome-devtools) and figuring out the [API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) by ourselves. This is the main difference between learning how to *use* a feature and how to *implement* a feature.
 
 This book is more about the latter. 
+
+## JS
+
+For JS, the browser itself is the runtime so we can do whatever we want with [Web API](https://developer.mozilla.org/en-US/docs/Web/Reference/API).
+
+Our approach would be use [script tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) to load JS file directly into the markdown page.
+
+
+```md
+<pre id="browser_vendor"></pre>
+<script src="introduction/js/browser_vendor.js"></script>
+```
+
+`introduction/js/browser_vendor.js`
+```javascript
+{{#include introduction/js/browser_vendor.js}}
+```
+
+<pre id="browser_vendor"></pre>
+<script src="introduction/js/browser_vendor.js"></script>

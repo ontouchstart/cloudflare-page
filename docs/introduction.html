@@ -170,7 +170,7 @@
                         <h1 id="study-rustjswasm-in-mdbook"><a class="header" href="#study-rustjswasm-in-mdbook">Study Rust/JS/WASM in mdBook</a></h1>
 <p>The purpose of this blog is to study low level <a href="https://www.rust-lang.org">rust</a>/<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JS</a>/<a href="https://webassembly.org/">WASM</a> concepts and features in an iterative and interactive <a href="https://en.wikipedia.org/wiki/Literate_programming">literate programming</a> workflow.</p>
 <p>It uses <a href="https://jamstack.org/generators/mdbook/">mdBook as a static site generator</a> and the source code is on <a href="https://github.com/ontouchstart/cloudflare-page">GitHub</a>.</p>
-<h2 id="rust-code-in-the-browser"><a class="header" href="#rust-code-in-the-browser">Rust code in the browser</a></h2>
+<h2 id="rust"><a class="header" href="#rust">Rust</a></h2>
 <h3 id="use-rust-playground-backend"><a class="header" href="#use-rust-playground-backend">Use rust playground backend</a></h3>
 <p><a href="https://play.rust-lang.org/">Rust Playground</a> has a REST API 
 for us to send rust code to and get result back. Here is how it works in JavaScript.</p>
@@ -206,6 +206,19 @@ for us to send rust code to and get result back. Here is how it works in JavaScr
 <p>With the packaged solution, we get things done but don't know much about how it works. The <em>implementation</em> is hidden from us unless we take a look at the <a href="https://github.com/rust-lang/mdBook/blob/536873ca267db8a7d92cd9455e1aa84eefda71e6/src/theme/book.js#L18">source code</a>. </p>
 <p>The REST API solution is actually a hack by inspecting the network traffic of the packaged solution in the browser <a href="https://developers.google.com/web/tools/chrome-devtools">DevTools</a> and figuring out the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">API</a> by ourselves. This is the main difference between learning how to <em>use</em> a feature and how to <em>implement</em> a feature.</p>
 <p>This book is more about the latter. </p>
+<h2 id="js"><a class="header" href="#js">JS</a></h2>
+<p>For JS, the browser itself is the runtime so we can do whatever we want with <a href="https://developer.mozilla.org/en-US/docs/Web/Reference/API">Web API</a>.</p>
+<p>Our approach would be use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">script tag</a> to load JS file directly into the markdown page.</p>
+<pre><code class="language-md">&lt;pre id=&quot;browser_vendor&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;introduction/js/browser_vendor.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p><code>introduction/js/browser_vendor.js</code></p>
+<pre><code class="language-javascript">document.getElementById('browser_vendor').innerHTML =
+`Your browser is made by ${window.navigator.vendor}
+`
+</code></pre>
+<pre id="browser_vendor"></pre>
+<script src="introduction/js/browser_vendor.js"></script>
 
                     </main>
 
