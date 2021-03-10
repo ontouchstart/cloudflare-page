@@ -3,7 +3,7 @@ authors = ["Sam Liu"]
 language = "en"
 multilingual = false
 src = "src"
-title = "ontouchstart.pages.dev"
+title = "ontouchstart"
 
 [build]
 build-dir = "docs"
