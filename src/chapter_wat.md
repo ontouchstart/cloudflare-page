@@ -22,7 +22,9 @@ Let's start to learn WASM ground up by hand from
 ```
 
 ```markdown
+<pre id="empty_module"></pre>
 <script src="chapter_wat/js/empty_module.js"></script>
 ```
 
+<pre id="empty_module"></pre>
 <script src="chapter_wat/js/empty_module.js"></script>

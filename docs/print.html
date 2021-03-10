@@ -346,10 +346,21 @@ Also see console log.
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
     console.log('Empty WASM Module', {response, bytes, instance, exports});
+    var i8 = new Int8Array(bytes);
+    var i16 = new Int16Array(bytes);
+    var i32 = new Int32Array(bytes);
+    var u8 = new Uint8Array(bytes);
+    console.log({i8, i16, i32, u8});
+    document.getElementById('empty_module').innerHTML = `FROM WASM:
+${JSON.stringify({i8, i16, i32, u8}, null, 2)}
+`;
+
 })();
 </code></pre>
-<pre><code class="language-markdown">&lt;script src=&quot;chapter_wat/js/empty_module.js&quot;&gt;&lt;/script&gt;
+<pre><code class="language-markdown">&lt;pre id=&quot;empty_module&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_wat/js/empty_module.js&quot;&gt;&lt;/script&gt;
 </code></pre>
+<pre id="empty_module"></pre>
 <script src="chapter_wat/js/empty_module.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
