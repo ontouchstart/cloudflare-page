@@ -11,7 +11,8 @@ A demo of WASM memory without [wasm-bindgen](https://github.com/rustwasm/wasm-bi
 #    let ptr = alloc(array.len());  
 #    println!("The length of the array {:?} is {}", array, array.len());
 #    unsafe { 
-#      println!("Need to find a way to copy the array into the memory block at {:?}", ptr);
+#      println!("Copy the array into the memory block at {:?}", ptr);
+#      std::ptr::copy(array.as_ptr(), ptr, array.len());
 #      println!("array_sum = {}", array_sum(ptr, array.len()));
 #    }
 # }
