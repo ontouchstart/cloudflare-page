@@ -6,6 +6,15 @@ A demo of WASM memory without [wasm-bindgen](https://github.com/rustwasm/wasm-bi
 `wasm/memory/src/lib.rs `
 ```rust
 {{#include wasm/memory/src/lib.rs}}
+#  fn main() {
+#    let array = [1, 2, 3, 4, 5];
+#    let ptr = alloc(array.len());  
+#    println!("The length of the array {:?} is {}", array, array.len());
+#    unsafe { 
+#      println!("Need to find a way to copy the array into the memory block at {:?}", ptr);
+#      println!("array_sum = {}", array_sum(ptr, array.len()));
+#    }
+# }
 ```
 
 `wasm/memory/index.js`
