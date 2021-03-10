@@ -77,7 +77,7 @@ wat2wasm wat/simple.wat -o wasm/simple.wasm
 ```
 
 ```markdown
-<pre id="wasm-answer"></pre>
+<pre id="wasm_answer"></pre>
 <script async src="introduction/js/wasm.js"></script>
 ```
 
@@ -87,5 +87,27 @@ wat2wasm wat/simple.wat -o wasm/simple.wasm
 {{#include introduction/js/wasm.js}}
 ```
 
-<pre id="wasm-answer"></pre>
+<pre id="wasm_answer"></pre>
 <script async src="introduction/js/wasm.js"></script>
+
+## WASM Memory
+
+Based on 
+- [WebAssembly.Memory](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Memory)
+- [WASM memory test](https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.html)
+- [memory.wat](https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.wat)
+
+```markdown
+<pre id="wasm_memory"></pre>
+<script async src="introduction/js/memory.js"></script>
+```
+
+`introduction/js/memory.js`
+```javascript
+{{#include introduction/js/memory.js}}
+```
+
+<pre id="wasm_memory"></pre>
+<script async src="introduction/js/memory.js"></script>
+
+

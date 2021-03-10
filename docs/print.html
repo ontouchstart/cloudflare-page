@@ -245,11 +245,12 @@ Also see console log.
 <p><code>introduction/Makefile</code></p>
 <pre><code class="language-makefile">build:
 	wat2wasm wat/simple.wat -o wasm/simple.wasm
+	wat2wasm wat/memory.wat -o wasm/memory.wasm
 </code></pre>
 <pre><code class="language-console">$ make -C src/introduction
 wat2wasm wat/simple.wat -o wasm/simple.wasm
 </code></pre>
-<pre><code class="language-markdown">&lt;pre id=&quot;wasm-answer&quot;&gt;&lt;/pre&gt;
+<pre><code class="language-markdown">&lt;pre id=&quot;wasm_answer&quot;&gt;&lt;/pre&gt;
 &lt;script async src=&quot;introduction/js/wasm.js&quot;&gt;&lt;/script&gt;
 </code></pre>
 <p><code>introduction/js/wasm.js</code></p>
@@ -259,14 +260,49 @@ wat2wasm wat/simple.wat -o wasm/simple.wasm
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
-    console.log('WASM', {response, bytes, instance, exports});
-    document.getElementById('wasm-answer').innerHTML = `The answer is ${instance.exports.answer()}.
+    console.log('WASM Answer', {response, bytes, instance, exports});
+    document.getElementById('wasm_answer').innerHTML = `From WASM Answer
+${instance.exports.answer()}
 Also see console log.
     `
 })();
 </code></pre>
-<pre id="wasm-answer"></pre>
+<pre id="wasm_answer"></pre>
 <script async src="introduction/js/wasm.js"></script>
+<h2 id="wasm-memory"><a class="header" href="#wasm-memory">WASM Memory</a></h2>
+<p>Based on </p>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Memory">WebAssembly.Memory</a></li>
+<li><a href="https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.html">WASM memory test</a></li>
+<li><a href="https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.wat">memory.wat</a></li>
+</ul>
+<pre><code class="language-markdown">&lt;pre id=&quot;wasm_memory&quot;&gt;&lt;/pre&gt;
+&lt;script async src=&quot;introduction/js/memory.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p><code>introduction/js/memory.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var mem = new WebAssembly.Memory({initial:10, maximum:100});
+
+    var importObject = { js: { mem }};
+    const response = await fetch('introduction/wasm/memory.wasm');
+    const { instance } = await WebAssembly.instantiateStreaming(response, importObject);
+    const { exports } = instance;
+    const { accumulate } = exports;
+    var i32 = new Uint32Array(mem.buffer);
+      for (let i = 0; i &lt; 100; i++) {
+        i32[i] = i+1;
+      }
+    const sum = accumulate(0, 100); 
+    console.log('WASM Memory', {response, instance, exports, sum});
+    document.getElementById('wasm_memory').innerHTML = `From WASM Memory
+sum = ${sum}
+Also see console log.
+`
+
+})();
+</code></pre>
+<pre id="wasm_memory"></pre>
+<script async src="introduction/js/memory.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>

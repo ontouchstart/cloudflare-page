@@ -4,8 +4,9 @@
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
-    console.log('WASM', {response, bytes, instance, exports});
-    document.getElementById('wasm-answer').innerHTML = `The answer is ${instance.exports.answer()}.
+    console.log('WASM Answer', {response, bytes, instance, exports});
+    document.getElementById('wasm_answer').innerHTML = `From WASM Answer
+${instance.exports.answer()}
 Also see console log.
     `
 })();
