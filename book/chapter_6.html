@@ -171,7 +171,7 @@
 <p>A demo of WASM memory without <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> based on the blog
 <a href="https://radu-matei.com/blog/practical-guide-to-wasm-memory/">A practical guide to WebAssembly memory</a>.</p>
 <p><code>wasm/memory/src/lib.rs </code></p>
-<pre><pre class="playground"><code class="language-rust">// https://radu-matei.com/blog/practical-guide-to-wasm-memory/#passing-arrays-to-rust-webassembly-modules
+<pre><pre class="playground"><code class="language-rust editable">/// https://radu-matei.com/blog/practical-guide-to-wasm-memory
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
 #[no_mangle]
@@ -200,17 +200,18 @@ pub unsafe fn array_sum(ptr: *mut u8, len: usize) -&gt; u8 {
     // actually compute the sum and return it
     data.iter().sum()
 }
-<span class="boring"> fn main() {
-</span><span class="boring">   let array = [1, 2, 3, 4, 5];
-</span><span class="boring">   let ptr = alloc(array.len());  
-</span><span class="boring">   println!(&quot;The length of the array {:?} is {}&quot;, array, array.len());
-</span><span class="boring">   unsafe { 
-</span><span class="boring">     println!(&quot;Copy the array into the memory block at {:?}&quot;, ptr);
-</span><span class="boring">     std::ptr::copy(array.as_ptr(), ptr, array.len());
-</span><span class="boring">     println!(&quot;array_sum = {}&quot;, array_sum(ptr, array.len()));
-</span><span class="boring">   }
-</span><span class="boring">}
-</span></code></pre></pre>
+
+fn main() {
+  let array = [1, 2, 3, 4, 5];
+  let ptr = alloc(array.len());  
+  println!(&quot;The length of the array {:?} is {}&quot;, array, array.len());
+  unsafe { 
+    println!(&quot;Copy the array into the memory block at {:?}&quot;, ptr);
+    std::ptr::copy(array.as_ptr(), ptr, array.len());
+    println!(&quot;array_sum = {}&quot;, array_sum(ptr, array.len()));
+  }
+}
+</code></pre></pre>
 <p><code>wasm/memory/index.js</code></p>
 <pre><code class="language-javascript">function copyMemory(data, instance) {
     var ptr = instance.exports.alloc(data.length);
@@ -245,6 +246,7 @@ function arraySum(array, instance) {
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate">WebAssembly.instantiate()</a></li>
 </ul>
 <script src="wasm/memory/index.js"></script>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

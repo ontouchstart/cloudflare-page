@@ -4,18 +4,19 @@ A demo of WASM memory without [wasm-bindgen](https://github.com/rustwasm/wasm-bi
 [A practical guide to WebAssembly memory](https://radu-matei.com/blog/practical-guide-to-wasm-memory/).
 
 `wasm/memory/src/lib.rs `
-```rust
+```rust,editable
 {{#include wasm/memory/src/lib.rs}}
-#  fn main() {
-#    let array = [1, 2, 3, 4, 5];
-#    let ptr = alloc(array.len());  
-#    println!("The length of the array {:?} is {}", array, array.len());
-#    unsafe { 
-#      println!("Copy the array into the memory block at {:?}", ptr);
-#      std::ptr::copy(array.as_ptr(), ptr, array.len());
-#      println!("array_sum = {}", array_sum(ptr, array.len()));
-#    }
-# }
+
+fn main() {
+  let array = [1, 2, 3, 4, 5];
+  let ptr = alloc(array.len());  
+  println!("The length of the array {:?} is {}", array, array.len());
+  unsafe { 
+    println!("Copy the array into the memory block at {:?}", ptr);
+    std::ptr::copy(array.as_ptr(), ptr, array.len());
+    println!("array_sum = {}", array_sum(ptr, array.len()));
+  }
+}
 ```
 
 `wasm/memory/index.js`

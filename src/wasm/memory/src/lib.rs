@@ -1,4 +1,4 @@
-// https://radu-matei.com/blog/practical-guide-to-wasm-memory/#passing-arrays-to-rust-webassembly-modules
+/// https://radu-matei.com/blog/practical-guide-to-wasm-memory
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
 #[no_mangle]
