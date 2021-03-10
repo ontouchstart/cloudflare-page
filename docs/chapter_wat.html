@@ -191,15 +191,14 @@
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
     console.log('Empty WASM Module', {response, bytes, instance, exports});
-    var i8 = new Int8Array(bytes);
-    var i16 = new Int16Array(bytes);
-    var i32 = new Int32Array(bytes);
     var u8 = new Uint8Array(bytes);
-    console.log({i8, i16, i32, u8});
+    var u16 = new Uint16Array(bytes);
+    var u32 = new Uint32Array(bytes);
+    window.memory = {bytes, u8, u16, u32};
+    console.log({memory});
     document.getElementById('empty_module').innerHTML = `FROM WASM:
-${JSON.stringify({i8, i16, i32, u8}, null, 2)}
+${JSON.stringify({memory}, null, 2)}
 `;
-
 })();
 </code></pre>
 <pre><code class="language-markdown">&lt;pre id=&quot;empty_module&quot;&gt;&lt;/pre&gt;
@@ -207,6 +206,13 @@ ${JSON.stringify({i8, i16, i32, u8}, null, 2)}
 </code></pre>
 <pre id="empty_module"></pre>
 <script src="chapter_wat/js/empty_module.js"></script>
+<h2 id="arraybuffer"><a class="header" href="#arraybuffer">ArrayBuffer</a></h2>
+<p>So what does the output above mean? To understand it, we need to dive into 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>. </p>
+<p>An empty WASM module is nothing but 8 bytes.</p>
+<pre><code class="language-console">$ du src/chapter_wat/wasm/empty_module.wasm
+8       src/chapter_wat/wasm/empty_module.wasm
+</code></pre>
 
                     </main>
 
