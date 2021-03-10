@@ -249,6 +249,7 @@ Also see console log.
 </code></pre>
 <pre><code class="language-console">$ make -C src/introduction
 wat2wasm wat/simple.wat -o wasm/simple.wasm
+wat2wasm wat/memory.wat -o wasm/memory.wasm
 </code></pre>
 <pre><code class="language-markdown">&lt;pre id=&quot;wasm_answer&quot;&gt;&lt;/pre&gt;
 &lt;script async src=&quot;introduction/js/wasm.js&quot;&gt;&lt;/script&gt;
@@ -276,6 +277,26 @@ Also see console log.
 <li><a href="https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.html">WASM memory test</a></li>
 <li><a href="https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.wat">memory.wat</a></li>
 </ul>
+<p><code>introduction/wat/memory.wat</code></p>
+<pre><code>(module
+  (memory (import &quot;js&quot; &quot;mem&quot;) 1)
+  (func (export &quot;accumulate&quot;) (param $ptr i32) (param $len i32) (result i32)
+    (local $end i32)
+    (local $sum i32)
+    (local.set $end (i32.add (local.get $ptr) (i32.mul (local.get $len) (i32.const 4))))
+    (block $break (loop $top
+      (br_if $break (i32.eq (local.get $ptr) (local.get $end)))
+      (local.set $sum (i32.add (local.get $sum)
+                               (i32.load (local.get $ptr))))
+        (local.set $ptr (i32.add (local.get $ptr) (i32.const 4)))
+        (br $top)
+    ))
+    (local.get $sum)
+  )
+)
+</code></pre>
+<pre><code class="language-console">wat2wasm wat/memory.wat -o wasm/memory.wasm
+</code></pre>
 <pre><code class="language-markdown">&lt;pre id=&quot;wasm_memory&quot;&gt;&lt;/pre&gt;
 &lt;script async src=&quot;introduction/js/memory.js&quot;&gt;&lt;/script&gt;
 </code></pre>

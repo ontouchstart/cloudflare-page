@@ -74,6 +74,7 @@ $ brew install wabt
 ```console
 $ make -C src/introduction
 wat2wasm wat/simple.wat -o wasm/simple.wasm
+wat2wasm wat/memory.wat -o wasm/memory.wasm
 ```
 
 ```markdown
@@ -96,6 +97,15 @@ Based on
 - [WebAssembly.Memory](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Memory)
 - [WASM memory test](https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.html)
 - [memory.wat](https://github.com/mdn/webassembly-examples/blob/master/js-api-examples/memory.wat)
+
+`introduction/wat/memory.wat`
+```
+{{#include introduction/wat/memory.wat}}
+```
+
+```console
+wat2wasm wat/memory.wat -o wasm/memory.wasm
+```
 
 ```markdown
 <pre id="wasm_memory"></pre>
