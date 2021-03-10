@@ -191,13 +191,16 @@ for us to send rust code to and get result back. Here is how it works in JavaScr
         method: &quot;POST&quot;,
         body: JSON.stringify({code, edition, version, optimize })
     })).json();
-    console.log({result});
-    document.getElementById('result').innerHTML = JSON.stringify(result, null, 2);
+    console.log('From Rust Playground', {result});
+    document.getElementById('result').innerHTML = `From Rust Playground:
+${JSON.stringify(result, null, 2)}.
+Also see console log.
+    `;
 
 })();
 </code></pre>
 <pre id="result"></pre>
-<script src="introduction/js/hello.js"></script>
+<script async src="introduction/js/hello.js"></script>
 <p>It is possible to build a whole interactive coding environment this way and we might want to do it in the future. However, mdBook already has <a href="https://rust-lang.github.io/mdBook/format/mdbook.html#inserting-runnable-rust-files">this feature built in</a> so we might just use it unless we need more custom features. </p>
 <p><code>introduction/hello/src/main.rs</code></p>
 <pre><pre class="playground"><code class="language-rust editable">fn main() {
@@ -211,7 +214,7 @@ for us to send rust code to and get result back. Here is how it works in JavaScr
 <h2 id="js"><a class="header" href="#js">JS</a></h2>
 <p>For JS, the browser itself is the runtime so we can do whatever we want with <a href="https://developer.mozilla.org/en-US/docs/Web/Reference/API">Web API</a>.</p>
 <p>Our approach would be use <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">script tag</a> to load JS file directly into the markdown page.</p>
-<pre><code class="language-md">&lt;pre id=&quot;browser_vendor&quot;&gt;&lt;/pre&gt;
+<pre><code class="language-markdown">&lt;pre id=&quot;browser_vendor&quot;&gt;&lt;/pre&gt;
 &lt;script src=&quot;introduction/js/browser_vendor.js&quot;&gt;&lt;/script&gt;
 </code></pre>
 <p><code>introduction/js/browser_vendor.js</code></p>
@@ -221,6 +224,46 @@ for us to send rust code to and get result back. Here is how it works in JavaScr
 </code></pre>
 <pre id="browser_vendor"></pre>
 <script src="introduction/js/browser_vendor.js"></script>
+<h2 id="wasm"><a class="header" href="#wasm">WASM</a></h2>
+<p>Install the <a href="https://github.com/WebAssembly/wabt">WABT: The WebAssembly Binary Toolkit</a> from <a href="https://formulae.brew.sh/formula/wabt">Homebrew</a></p>
+<pre><code class="language-console">$ brew install wabt
+</code></pre>
+<p><code>introduction/wat/simple.wat</code></p>
+<pre><code>(module
+  (func $answer (;0;) (export &quot;answer&quot;) (result i32)
+    (local $var0 i32)
+    i32.const 42
+    local.set $var0
+    local.get $var0
+    return
+  )
+)
+</code></pre>
+<p><code>introduction/Makefile</code></p>
+<pre><code class="language-makefile">build:
+	wat2wasm wat/simple.wat -o wasm/simple.wasm
+</code></pre>
+<pre><code class="language-console">$ make -C src/introduction
+wat2wasm wat/simple.wat -o wasm/simple.wasm
+</code></pre>
+<pre><code class="language-markdown">&lt;pre id=&quot;wasm-answer&quot;&gt;&lt;/pre&gt;
+&lt;script async src=&quot;introduction/js/wasm.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p><code>introduction/js/wasm.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('introduction/wasm/simple.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('WASM', {response, bytes, instance, exports});
+    document.getElementById('wasm-answer').innerHTML = `The answer is ${instance.exports.answer()}.
+Also see console log.
+    `
+})();
+</code></pre>
+<pre id="wasm-answer"></pre>
+<script async src="introduction/js/wasm.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>

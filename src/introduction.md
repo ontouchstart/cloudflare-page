@@ -17,7 +17,7 @@ for us to send rust code to and get result back. Here is how it works in JavaScr
 {{#include introduction/js/hello.js}}
 ```
 <pre id="result"></pre>
-<script src="introduction/js/hello.js"></script>
+<script async src="introduction/js/hello.js"></script>
 
 It is possible to build a whole interactive coding environment this way and we might want to do it in the future. However, mdBook already has [this feature built in](https://rust-lang.github.io/mdBook/format/mdbook.html#inserting-runnable-rust-files) so we might just use it unless we need more custom features. 
 
@@ -41,7 +41,7 @@ For JS, the browser itself is the runtime so we can do whatever we want with [We
 Our approach would be use [script tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) to load JS file directly into the markdown page.
 
 
-```md
+```markdown
 <pre id="browser_vendor"></pre>
 <script src="introduction/js/browser_vendor.js"></script>
 ```
@@ -53,3 +53,39 @@ Our approach would be use [script tag](https://developer.mozilla.org/en-US/docs/
 
 <pre id="browser_vendor"></pre>
 <script src="introduction/js/browser_vendor.js"></script>
+
+## WASM
+
+Install the [WABT: The WebAssembly Binary Toolkit](https://github.com/WebAssembly/wabt) from [Homebrew](https://formulae.brew.sh/formula/wabt)
+```console
+$ brew install wabt
+```
+
+`introduction/wat/simple.wat`
+```
+{{#include introduction/wat/simple.wat}}
+```
+
+`introduction/Makefile`
+```makefile
+{{#include introduction/Makefile}}
+```
+
+```console
+$ make -C src/introduction
+wat2wasm wat/simple.wat -o wasm/simple.wasm
+```
+
+```markdown
+<pre id="wasm-answer"></pre>
+<script async src="introduction/js/wasm.js"></script>
+```
+
+
+`introduction/js/wasm.js`
+```javascript
+{{#include introduction/js/wasm.js}}
+```
+
+<pre id="wasm-answer"></pre>
+<script async src="introduction/js/wasm.js"></script>

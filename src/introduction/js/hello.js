@@ -12,7 +12,10 @@
         method: "POST",
         body: JSON.stringify({code, edition, version, optimize })
     })).json();
-    console.log({result});
-    document.getElementById('result').innerHTML = JSON.stringify(result, null, 2);
+    console.log('From Rust Playground', {result});
+    document.getElementById('result').innerHTML = `From Rust Playground:
+${JSON.stringify(result, null, 2)}.
+Also see console log.
+    `;
 
 })();
