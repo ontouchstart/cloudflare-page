@@ -1,9 +1,9 @@
 (async () => {
     var importObject = {
         dom : {
-            log: function (output) {
-                console.log('Called from WASM', {output});
-                document.getElementById(`call_js_func_module_output`).innerHTML = `output = ${output}`
+            log: function (input, output) {
+                console.log('Display from WASM', {input, output});
+                document.getElementById(`call_js_func_module_output_${input}`).innerHTML = `output = ${output}`
             }
         }
     };
@@ -19,4 +19,5 @@
     console.log({memory});
     console.log(input);
     exports.log(input);
+    exports.log(64); // input = 64 for another block
 })();

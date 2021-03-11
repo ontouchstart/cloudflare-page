@@ -168,15 +168,16 @@ See [Importing functions from JavaScript](https://developer.mozilla.org/en-US/do
 ```console
 $ wat2wasm wat/call_js_func_module.wat -o wasm/call_js_func_module.wasm
 $ hexdump -C wasm/call_js_func_module.wasm
-00000000  00 61 73 6d 01 00 00 00  01 05 01 60 01 7f 00 02  |.asm.......`....|
-00000010  0b 01 03 64 6f 6d 03 6c  6f 67 00 00 03 02 01 00  |...dom.log......|
-00000020  07 07 01 03 6c 6f 67 00  00 0a 08 01 06 00 20 00  |....log....... .|
-00000030  10 00 0b                                          |...|
-00000033
+00000000  00 61 73 6d 01 00 00 00  01 0a 02 60 02 7f 7f 00  |.asm.......`....|
+00000010  60 01 7f 00 02 0b 01 03  64 6f 6d 03 6c 6f 67 00  |`.......dom.log.|
+00000020  00 03 02 01 01 07 07 01  03 6c 6f 67 00 01 0a 0a  |.........log....|
+00000030  01 08 00 20 00 20 00 10  00 0b                    |... . ....|
+0000003a
 ```
 
 ```markdown
-<pre id="call_js_func_module"></pre>
+<pre id="call_js_func_module_output_42"></pre>
+<pre id="call_js_func_module_output_64"></pre>
 <script src="chapter_wat/js/call_js_func_module.js"></script>
 ```
 
@@ -186,5 +187,6 @@ $ hexdump -C wasm/call_js_func_module.wasm
 {{#include chapter_wat/js/call_js_func_module.js}}
 ```
 
-<pre id="call_js_func_module_output"></pre>
+<pre id="call_js_func_module_output_42"></pre>
+<pre id="call_js_func_module_output_64"></pre>
 <script src="chapter_wat/js/call_js_func_module.js"></script>
