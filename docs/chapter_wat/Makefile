@@ -1,4 +1,11 @@
-build: empty_module return_module r_module r_func_0_module call_js_func_module add_module
+build: empty_module \
+	return_module \
+	r_module \
+	r_func_0_module \
+	call_js_func_module \
+	add_module \
+	add_only_module \
+	import_add_module
 
 empty_module:
 	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
@@ -25,3 +32,11 @@ call_js_func_module:
 add_module:
 	wat2wasm wat/add_module.wat -o wasm/add_module.wasm
 	hexdump -C wasm/add_module.wasm
+
+add_only_module:
+	wat2wasm wat/add_only_module.wat -o wasm/add_only_module.wasm
+	hexdump -C wasm/add_only_module.wasm
+
+import_add_module:
+	wat2wasm wat/import_add_module.wat -o wasm/import_add_module.wasm
+	hexdump -C wasm/import_add_module.wasm

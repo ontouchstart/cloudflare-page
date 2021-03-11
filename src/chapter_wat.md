@@ -221,3 +221,55 @@ hexdump -C wasm/add_module.wasm
 
 <pre id="add_module_output"></pre>
 <script src="chapter_wat/js/add_module.js"></script>
+
+## Import add from another module
+
+In the previous add module, the exported `add(x, y)` calls internal `add(x, y)` and imported `dom.show_add(x, y, result)`.
+Let's see if we can import the `add(x, y)` from another module. 
+
+`chapter_wat/wat/add_only_module.wat`
+```
+{{#include chapter_wat/wat/add_only_module.wat}}
+```
+
+```console
+$ wat2wasm wat/add_only_module.wat -o wasm/add_only_module.wasm
+$ hexdump -C wasm/add_only_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 07 01 60 02 7f 7f 01  |.asm.......`....|
+00000010  7f 03 02 01 00 07 07 01  03 61 64 64 00 00 0a 09  |.........add....|
+00000020  01 07 00 20 00 20 01 6a  0b                       |... . .j.|
+00000029
+```
+
+`chapter_wat/wat/import_add_module.wat`
+```
+{{#include chapter_wat/wat/import_add_module.wat}}
+```
+
+```console
+$ wat2wasm wat/import_add_module.wat -o wasm/import_add_module.wasm
+$ hexdump -C wasm/import_add_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 12 03 60 03 7f 7f 7f  |.asm.......`....|
+00000010  00 60 02 7f 7f 01 7f 60  02 7f 7f 00 02 1f 02 03  |.`.....`........|
+00000020  64 6f 6d 08 73 68 6f 77  5f 61 64 64 00 00 08 65  |dom.show_add...e|
+00000030  78 74 65 72 6e 61 6c 03  61 64 64 00 01 03 02 01  |xternal.add.....|
+00000040  02 07 07 01 03 61 64 64  00 02 0a 10 01 0e 00 20  |.....add....... |
+00000050  00 20 01 20 00 20 01 10  01 10 00 0b              |. . . ......|
+0000005c
+```
+
+```markdown
+<pre id="import_add_module_output"></pre>
+<script src="chapter_wat/js/import_add_fmodule.js"></script>
+```
+
+`chapter_wat/js/import_add_module.js`
+```javascript
+{{#include chapter_wat/js/import_add_module.js}}
+```
+
+<pre id="import_add_module_output"></pre>
+<script src="chapter_wat/js/import_add_module.js"></script>
+
+Now we successfully import the `add(x, y)` function from a WASM module `add_only_module.wasm` into another WASM module
+`import_add_module.wasm` and call the exported `add(x, y)` from both modules in different scopes. 

@@ -1,10 +1,10 @@
 (async () => {
     var importObject = {
         dom : {
-            show_add: function (x, y, output) {
-                console.log('Call from WASM', {x, y, output});
+            show_add: function (x, y, result) {
+                console.log('Call from WASM', {x, y, result});
                 document.getElementById(`add_module_output`).innerHTML += `
-${x} + ${y} = ${output}`;
+${x} + ${y} = ${result}`;
             }
         }
     };
