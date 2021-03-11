@@ -37,10 +37,11 @@ So what does the output above mean? To understand it, we need to dive into
 An empty WASM module is nothing but 8 bytes.
 
 ```console
-$ exdump -C src/chapter_wat/wasm/empty_module.wasm   
+$ hexdump -C src/chapter_wat/wasm/empty_module.wasm   
 00000000  00 61 73 6d 01 00 00 00                           |.asm....|
 00000008
 ```
+See [hexdump](https://en.wikipedia.org/wiki/Hex_dump).
 
 The first 4 bytes represent WASM_BINARY_MAGIC
 ```

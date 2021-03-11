@@ -366,10 +366,11 @@ ${JSON.stringify({memory}, null, 2)}
 <p>So what does the output above mean? To understand it, we need to dive into 
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>. </p>
 <p>An empty WASM module is nothing but 8 bytes.</p>
-<pre><code class="language-console">$ exdump -C src/chapter_wat/wasm/empty_module.wasm   
+<pre><code class="language-console">$ hexdump -C src/chapter_wat/wasm/empty_module.wasm   
 00000000  00 61 73 6d 01 00 00 00                           |.asm....|
 00000008
 </code></pre>
+<p>See <a href="https://en.wikipedia.org/wiki/Hex_dump">hexdump</a>.</p>
 <p>The first 4 bytes represent WASM_BINARY_MAGIC</p>
 <pre><code>00 61 73 6d ('\0asm')
 </code></pre>
