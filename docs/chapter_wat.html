@@ -180,8 +180,7 @@
 <p><code>chapter_wat/wat/empty_module.wat</code></p>
 <pre><code>(module)
 </code></pre>
-<pre><code class="language-makefile">build:
-	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
+<pre><code class="language-console">wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
 </code></pre>
 <p><code>chapter_wat/js/empty_module.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
@@ -207,14 +206,11 @@ ${JSON.stringify({memory}, null, 2)}
 </code></pre>
 <pre id="empty_module"></pre>
 <script src="chapter_wat/js/empty_module.js"></script>
-<h2 id="arraybuffer"><a class="header" href="#arraybuffer">ArrayBuffer</a></h2>
+<h3 id="arraybuffer"><a class="header" href="#arraybuffer">ArrayBuffer</a></h3>
 <p>So what does the output above mean? To understand it, we need to dive into 
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>. </p>
 <p>An empty WASM module is nothing but 8 bytes.</p>
-<pre><code class="language-console">$ hexdump -c src/chapter_wat/wasm/empty_module.wasm
-0000000  \0   a   s   m 001  \0  \0  \0                                
-0000008
-$ hexdump -C src/chapter_wat/wasm/empty_module.wasm   
+<pre><code class="language-console">$ hexdump -C wasm/empty_module.wasm   
 00000000  00 61 73 6d 01 00 00 00                           |.asm....|
 00000008
 </code></pre>
@@ -226,6 +222,48 @@ $ hexdump -C src/chapter_wat/wasm/empty_module.wasm
 <pre><code>01 00 00 00
 </code></pre>
 <p>See <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">binary module specification</a>.</p>
+<h2 id="a-simple-function-that-returns-the-input"><a class="header" href="#a-simple-function-that-returns-the-input">A simple function that returns the input</a></h2>
+<p><code>chapter_wat/wat/return_module.wat</code></p>
+<pre><code>(module
+  (func $return (param $input i32) (result i32)
+    local.get $input )
+  (export &quot;return&quot; (func $return))
+)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm wat/return_module.wat -o wasm/return_module.wasm
+$ hexdump -C wasm/return_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 06 01 60 01 7f 01 7f  |.asm.......`....|
+00000010  03 02 01 00 07 0a 01 06  72 65 74 75 72 6e 00 00  |........return..|
+00000020  0a 06 01 04 00 20 00 0b                           |..... ..|
+00000028
+</code></pre>
+<p><code>chapter_wat/js/return_module.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('chapter_wat/wasm/return_module.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('WASM Module', {response, bytes, instance, exports});
+    var u8 = new Uint8Array(bytes);
+    var u16 = new Uint16Array(bytes);
+    var u32 = new Uint32Array(bytes);
+    const byteLength = bytes.byteLength;
+    const input = 42;
+    window.memory = {bytes, byteLength, u8, u16, u32};
+    console.log({memory});
+    document.getElementById('return_module').innerHTML = `FROM WASM:
+${JSON.stringify({memory}, null, 2)}
+return(${input}) = ${exports.return(input)}
+`;
+})();
+</code></pre>
+<pre><code class="language-markdown">&lt;pre id=&quot;return_module&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_wat/js/return_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<pre id="return_module"></pre>
+<script src="chapter_wat/js/return_module.js"></script>
+<p>You can see this module has <code>40</code> (<code>0x28</code>) bytes. </p>
 
                     </main>
 
