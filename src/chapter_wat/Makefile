@@ -1,4 +1,4 @@
-build: empty_module return_module r_module r_func_0_module call_js_func_module
+build: empty_module return_module r_module r_func_0_module call_js_func_module add_module
 
 empty_module:
 	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
@@ -21,3 +21,7 @@ r_func_0_module:
 call_js_func_module:
 	wat2wasm wat/call_js_func_module.wat -o wasm/call_js_func_module.wasm
 	hexdump -C wasm/call_js_func_module.wasm
+
+add_module:
+	wat2wasm wat/add_module.wat -o wasm/add_module.wasm
+	hexdump -C wasm/add_module.wasm

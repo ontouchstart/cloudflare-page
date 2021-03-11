@@ -501,8 +501,8 @@ return(${input}) = ${exports.r(input)}
 <pre id="r_module"></pre>
 <script src="chapter_wat/js/r_module.js"></script>
 <h3 id="call-js-function-from-wasm"><a class="header" href="#call-js-function-from-wasm">Call JS function from WASM</a></h3>
-<p>See <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format#importing_functions_from_javascript">Importing functions from JavaScript</a>
-<code>chapter_wat/wat/call_js_func_module.wat</code></p>
+<p>See <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format#importing_functions_from_javascript">Importing functions from JavaScript</a></p>
+<p><code>chapter_wat/wat/call_js_func_module.wat</code></p>
 <pre><code>(module
   (import &quot;dom&quot; &quot;log&quot; (func (param i32 i32 )))
   (func (param $input i32)
@@ -520,8 +520,7 @@ $ hexdump -C wasm/call_js_func_module.wasm
 00000030  01 08 00 20 00 20 00 10  00 0b                    |... . ....|
 0000003a
 </code></pre>
-<pre><code class="language-markdown">&lt;pre id=&quot;call_js_func_module_output_42&quot;&gt;&lt;/pre&gt;
-&lt;pre id=&quot;call_js_func_module_output_64&quot;&gt;&lt;/pre&gt;
+<pre><code class="language-markdown">&lt;pre id=&quot;call_js_func_module_output&quot;&gt;&lt;/pre&gt;
 &lt;script src=&quot;chapter_wat/js/call_js_func_module.js&quot;&gt;&lt;/script&gt;
 </code></pre>
 <p><code>chapter_wat/js/call_js_func_module.js</code></p>
@@ -529,8 +528,10 @@ $ hexdump -C wasm/call_js_func_module.wasm
     var importObject = {
         dom : {
             log: function (input, output) {
-                console.log('Display from WASM', {input, output});
-                document.getElementById(`call_js_func_module_output_${input}`).innerHTML = `output = ${output}`
+                console.log('Call from WASM', {input, output});
+                document.getElementById(`call_js_func_module_output`).innerHTML += `
+input = ${input}
+output = ${output}`
             }
         }
     };
@@ -546,12 +547,68 @@ $ hexdump -C wasm/call_js_func_module.wasm
     console.log({memory});
     console.log(input);
     exports.log(input);
-    exports.log(64); // input = 64 for another block
+    exports.log(64); 
 })();
 </code></pre>
-<pre id="call_js_func_module_output_42"></pre>
-<pre id="call_js_func_module_output_64"></pre>
-<script src="chapter_wat/js/call_js_func_module.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<pre id="call_js_func_module_output"></pre>
+<script src="chapter_wat/js/call_js_func_module.js"></script>
+<h3 id="finally-the-add-module"><a class="header" href="#finally-the-add-module">Finally the add module</a></h3>
+<p><code>chapter_wat/wat/add_module.wat</code></p>
+<pre><code>(module
+  (import &quot;dom&quot; &quot;show_add&quot; (func (param i32 i32 i32))) ;; add(x, y, result)
+  (func (param i32 i32) (result i32) ;; add(x, y)
+    local.get 0
+    local.get 1
+    i32.add)
+  (func (param i32 i32) 
+    local.get 0 ;; for the first param in dom.add
+    local.get 1 ;; for the second param in dom.add
+    local.get 0
+    local.get 1
+    call 1 ;; for the third param in dom.add
+    call 0 ;;
+  )
+  (export &quot;add&quot; (func 2))
+)
+</code></pre>
+<pre><code class="language-console">wat2wasm wat/add_module.wat -o wasm/add_module.wasm
+hexdump -C wasm/add_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 12 03 60 03 7f 7f 7f  |.asm.......`....|
+00000010  00 60 02 7f 7f 01 7f 60  02 7f 7f 00 02 10 01 03  |.`.....`........|
+00000020  64 6f 6d 08 73 68 6f 77  5f 61 64 64 00 00 03 03  |dom.show_add....|
+00000030  02 01 02 07 07 01 03 61  64 64 00 02 0a 18 02 07  |.......add......|
+00000040  00 20 00 20 01 6a 0b 0e  00 20 00 20 01 20 00 20  |. . .j... . . . |
+00000050  01 10 01 10 00 0b                                 |......|
+00000056
+</code></pre>
+<pre><code class="language-markdown">&lt;pre id=&quot;add_module_output&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_wat/js/add_fmodule.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p><code>chapter_wat/js/add_module.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {
+        dom : {
+            show_add: function (x, y, output) {
+                console.log('Call from WASM', {x, y, output});
+                document.getElementById(`add_module_output`).innerHTML += `
+${x} + ${y} = ${output}`;
+            }
+        }
+    };
+    const response = await fetch('chapter_wat/wasm/add_module.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('WASM Module', {response, bytes, instance, exports});
+    exports.add(1, 1); 
+    exports.add(3, 4);
+    const i32max = (0xffffffff - 1)/2;
+    exports.add(i32max, 1); 
+})();
+</code></pre>
+<pre id="add_module_output"></pre>
+<script src="chapter_wat/js/add_module.js"></script>
+<h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>

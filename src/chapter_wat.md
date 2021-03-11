@@ -160,6 +160,7 @@ document.getElementById('r_module').innerHTML = `...`
 ### Call JS function from WASM
 
 See [Importing functions from JavaScript](https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format#importing_functions_from_javascript)
+
 `chapter_wat/wat/call_js_func_module.wat`
 ```
 {{#include chapter_wat/wat/call_js_func_module.wat}}
@@ -176,8 +177,7 @@ $ hexdump -C wasm/call_js_func_module.wasm
 ```
 
 ```markdown
-<pre id="call_js_func_module_output_42"></pre>
-<pre id="call_js_func_module_output_64"></pre>
+<pre id="call_js_func_module_output"></pre>
 <script src="chapter_wat/js/call_js_func_module.js"></script>
 ```
 
@@ -187,6 +187,37 @@ $ hexdump -C wasm/call_js_func_module.wasm
 {{#include chapter_wat/js/call_js_func_module.js}}
 ```
 
-<pre id="call_js_func_module_output_42"></pre>
-<pre id="call_js_func_module_output_64"></pre>
+<pre id="call_js_func_module_output"></pre>
 <script src="chapter_wat/js/call_js_func_module.js"></script>
+
+### Finally the add module
+
+`chapter_wat/wat/add_module.wat`
+```
+{{#include chapter_wat/wat/add_module.wat}}
+```
+
+```console
+wat2wasm wat/add_module.wat -o wasm/add_module.wasm
+hexdump -C wasm/add_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 12 03 60 03 7f 7f 7f  |.asm.......`....|
+00000010  00 60 02 7f 7f 01 7f 60  02 7f 7f 00 02 10 01 03  |.`.....`........|
+00000020  64 6f 6d 08 73 68 6f 77  5f 61 64 64 00 00 03 03  |dom.show_add....|
+00000030  02 01 02 07 07 01 03 61  64 64 00 02 0a 18 02 07  |.......add......|
+00000040  00 20 00 20 01 6a 0b 0e  00 20 00 20 01 20 00 20  |. . .j... . . . |
+00000050  01 10 01 10 00 0b                                 |......|
+00000056
+```
+
+```markdown
+<pre id="add_module_output"></pre>
+<script src="chapter_wat/js/add_fmodule.js"></script>
+```
+
+`chapter_wat/js/add_module.js`
+```javascript
+{{#include chapter_wat/js/add_module.js}}
+```
+
+<pre id="add_module_output"></pre>
+<script src="chapter_wat/js/add_module.js"></script>
