@@ -85,3 +85,34 @@ $ hexdump -C wasm/return_module.wasm
 <script src="chapter_wat/js/return_module.js"></script>
 
 You can see this module has `40` (`0x28`) bytes. 
+
+Now let's shave a few more bytes off.
+
+`chapter_wat/wat/r_module.wat`
+```
+{{#include chapter_wat/wat/r_module.wat}}
+```
+
+```console
+$ wat2wasm wat/r_module.wat -o wasm/r_module.wasm
+$ hexdump -C wasm/r_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 06 01 60 01 7f 01 7f  |.asm.......`....|
+00000010  03 02 01 00 07 05 01 01  72 00 00 0a 06 01 04 00  |........r.......|
+00000020  20 00 0b                                          | ..|
+00000023
+```
+
+`chapter_wat/js/r_module.js`
+```javascript
+{{#include chapter_wat/js/r_module.js}}
+```
+
+```markdown
+<pre id="r_module"></pre>
+<script src="chapter_wat/js/r_module.js"></script>
+```
+
+<pre id="r_module"></pre>
+<script src="chapter_wat/js/r_module.js"></script>
+
+You can see this module has `35` (`0x23`) bytes. We shaved 5 bytes `eturn` from the wasm. 

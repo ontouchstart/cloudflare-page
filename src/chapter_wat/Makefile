@@ -1,4 +1,4 @@
-build: empty_module return_module
+build: empty_module return_module r_module
 
 empty_module:
 	wat2wasm wat/empty_module.wat -o wasm/empty_module.wasm
@@ -7,3 +7,7 @@ empty_module:
 return_module:	
 	wat2wasm wat/return_module.wat -o wasm/return_module.wasm
 	hexdump -C wasm/return_module.wasm
+
+r_module:	
+	wat2wasm wat/r_module.wat -o wasm/r_module.wasm
+	hexdump -C wasm/r_module.wasm	
