@@ -8,7 +8,8 @@
     var u8 = new Uint8Array(bytes);
     var u16 = new Uint16Array(bytes);
     var u32 = new Uint32Array(bytes);
-    window.memory = {bytes, u8, u16, u32};
+    const byteLength = bytes.byteLength;
+    window.memory = {bytes, byteLength, u8, u16, u32};
     console.log({memory});
     document.getElementById('empty_module').innerHTML = `FROM WASM:
 ${JSON.stringify({memory}, null, 2)}

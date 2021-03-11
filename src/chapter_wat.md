@@ -37,9 +37,20 @@ So what does the output above mean? To understand it, we need to dive into
 An empty WASM module is nothing but 8 bytes.
 
 ```console
-$ du src/chapter_wat/wasm/empty_module.wasm
-8       src/chapter_wat/wasm/empty_module.wasm
-$ hexdump src/chapter_wat/wasm/empty_module.wasm
-0000000 00 61 73 6d 01 00 00 00                        
-0000008
+$ exdump -C src/chapter_wat/wasm/empty_module.wasm   
+00000000  00 61 73 6d 01 00 00 00                           |.asm....|
+00000008
 ```
+
+The first 4 bytes represent WASM_BINARY_MAGIC
+```
+00 61 73 6d ('\0asm')
+```
+
+The next 4 bytes represent WASM_BINARY_VERSION
+```
+01 00 00 00
+```
+
+See [binary module specification](https://webassembly.github.io/spec/core/binary/modules.html#binary-module).
+

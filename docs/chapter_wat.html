@@ -194,7 +194,8 @@
     var u8 = new Uint8Array(bytes);
     var u16 = new Uint16Array(bytes);
     var u32 = new Uint32Array(bytes);
-    window.memory = {bytes, u8, u16, u32};
+    const byteLength = bytes.byteLength;
+    window.memory = {bytes, byteLength, u8, u16, u32};
     console.log({memory});
     document.getElementById('empty_module').innerHTML = `FROM WASM:
 ${JSON.stringify({memory}, null, 2)}
@@ -210,12 +211,17 @@ ${JSON.stringify({memory}, null, 2)}
 <p>So what does the output above mean? To understand it, we need to dive into 
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>. </p>
 <p>An empty WASM module is nothing but 8 bytes.</p>
-<pre><code class="language-console">$ du src/chapter_wat/wasm/empty_module.wasm
-8       src/chapter_wat/wasm/empty_module.wasm
-$ hexdump src/chapter_wat/wasm/empty_module.wasm
-0000000 00 61 73 6d 01 00 00 00                        
-0000008
+<pre><code class="language-console">$ exdump -C src/chapter_wat/wasm/empty_module.wasm   
+00000000  00 61 73 6d 01 00 00 00                           |.asm....|
+00000008
 </code></pre>
+<p>The first 4 bytes represent WASM_BINARY_MAGIC</p>
+<pre><code>00 61 73 6d ('\0asm')
+</code></pre>
+<p>The next 4 bytes represent WASM_BINARY_VERSION</p>
+<pre><code>01 00 00 00
+</code></pre>
+<p>See <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">binary module specification</a>.</p>
 
                     </main>
 
