@@ -86,7 +86,7 @@ $ hexdump -C wasm/return_module.wasm
 
 You can see this module has `40` (`0x28`) bytes. 
 
-Now let's shave a few more bytes off.
+Let's shave a few more bytes off.
 
 `chapter_wat/wat/r_module.wat`
 ```
@@ -101,6 +101,29 @@ $ hexdump -C wasm/r_module.wasm
 00000020  20 00 0b                                          | ..|
 00000023
 ```
+You can see this module has `35` (`0x23`) bytes. We shaved 5 bytes `eturn` from the wasm. 
+
+Since we only have one function in the WAT, we can simplify the WAT source further:
+
+```
+{{#include chapter_wat/wat/r_func_0_module.wat }}
+```
+
+Which produces exactly the same WASM.
+```console
+$ diff wat/r_module.wat wat/r_func_0_module.wat
+2,4c2,4
+<   (func $return (param $input i32) (result i32)
+<     local.get $input )
+<   (export "r" (func $return))
+---
+>   (func (param $p i32) (result i32)
+>     local.get $p )
+>   (export "r" (func 0))
+$ diff wasm/r_module.wasm wasm/r_func_0_module.wasm
+```
+
+## All things work together
 
 `chapter_wat/js/r_module.js`
 ```javascript
@@ -112,7 +135,24 @@ $ hexdump -C wasm/r_module.wasm
 <script src="chapter_wat/js/r_module.js"></script>
 ```
 
+- Browser: `exports` context from [WebAssembly instance](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Instance) 
+- Browser: `const input = 42`
+- Browser: calls `exports.r(input)`
+- WASM: invoke `func 0`, which is the only function in the module
+- WASM: pass `42` of type `i32` to `$p`
+- WASM: `local.get $p` push `42` to the stack.
+- WASM: The only data left in the stack is `42` of type `i32`
+- WASM: `(func 0)` finishes, pop the stack as the result `42`
+- Browser: inserts the result `42` into [JavaScript template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)  
+```
+`FROM WASM:
+${JSON.stringify({memory}, null, 2)}
+return(${input}) = ${exports.r(input)}
+`;
+```
+- Browser: render via [DOM API](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML): 
+```
+document.getElementById('r_module').innerHTML = `...`
+```
 <pre id="r_module"></pre>
 <script src="chapter_wat/js/r_module.js"></script>
-
-You can see this module has `35` (`0x23`) bytes. We shaved 5 bytes `eturn` from the wasm. 

@@ -264,7 +264,7 @@ return(${input}) = ${exports.return(input)}
 <pre id="return_module"></pre>
 <script src="chapter_wat/js/return_module.js"></script>
 <p>You can see this module has <code>40</code> (<code>0x28</code>) bytes. </p>
-<p>Now let's shave a few more bytes off.</p>
+<p>Let's shave a few more bytes off.</p>
 <p><code>chapter_wat/wat/r_module.wat</code></p>
 <pre><code>(module
   (func $return (param $input i32) (result i32)
@@ -279,6 +279,27 @@ $ hexdump -C wasm/r_module.wasm
 00000020  20 00 0b                                          | ..|
 00000023
 </code></pre>
+<p>You can see this module has <code>35</code> (<code>0x23</code>) bytes. We shaved 5 bytes <code>eturn</code> from the wasm. </p>
+<p>Since we only have one function in the WAT, we can simplify the WAT source further:</p>
+<pre><code>(module
+  (func (param $p i32) (result i32)
+    local.get $p )
+  (export &quot;r&quot; (func 0))
+)
+</code></pre>
+<p>Which produces exactly the same WASM.</p>
+<pre><code class="language-console">$ diff wat/r_module.wat wat/r_func_0_module.wat
+2,4c2,4
+&lt;   (func $return (param $input i32) (result i32)
+&lt;     local.get $input )
+&lt;   (export &quot;r&quot; (func $return))
+---
+&gt;   (func (param $p i32) (result i32)
+&gt;     local.get $p )
+&gt;   (export &quot;r&quot; (func 0))
+$ diff wasm/r_module.wasm wasm/r_func_0_module.wasm
+</code></pre>
+<h2 id="all-things-work-together"><a class="header" href="#all-things-work-together">All things work together</a></h2>
 <p><code>chapter_wat/js/r_module.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
@@ -301,10 +322,29 @@ return(${input}) = ${exports.r(input)}
 <pre><code class="language-markdown">&lt;pre id=&quot;r_module&quot;&gt;&lt;/pre&gt;
 &lt;script src=&quot;chapter_wat/js/r_module.js&quot;&gt;&lt;/script&gt;
 </code></pre>
+<ul>
+<li>Browser: <code>exports</code> context from <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Instance">WebAssembly instance</a> </li>
+<li>Browser: <code>const input = 42</code></li>
+<li>Browser: calls <code>exports.r(input)</code></li>
+<li>WASM: invoke <code>func 0</code>, which is the only function in the module</li>
+<li>WASM: pass <code>42</code> of type <code>i32</code> to <code>$p</code></li>
+<li>WASM: <code>local.get $p</code> push <code>42</code> to the stack.</li>
+<li>WASM: The only data left in the stack is <code>42</code> of type <code>i32</code></li>
+<li>WASM: <code>(func 0)</code> finishes, pop the stack as the result <code>42</code></li>
+<li>Browser: inserts the result <code>42</code> into <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">JavaScript template literal</a></li>
+</ul>
+<pre><code>`FROM WASM:
+${JSON.stringify({memory}, null, 2)}
+return(${input}) = ${exports.r(input)}
+`;
+</code></pre>
+<ul>
+<li>Browser: render via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML">DOM API</a>: </li>
+</ul>
+<pre><code>document.getElementById('r_module').innerHTML = `...`
+</code></pre>
 <pre id="r_module"></pre>
 <script src="chapter_wat/js/r_module.js"></script>
-<p>You can see this module has <code>35</code> (<code>0x23</code>) bytes. We shaved 5 bytes <code>eturn</code> from the wasm. </p>
-
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
