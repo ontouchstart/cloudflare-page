@@ -156,3 +156,35 @@ document.getElementById('r_module').innerHTML = `...`
 ```
 <pre id="r_module"></pre>
 <script src="chapter_wat/js/r_module.js"></script>
+
+### Call JS function from WASM
+
+See [Importing functions from JavaScript](https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format#importing_functions_from_javascript)
+`chapter_wat/wat/call_js_func_module.wat`
+```
+{{#include chapter_wat/wat/call_js_func_module.wat}}
+```
+
+```console
+$ wat2wasm wat/call_js_func_module.wat -o wasm/call_js_func_module.wasm
+$ hexdump -C wasm/call_js_func_module.wasm
+00000000  00 61 73 6d 01 00 00 00  01 05 01 60 01 7f 00 02  |.asm.......`....|
+00000010  0b 01 03 64 6f 6d 03 6c  6f 67 00 00 03 02 01 00  |...dom.log......|
+00000020  07 07 01 03 6c 6f 67 00  00 0a 08 01 06 00 20 00  |....log....... .|
+00000030  10 00 0b                                          |...|
+00000033
+```
+
+```markdown
+<pre id="call_js_func_module"></pre>
+<script src="chapter_wat/js/call_js_func_module.js"></script>
+```
+
+
+`chapter_wat/js/call_js_func_module.js`
+```javascript
+{{#include chapter_wat/js/call_js_func_module.js}}
+```
+
+<pre id="call_js_func_module_output"></pre>
+<script src="chapter_wat/js/call_js_func_module.js"></script>
