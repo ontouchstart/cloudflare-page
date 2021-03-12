@@ -211,7 +211,7 @@ hexdump -C wasm/add_module.wasm
 
 ```markdown
 <pre id="add_module_output"></pre>
-<script src="chapter_wat/js/add_fmodule.js"></script>
+<script src="chapter_wat/js/add_module.js"></script>
 ```
 
 `chapter_wat/js/add_module.js`
@@ -260,7 +260,7 @@ $ hexdump -C wasm/import_add_module.wasm
 
 ```markdown
 <pre id="import_add_module_output"></pre>
-<script src="chapter_wat/js/import_add_fmodule.js"></script>
+<script src="chapter_wat/js/import_add_module.js"></script>
 ```
 
 `chapter_wat/js/import_add_module.js`
