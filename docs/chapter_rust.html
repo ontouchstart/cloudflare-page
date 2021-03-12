@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Chapter 4 - ontouchstart</title>
+        <title>Rust and WASM - ontouchstart</title>
         
         
 
@@ -98,7 +98,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">3.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">4.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">5.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html" class="active"><strong aria-hidden="true">6.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">7.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">8.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html" class="active"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">3.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">4.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">5.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">6.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">7.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">8.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,51 +170,159 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="wasm-custom-sections-read-only"><a class="header" href="#wasm-custom-sections-read-only">WASM Custom Sections (Read Only)</a></h1>
-<p><code>wasm/link_section/src/lib.rs</code></p>
-<pre><pre class="playground"><code class="language-rust edition2018">#[link_section = &quot;data&quot;]
-pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
-<span class="boring">fn main() {
-</span><span class="boring">   println!(&quot;SECTION = {:?}&quot;, SECTION);
-</span><span class="boring">}
+                        <h1 id="rust-and-wasm"><a class="header" href="#rust-and-wasm">Rust and WASM</a></h1>
+<p>Now let's play with WASM in Rust without <a href="https://rustwasm.github.io/">rustwasm toolchain</a>.</p>
+<h2 id="empty-module"><a class="header" href="#empty-module">Empty module</a></h2>
+<p><code>chapter_rust/rust/empty_module/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub fn empty() {}
+<span class="boring">}
 </span></code></pre></pre>
-<p><code>wasm/link_section/index.js</code></p>
+<p><code>chapter_rust/rust/empty_module/Cargo.toml</code></p>
+<pre><code>[package]
+name = &quot;empty_module&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;Sam Liu &lt;ontouchstart@gmail.com&gt;&quot;]
+edition = &quot;2018&quot;
+
+[lib]
+crate-type = [&quot;cdylib&quot;]
+</code></pre>
+<p><code>chapter_rust/rust/empty_module/Makefile</code></p>
+<pre><code>build:
+	cargo build --target wasm32-unknown-unknown --release
+	cp target/wasm32-unknown-unknown/release/empty_module.wasm ../../wasm
+</code></pre>
+<p><code>chapter_rust/js/empty_module.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
     var importObject = {};
-    const response = await fetch('wasm/link_section/link_section.wasm');
+    const response = await fetch('chapter_rust/wasm/empty_module.wasm');
     const bytes = await response.arrayBuffer();
-    const mod = await WebAssembly.compile(bytes);
-    
-    console.log({ response, bytes, mod});
-    const sections = WebAssembly.Module.customSections(mod, &quot;data&quot;);
-    const decoder = new TextDecoder();
-    const text = decoder.decode(sections[0]);
-    console.log({ response, mod, sections })
-    document.getElementById('answer').innerHTML = `
-    &lt;h2&gt;${text}&lt;/h2&gt;
-    `
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('Empty WASM Module', {response, bytes, instance, exports});
+    var u8 = new Uint8Array(bytes);
+    const byteLength = bytes.byteLength;
+    window.memory = {bytes, byteLength, u8};
+    console.log({memory});
+    document.getElementById('empty_module').innerHTML = `FROM WASM:
+byteLength = ${byteLength}
+`;
 })();
 </code></pre>
-<div id="answer"></div>
-<h2 id="reference"><a class="header" href="#reference">Reference:</a></h2>
-<ul>
-<li><a href="https://rustwasm.github.io/docs/book/reference/js-ffi.html#custom-sections">JS FFI Custom Sections</a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/Module">WebAssembly.Module() constructor</a></li>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Module/customSections">WebAssembly.Module.customSections()</a></li>
-</ul>
-<script src="wasm/link_section/index.js"></script>
+<pre><code class="language-markdown">&lt;pre id=&quot;empty_module&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_rust/js/empty_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<pre id="empty_module"></pre>
+<script src="chapter_rust/js/empty_module.js"></script>
+<p>The wasm straight out of the rust is way bigger than the 8 byte empty module created by hand.</p>
+<pre><code class="language-console">$ hexdump -C wasm/empty_module.wasm | head
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 04 05 01 70 01 01  01 05 03 01 00 10 06 19  |.....p..........|
+00000020  03 7f 01 41 80 80 c0 00  0b 7f 00 41 80 80 c0 00  |...A.......A....|
+00000030  0b 7f 00 41 80 80 c0 00  0b 07 2d 04 06 6d 65 6d  |...A......-..mem|
+00000040  6f 72 79 02 00 05 65 6d  70 74 79 00 00 0a 5f 5f  |ory...empty...__|
+00000050  64 61 74 61 5f 65 6e 64  03 01 0b 5f 5f 68 65 61  |data_end...__hea|
+00000060  70 5f 62 61 73 65 03 02  0a 04 01 02 00 0b 00 da  |p_base..........|
+00000070  92 18 0b 2e 64 65 62 75  67 5f 69 6e 66 6f 80 15  |....debug_info..|
+00000080  03 00 04 00 00 00 00 00  04 01 00 00 00 00 1c 00  |................|
+00000090  39 00 00 00 00 00 00 00  50 00 00 00 00 00 00 00  |9.......P.......|
+$ hexdump -C wasm/empty_module.wasm | tail
+001828e0  6d 5f 6d 65 6d 63 70 79  5f 65 6c 65 6d 65 6e 74  |m_memcpy_element|
+001828f0  5f 75 6e 6f 72 64 65 72  65 64 5f 61 74 6f 6d 69  |_unordered_atomi|
+00182900  63 5f 31 00 00 00 00 00  00 0f 04 6e 61 6d 65 01  |c_1........name.|
+00182910  08 01 00 05 65 6d 70 74  79 00 4d 09 70 72 6f 64  |....empty.M.prod|
+00182920  75 63 65 72 73 02 08 6c  61 6e 67 75 61 67 65 01  |ucers..language.|
+00182930  04 52 75 73 74 00 0c 70  72 6f 63 65 73 73 65 64  |.Rust..processed|
+00182940  2d 62 79 01 05 72 75 73  74 63 1d 31 2e 35 30 2e  |-by..rustc.1.50.|
+00182950  30 20 28 63 62 37 35 61  64 35 64 62 20 32 30 32  |0 (cb75ad5db 202|
+00182960  31 2d 30 32 2d 31 30 29                           |1-02-10)|
+00182968
+$ du -k wasm/empty_module.wasm 
+1548    wasm/empty_module.wasm
+</code></pre>
+<h3 id="arraybuffer"><a class="header" href="#arraybuffer">ArrayBuffer</a></h3>
+<p>We still have the first 4 bytes WASM_BINARY_MAGIC</p>
+<pre><code>00 61 73 6d ('\0asm')
+</code></pre>
+<p>and the next 4 bytes represent WASM_BINARY_VERSION</p>
+<pre><code>01 00 00 00
+</code></pre>
+<p>See <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">binary module specification</a>.</p>
+<h2 id="a-simple-function-that-returns-the-input"><a class="header" href="#a-simple-function-that-returns-the-input">A simple function that returns the input</a></h2>
+<p><code>chapter_rust/rust/return_module/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub fn return_input(input: i32) -&gt; i32 {
+    input
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Since <code>return</code> is a rust keyword, we changed the function name to <code>return_input</code>.</p>
+<p><code>chapter_rust/js/return_module.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('chapter_rust/wasm/return_module.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('WASM Module', {response, bytes, instance, exports});
+    const byteLength = bytes.byteLength;
+    const input = 42;
+    document.getElementById('return_module').innerHTML = `FROM WASM:
+byteLength = ${byteLength}    
+return_input(${input}) = ${exports.return_input(input)}
+`;
+})();
+</code></pre>
+<pre><code class="language-markdown">&lt;pre id=&quot;return_module&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_rust/js/return_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<pre id="return_module"></pre>
+<script src="chapter_rust/js/return_module.js"></script>
+<pre><code class="language-console">$ hexdump -C wasm/return_module.wasm | head
+00000000  00 61 73 6d 01 00 00 00  01 06 01 60 01 7f 01 7f  |.asm.......`....|
+00000010  03 02 01 00 04 05 01 70  01 01 01 05 03 01 00 10  |.......p........|
+00000020  06 19 03 7f 01 41 80 80  c0 00 0b 7f 00 41 80 80  |.....A.......A..|
+00000030  c0 00 0b 7f 00 41 80 80  c0 00 0b 07 34 04 06 6d  |.....A......4..m|
+00000040  65 6d 6f 72 79 02 00 0c  72 65 74 75 72 6e 5f 69  |emory...return_i|
+00000050  6e 70 75 74 00 00 0a 5f  5f 64 61 74 61 5f 65 6e  |nput...__data_en|
+00000060  64 03 01 0b 5f 5f 68 65  61 70 5f 62 61 73 65 03  |d...__heap_base.|
+00000070  02 0a 06 01 04 00 20 00  0b 00 da 92 18 0b 2e 64  |...... ........d|
+00000080  65 62 75 67 5f 69 6e 66  6f 80 15 03 00 04 00 00  |ebug_info.......|
+00000090  00 00 00 04 01 00 00 00  00 1c 00 39 00 00 00 00  |...........9....|
+$ hexdump -C wasm/return_module.wasm | tail
+001828f0  63 70 79 5f 65 6c 65 6d  65 6e 74 5f 75 6e 6f 72  |cpy_element_unor|
+00182900  64 65 72 65 64 5f 61 74  6f 6d 69 63 5f 31 00 00  |dered_atomic_1..|
+00182910  00 00 00 00 16 04 6e 61  6d 65 01 0f 01 00 0c 72  |......name.....r|
+00182920  65 74 75 72 6e 5f 69 6e  70 75 74 00 4d 09 70 72  |eturn_input.M.pr|
+00182930  6f 64 75 63 65 72 73 02  08 6c 61 6e 67 75 61 67  |oducers..languag|
+00182940  65 01 04 52 75 73 74 00  0c 70 72 6f 63 65 73 73  |e..Rust..process|
+00182950  65 64 2d 62 79 01 05 72  75 73 74 63 1d 31 2e 35  |ed-by..rustc.1.5|
+00182960  30 2e 30 20 28 63 62 37  35 61 64 35 64 62 20 32  |0.0 (cb75ad5db 2|
+00182970  30 32 31 2d 30 32 2d 31  30 29                    |021-02-10)|
+0018297a
+$ du -k wasm/return_module.wasm  
+1548    wasm/return_module.wasm
+</code></pre>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="chapter_3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="chapter_wat.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="chapter_5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -226,13 +334,13 @@ pub static SECTION: [u8; 12] = *b&quot;Hello World!&quot;;
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="chapter_3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="chapter_wat.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="chapter_5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

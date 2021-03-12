@@ -4,6 +4,7 @@ build:
 	make -C src/wasm/double
 	make -C src/wasm/memory
 	make -C src/chapter_wat
+	make -C src/chapter_rust
 	mdbook build
 
 view:
