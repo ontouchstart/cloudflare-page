@@ -204,12 +204,8 @@ crate-type = [&quot;cdylib&quot;]
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
     console.log('Empty WASM Module', {response, bytes, instance, exports});
-    var u8 = new Uint8Array(bytes);
-    const byteLength = bytes.byteLength;
-    window.memory = {bytes, byteLength, u8};
-    console.log({memory});
     document.getElementById('empty_module').innerHTML = `FROM WASM:
-byteLength = ${byteLength}
+byteLength = ${bytes.byteLength}
 `;
 })();
 </code></pre>
@@ -271,10 +267,10 @@ pub fn return_input(input: i32) -&gt; i32 {
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
     console.log('WASM Module', {response, bytes, instance, exports});
-    const byteLength = bytes.byteLength;
     const input = 42;
     document.getElementById('return_module').innerHTML = `FROM WASM:
-byteLength = ${byteLength}    
+byteLength = ${bytes.byteLength}
+
 return_input(${input}) = ${exports.return_input(input)}
 `;
 })();
@@ -308,6 +304,64 @@ $ hexdump -C wasm/return_module.wasm | tail
 0018297a
 </code></pre>
 <p>The file size is <code>1583482 (0x0018297a)</code> byte. <code>18</code> byte bigger than the empty version.</p>
+<h2 id="add-only-module"><a class="header" href="#add-only-module">Add only module</a></h2>
+<p><code>chapter_rust/rust/add_only_module/src/lib.rs</code></p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[no_mangle]
+pub fn return_input(input: i32) -&gt; i32 {
+    input
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p><code>chapter_rust/js/add_only_module.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    var importObject = { };
+    const response = await fetch('chapter_rust/wasm/add_only_module.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('WASM Module', {response, bytes, instance, exports});
+    const i32max = (0xffffffff - 1)/2;
+    document.getElementById(`add_only_module_output`).innerHTML = `FROM WASM:
+byteLength = ${bytes.byteLength}
+    
+1 + 1 = ${exports.add(1, 1)}
+3 + 4 = ${exports.add(3, 4)}
+${i32max} + 1 = ${exports.add(i32max, 1)}
+`;
+})();
+</code></pre>
+<pre><code class="language-markdown">&lt;pre id=&quot;add_only_module_output&quot;&gt;&lt;/pre&gt;
+&lt;script src=&quot;chapter_rust/js/add_only_module.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<pre id="add_only_module_output"></pre>
+<script src="chapter_rust/js/add_only_module.js"></script>
+<pre><code class="language-console">$ hexdump -C wasm/add_only_module.wasm | head
+00000000  00 61 73 6d 01 00 00 00  01 07 01 60 02 7f 7f 01  |.asm.......`....|
+00000010  7f 03 02 01 00 04 05 01  70 01 01 01 05 03 01 00  |........p.......|
+00000020  10 06 19 03 7f 01 41 80  80 c0 00 0b 7f 00 41 80  |......A.......A.|
+00000030  80 c0 00 0b 7f 00 41 80  80 c0 00 0b 07 2b 04 06  |......A......+..|
+00000040  6d 65 6d 6f 72 79 02 00  03 61 64 64 00 00 0a 5f  |memory...add..._|
+00000050  5f 64 61 74 61 5f 65 6e  64 03 01 0b 5f 5f 68 65  |_data_end...__he|
+00000060  61 70 5f 62 61 73 65 03  02 0a 09 01 07 00 20 01  |ap_base....... .|
+00000070  20 00 6a 0b 00 da 92 18  0b 2e 64 65 62 75 67 5f  | .j.......debug_|
+00000080  69 6e 66 6f 80 15 03 00  04 00 00 00 00 00 04 01  |info............|
+00000090  00 00 00 00 1c 00 39 00  00 00 00 00 00 00 50 00  |......9.......P.|
+$ hexdump -C wasm/add_only_module.wasm | tail
+001828e0  00 5f 5f 6c 6c 76 6d 5f  6d 65 6d 63 70 79 5f 65  |.__llvm_memcpy_e|
+001828f0  6c 65 6d 65 6e 74 5f 75  6e 6f 72 64 65 72 65 64  |lement_unordered|
+00182900  5f 61 74 6f 6d 69 63 5f  31 00 00 00 00 00 00 0d  |_atomic_1.......|
+00182910  04 6e 61 6d 65 01 06 01  00 03 61 64 64 00 4d 09  |.name.....add.M.|
+00182920  70 72 6f 64 75 63 65 72  73 02 08 6c 61 6e 67 75  |producers..langu|
+00182930  61 67 65 01 04 52 75 73  74 00 0c 70 72 6f 63 65  |age..Rust..proce|
+00182940  73 73 65 64 2d 62 79 01  05 72 75 73 74 63 1d 31  |ssed-by..rustc.1|
+00182950  2e 35 30 2e 30 20 28 63  62 37 35 61 64 35 64 62  |.50.0 (cb75ad5db|
+00182960  20 32 30 32 31 2d 30 32  2d 31 30 29              | 2021-02-10)|
+0018296c
+</code></pre>
+<p>The file size is <code>1583468 (0x0018296c)</code> byte.</p>
 
                     </main>
 

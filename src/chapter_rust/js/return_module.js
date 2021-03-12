@@ -5,10 +5,10 @@
     const { instance } = await WebAssembly.instantiate(bytes, importObject);
     const { exports } = instance;
     console.log('WASM Module', {response, bytes, instance, exports});
-    const byteLength = bytes.byteLength;
     const input = 42;
     document.getElementById('return_module').innerHTML = `FROM WASM:
-byteLength = ${byteLength}    
+byteLength = ${bytes.byteLength}
+
 return_input(${input}) = ${exports.return_input(input)}
 `;
 })();
