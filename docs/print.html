@@ -765,9 +765,8 @@ $ hexdump -C wasm/empty_module.wasm | tail
 00182950  30 20 28 63 62 37 35 61  64 35 64 62 20 32 30 32  |0 (cb75ad5db 202|
 00182960  31 2d 30 32 2d 31 30 29                           |1-02-10)|
 00182968
-$ du -k wasm/empty_module.wasm 
-1548    wasm/empty_module.wasm
 </code></pre>
+<p>The file size is <code>1583464 (0x00182968)</code> byte.</p>
 <h3 id="arraybuffer-1"><a class="header" href="#arraybuffer-1">ArrayBuffer</a></h3>
 <p>We still have the first 4 bytes WASM_BINARY_MAGIC</p>
 <pre><code>00 61 73 6d ('\0asm')
@@ -831,9 +830,8 @@ $ hexdump -C wasm/return_module.wasm | tail
 00182960  30 2e 30 20 28 63 62 37  35 61 64 35 64 62 20 32  |0.0 (cb75ad5db 2|
 00182970  30 32 31 2d 30 32 2d 31  30 29                    |021-02-10)|
 0018297a
-$ du -k wasm/return_module.wasm  
-1548    wasm/return_module.wasm
 </code></pre>
+<p>The file size is <code>1583482 (0x0018297a)</code> byte. <code>18</code> byte bigger than the empty version.</p>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>

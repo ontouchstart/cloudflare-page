@@ -57,9 +57,9 @@ $ hexdump -C wasm/empty_module.wasm | tail
 00182950  30 20 28 63 62 37 35 61  64 35 64 62 20 32 30 32  |0 (cb75ad5db 202|
 00182960  31 2d 30 32 2d 31 30 29                           |1-02-10)|
 00182968
-$ du -k wasm/empty_module.wasm 
-1548    wasm/empty_module.wasm
 ```
+
+The file size is `1583464 (0x00182968)` byte.
 
 ### ArrayBuffer
 
@@ -119,6 +119,6 @@ $ hexdump -C wasm/return_module.wasm | tail
 00182960  30 2e 30 20 28 63 62 37  35 61 64 35 64 62 20 32  |0.0 (cb75ad5db 2|
 00182970  30 32 31 2d 30 32 2d 31  30 29                    |021-02-10)|
 0018297a
-$ du -k wasm/return_module.wasm  
-1548    wasm/return_module.wasm
 ```
+
+The file size is `1583482 (0x0018297a)` byte. `18` byte bigger than the empty version.
