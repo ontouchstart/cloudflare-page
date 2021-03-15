@@ -3,7 +3,8 @@
 
 - [WAT: WASM by Hand](./chapter_wat.md)
 - [Rust and WASM](./chapter_rust.md)
-- [C and WASM](./chapter_emcc.md)
+- [C and WASM via emcc](./chapter_emcc.md)
+- [C and WASM via llvm](./chapter_llvm.md)
 - [Chapter 1](./chapter_1.md)
 - [Chapter 2](./chapter_2.md)
 - [Chapter 3](./chapter_3.md)

@@ -6,6 +6,7 @@ build:
 	make -C src/chapter_wat
 	make -C src/chapter_rust
 	make -C src/chapter_emcc
+	make -C src/chapter_llvm
 	mdbook build
 
 view:

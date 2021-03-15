@@ -1,9 +1,11 @@
-# emcc
+# C and WASM via emcc
 
 [emcc](https://emscripten.org/docs/tools_reference/emcc.html) is the [Emscripten](https://emscripten.org) Compiler Frontend.
 
+[Homebrew](https://formulae.brew.sh/formula/emscripten)
+
 ```console
-$ brew install emcc
+$ brew install emscripten
 $ emcc -v
 emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 2.0.15
 clang version 13.0.0 (https://github.com/llvm/llvm-project.git 1c5f08312874717caf5d94729d825c32845773ec)
@@ -11,7 +13,6 @@ Target: wasm32-unknown-emscripten
 Thread model: posix
 InstalledDir: /usr/local/opt/emscripten/libexec/llvm/bin
 ```
-
 
 ## Hello world
 

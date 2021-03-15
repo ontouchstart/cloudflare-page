@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">4.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">5.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">6.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">7.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">8.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">9.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">5.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">6.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">7.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">8.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">9.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">10.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1088,9 +1088,10 @@ Memory buffer ${exports.memory.buffer.byteLength} bytes
 </code></pre>
 <pre id ="call_js_func_module_output"></pre>
 <script src="chapter_rust/js/call_js_func_module.js"></script>
-<h1 id="emcc"><a class="header" href="#emcc">emcc</a></h1>
+<h1 id="c-and-wasm-via-emcc"><a class="header" href="#c-and-wasm-via-emcc">C and WASM via emcc</a></h1>
 <p><a href="https://emscripten.org/docs/tools_reference/emcc.html">emcc</a> is the <a href="https://emscripten.org">Emscripten</a> Compiler Frontend.</p>
-<pre><code class="language-console">$ brew install emcc
+<p><a href="https://formulae.brew.sh/formula/emscripten">Homebrew</a></p>
+<pre><code class="language-console">$ brew install emscripten
 $ emcc -v
 emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 2.0.15
 clang version 13.0.0 (https://github.com/llvm/llvm-project.git 1c5f08312874717caf5d94729d825c32845773ec)
@@ -7395,6 +7396,82 @@ exports.main() = ${exports.main()}
 </code></pre>
 <pre id="emcc_output"></pre>
 <script src="/chapter_emcc/42/load.js"></script>
+<h1 id="c-and-wasm-via-llvm"><a class="header" href="#c-and-wasm-via-llvm">C and WASM via LLVM</a></h1>
+<p>We are going to use the same llvm toolchain as in <a href="chapter_emcc.html">emcc</a>:</p>
+<pre><code class="language-console">$ brew install emscripten
+$ emcc -v
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 2.0.15
+clang version 13.0.0 (https://github.com/llvm/llvm-project.git 1c5f08312874717caf5d94729d825c32845773ec)
+Target: wasm32-unknown-emscripten
+Thread model: posix
+InstalledDir: /usr/local/opt/emscripten/libexec/llvm/bin
+
+</code></pre>
+<p><code>chapter_llvm/42/42.c</code></p>
+<pre><code class="language-C">int answer() {
+  return 0b101010;
+}
+</code></pre>
+<p><code>chapter_llvm/42/Makefile</code></p>
+<pre><code class="language-makefile">CLANG=/usr/local/opt/emscripten/libexec/llvm/bin/clang
+LLC=/usr/local/opt/emscripten/libexec/llvm/bin/llc
+LD=/usr/local/opt/emscripten/libexec/llvm/bin/wasm-ld
+WASM2WAT=wasm2wat
+
+all:
+	$(CLANG) --target=wasm32 -emit-llvm -c -S 42.c
+	$(LLC) -march=wasm32 -filetype=obj 42.ll
+	$(LD) --no-entry --export=answer -o 42.wasm 42.o
+	$(WASM2WAT) -o 42.wat 42.wasm
+
+clean:
+	rm 42.o 42.ll 42.wasm 42.wat
+</code></pre>
+<p><code>chapter_llvm/42/42.ll</code></p>
+<pre><code>; ModuleID = '42.c'
+source_filename = &quot;42.c&quot;
+target datalayout = &quot;e-m:e-p:32:32-i64:64-n32:64-S128&quot;
+target triple = &quot;wasm32&quot;
+
+; Function Attrs: noinline nounwind optnone
+define hidden i32 @answer() #0 {
+  ret i32 42
+}
+
+attributes #0 = { noinline nounwind optnone &quot;frame-pointer&quot;=&quot;none&quot; &quot;no-trapping-math&quot;=&quot;true&quot; &quot;stack-protector-buffer-size&quot;=&quot;8&quot; &quot;target-cpu&quot;=&quot;generic&quot; }
+
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !&quot;wchar_size&quot;, i32 4}
+!1 = !{!&quot;clang version 13.0.0 (https://github.com/llvm/llvm-project.git 1c5f08312874717caf5d94729d825c32845773ec)&quot;}
+</code></pre>
+<p><code>chapter_llvm/42/42.wat</code></p>
+<pre><code>(module
+  (type (;0;) (func (result i32)))
+  (func $answer (type 0) (result i32)
+    i32.const 42)
+  (memory (;0;) 2)
+  (global (;0;) (mut i32) (i32.const 66560))
+  (export &quot;memory&quot; (memory 0))
+  (export &quot;answer&quot; (func $answer)))
+</code></pre>
+<p><code>chapter_llvm/42/42.js</code></p>
+<pre><code>(async () =&gt; {
+    var importObject = {};
+    const response = await fetch('chapter_llvm/42/42.wasm');
+    const bytes = await response.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(bytes, importObject);
+    const { exports } = instance;
+    console.log('Empty WASM Module', {response, bytes, instance, exports});
+    document.getElementById('llvm_output').innerHTML = `FROM WASM:
+exports.main() = ${exports.answer()}
+`;
+})();
+
+</code></pre>
+<pre id="llvm_output"></pre>
+<script src="chapter_llvm/42/42.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
