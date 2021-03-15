@@ -1,8 +1,0 @@
-[package]
-name = "empty_module"
-version = "0.1.0"
-authors = ["Sam Liu <ontouchstart@gmail.com>"]
-edition = "2018"
-
-[lib]
-crate-type = ["cdylib"]
