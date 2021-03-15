@@ -60,9 +60,8 @@ This is way complicated. Let's make it simple from scratch.
 
 ## 42
 
-[Why 42](https://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#Why_the_number_42?)?
-
-Let's make a simplest wasm from C.
+Let's make a simplest wasm from C. 
+([Why 42?](https://www.youtube.com/watch?v=5ZLtcTZP2js))
 
 `chapter_emcc/42/main.c`
 ```C
