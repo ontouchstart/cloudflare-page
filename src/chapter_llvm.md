@@ -1,4 +1,4 @@
-# C and WASM via LLVM
+# C and WASM via llvm
 
 We are going to use the same llvm toolchain as in [emcc](chapter_emcc.html):
 
