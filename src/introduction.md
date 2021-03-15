@@ -1,6 +1,6 @@
-# Study Rust/JS/WASM in mdBook 
+# Study C/Rust/JS/WASM in mdBook 
 
-The purpose of this blog is to study low level [rust](https://www.rust-lang.org)/[JS](https://developer.mozilla.org/en-US/docs/Web/JavaScript)/[WASM](https://webassembly.org/) concepts and features in an iterative and interactive [literate programming](https://en.wikipedia.org/wiki/Literate_programming) workflow.
+The purpose of this blog is to study low level [C](https://en.wikipedia.org/wiki/C_(programming_language))/[rust](https://www.rust-lang.org)/[JS](https://developer.mozilla.org/en-US/docs/Web/JavaScript)/[WASM](https://webassembly.org/) concepts and features in an iterative and interactive [literate programming](https://en.wikipedia.org/wiki/Literate_programming) workflow.
 
 It uses [mdBook as a static site generator](https://jamstack.org/generators/mdbook/) and the source code is on [GitHub](https://github.com/ontouchstart/cloudflare-page).
 
