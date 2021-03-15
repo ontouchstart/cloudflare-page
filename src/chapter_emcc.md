@@ -57,3 +57,61 @@ emcc main.c -o hello.html
 ```
 
 This is way complicated. Let's make it simple from scratch.
+
+## 42
+
+[Why 42](https://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#Why_the_number_42?)?
+
+Let's make a simplest wasm from C.
+
+`chapter_emcc/42/main.c`
+```C
+{{#include chapter_emcc/42/main.c}}
+```
+
+`chapter_emcc/42/Makefile`
+```makefile
+{{#include chapter_emcc/42/Makefile}}
+```
+
+`chapter_emcc/42/a.out.wat`
+```
+{{#include chapter_emcc/42/a.out.wat}}
+```
+
+What really matters is the line
+```
+(export "main" (func 2))
+```
+
+which is just
+```
+(func (;1;) (type 0) (result i32)
+    (local i32 i32 i32 i32 i32)
+    global.get 0
+    local.set 0
+    i32.const 16
+    local.set 1
+    local.get 0
+    local.get 1
+    i32.sub
+    local.set 2
+    i32.const 0
+    local.set 3
+    local.get 2
+    local.get 3
+    i32.store offset=12
+    i32.const 42
+    local.set 4
+    local.get 4
+    return)
+```
+so we might be able to load it in the similiar ways as we did in [WAT: WASM by Hand](/chapter_wat.html).
+
+`chapter_emcc/42/load.js`
+```javascript
+{{#include chapter_emcc/42/load.js}}
+```
+
+<pre id="emcc_output"></pre>
+<script src="/chapter_emcc/42/load.js"></script>
