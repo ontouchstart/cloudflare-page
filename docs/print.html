@@ -7472,7 +7472,7 @@ exports.answer() = ${exports.answer()}
 </code></pre>
 <pre id="llvm_output"></pre>
 <script src="chapter_llvm/42/42.js"></script>
-<h1 id="programming-with-bytes"><a class="header" href="#programming-with-bytes">Programming with Bytes</a></h1>
+<h1 id="programming-with-arraybuffer"><a class="header" href="#programming-with-arraybuffer">Programming with ArrayBuffer</a></h1>
 <p>Let's start from the bottom and program from scratch with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>.</p>
 <h2 id="an-array-buffer-of-16-bytes"><a class="header" href="#an-array-buffer-of-16-bytes">An array buffer of 16 bytes</a></h2>
 <p><code>chapter_bytes/js/16_bytes.js</code></p>
@@ -7554,7 +7554,88 @@ ${JSON.stringify(wasm, null, 2)}
 })();
 </code></pre>
 <pre id="8_bytes_empty_wasm"></pre>
-<script src="chapter_bytes/js/8_bytes_empty_wasm.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<script src="chapter_bytes/js/8_bytes_empty_wasm.js"></script>
+<h2 id="42-wasm"><a class="header" href="#42-wasm">42 WASM</a></h2>
+<p>Let's see if we can &quot;hand write&quot; bytecode WASM in ArrayBuffer for a simple WASM that gives us <a href="https://en.wikipedia.org/wiki/Phrases_from_The_Hitchhiker%27s_Guide_to_the_Galaxy#Answer_to_the_Ultimate_Question_of_Life,_the_Universe,_and_Everything_(42)">the answer</a>.</p>
+<p>Here we cheated a little bit by generating the WASM first by hand with a short WAT.</p>
+<p><code>chapter_bytes/wat/42.wat</code></p>
+<pre><code>(module (func (export &quot;42&quot;) (result i32) i32.const 42))
+</code></pre>
+<p><code>chapter_bytes/wat/Makefile</code></p>
+<pre><code class="language-makefile">all:
+	wat2wasm 42.wat
+	hexdump 42.wasm
+</code></pre>
+<pre><code class="language-console">$ make
+wat2wasm 42.wat
+hexdump 42.wasm
+0000000 00 61 73 6d 01 00 00 00 01 05 01 60 00 01 7f 03
+0000010 02 01 00 07 06 01 02 34 32 00 00 0a 06 01 04 00
+0000020 41 2a 0b                                       
+0000023
+</code></pre>
+<p>Now we can hard code those bytes in following JS.</p>
+<p><code>chapter_bytes/js/42_wasm.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const wasm_bytes = [
+        0x00, 0x61, 0x73, 0x6d,
+        0x01, 0x00, 0x00, 0x00,
+        0x01, 0x05, 0x01, 0x60,
+        0x00, 0x01, 0x7f, 0x03,
+        0x02, 0x01, 0x00, 0x07,
+        0x06, 0x01, 0x02, 0x34,
+        0x32, 0x00, 0x00, 0x0a,
+        0x06, 0x01, 0x04, 0x00,
+        0x41, 0x2a, 0x0b
+    ];
+
+    const buffer = new ArrayBuffer(wasm_bytes.length);
+    const u8 = new Uint8Array(buffer);
+    const data = u8.map((d, i) =&gt; wasm_bytes[i]);
+
+    const importObject = {};
+
+    const wasm = await WebAssembly.instantiate(data.buffer, importObject);
+    console.log({ wasm });
+    const { instance, module } = wasm;
+    const { exports } = instance;
+    const answer = exports[&quot;42&quot;];
+    const hex = (data) =&gt; {
+        let output = '';
+        for (let i = 0; i &lt; data.length; i++) {
+            if (data[i] &lt; 0x10) {
+                output += `0${data[i].toString(16)}`;
+            }
+            else {
+                output += `${data[i].toString(16)}`;
+            }
+            if ((i % 0x10) === 0x0f) {
+                output += '\n';
+            }
+            else {
+                output += ' ';
+            }
+        }
+        return output;
+    };
+    document.getElementById('42_wasm').innerHTML = `
+Data:
+${hex(data)}
+
+wasm:
+${JSON.stringify(wasm, null, 2)}
+
+answer: 
+${answer}
+
+answer(): 
+${answer()}
+`;
+})();
+</code></pre>
+<pre id="42_wasm"></pre>
+<script src="chapter_bytes/js/42_wasm.js"></script>
+<h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>
