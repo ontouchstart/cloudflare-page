@@ -7497,16 +7497,27 @@ ${hex(data)}
 <h2 id="an-array-buffer-of-256-bytes"><a class="header" href="#an-array-buffer-of-256-bytes">An array buffer of 256 bytes</a></h2>
 <p><code>chapter_bytes/js/256_bytes.js</code></p>
 <pre><code class="language-javascript">{
-    const buffer = new ArrayBuffer(0x10);
+    const buffer = new ArrayBuffer(0x100);
     const u8 = new Uint8Array(buffer);
     const data = u8.map((d, i) =&gt; i);
     const hex = (data) =&gt; {
-        return data.reduce((x, y) =&gt; (
-            y &lt; 0x10 ? (`${x}0${y.toString(16)} `) : (`${x}${y.toString(16)} `)), ''
+        return data.reduce((x, y) =&gt; {
+            if (y &lt; 0x10) {
+                return `${x}0${y.toString(16)} `;
+            }
+            else {
+                if ((y % 0x10) === 0) {
+                    return `${x}\n${y.toString(16)} `
+                }
+                else {
+                    return `${x}${y.toString(16)} `;
+                }
+            }
+        }, ''
         );
     };
 
-    document.getElementById('16_bytes').innerHTML = `
+    document.getElementById('256_bytes').innerHTML = `
 Data:
 ${hex(data)}
 `;

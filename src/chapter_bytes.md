@@ -15,7 +15,7 @@ Let's study everything again from scratch with bytes.
 
 `chapter_bytes/js/256_bytes.js`
 ```javascript
-{{#include chapter_bytes/js/16_bytes.js}}
+{{#include chapter_bytes/js/256_bytes.js}}
 ```
 These are all the possible values a byte can represent.
 <pre id="256_bytes"></pre>

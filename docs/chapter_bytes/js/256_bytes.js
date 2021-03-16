@@ -8,8 +8,7 @@
                 return `${x}0${y.toString(16)} `;
             }
             else {
-                if ((y % 16) === 0) {
-                    console.log('line break');
+                if ((y % 0x10) === 0) {
                     return `${x}\n${y.toString(16)} `
                 }
                 else {
