@@ -5,7 +5,7 @@
 - [Rust and WASM](./chapter_rust.md)
 - [C and WASM via emcc](./chapter_emcc.md)
 - [C and WASM via llvm](./chapter_llvm.md)
-- [Bytes](./chapter_bytes.md)
+- [Programming with ArrayBuffer](./chapter_bytes.md)
 - [Chapter 1](./chapter_1.md)
 - [Chapter 2](./chapter_2.md)
 - [Chapter 3](./chapter_3.md)

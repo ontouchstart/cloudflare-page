@@ -1,6 +1,6 @@
-# Bytes
+# Programming with Bytes
 
-Let's study everything again from scratch with bytes.
+Let's start from the bottom and program from scratch with [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer).
 
 ## An array buffer of 16 bytes
 
@@ -20,3 +20,12 @@ Let's study everything again from scratch with bytes.
 These are all the possible values a byte can represent.
 <pre id="256_bytes"></pre>
 <script src="chapter_bytes/js/256_bytes.js"></script>
+
+## Empty WASM of 8 bytes
+
+`chapter_bytes/js/8_bytes_empty_wasm.js`
+```javascript
+{{#include chapter_bytes/js/8_bytes_empty_wasm.js}}
+```
+<pre id="8_bytes_empty_wasm"></pre>
+<script src="chapter_bytes/js/8_bytes_empty_wasm.js"></script>
