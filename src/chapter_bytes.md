@@ -114,3 +114,28 @@ $ hexdump 42_memory.wasm
 <pre id="42_memory_wasm"></pre>
 <script src="chapter_bytes/js/42_memory_wasm.js"></script>
 
+## store and hex
+
+`chapter_bytes/wat/hex_memory_wasm.wat`
+```
+{{#include chapter_bytes/wat/hex_memory_wasm.wat}}
+```
+
+```console
+$ wat2wasm hex_memory_wasm.wat
+hexdump hex_memory_wasm.wasm
+0000000 00 61 73 6d 01 00 00 00 01 0b 02 60 01 7f 00 60
+0000010 02 7f 7f 01 7f 02 14 02 02 6a 73 03 6d 65 6d 02
+0000020 00 01 02 6a 73 03 68 65 78 00 00 03 02 01 01 07
+0000030 0f 02 05 73 74 6f 72 65 00 01 03 68 65 78 00 00
+0000040 0a 10 01 0e 00 20 00 20 01 36 02 00 20 00 28 02
+0000050 00 0b                                          
+0000052
+```
+`chapter_bytes/js/hex_memory_wasm.js`
+```javascript
+{{#include chapter_bytes/js/hex_memory_wasm.js}}
+```
+
+<pre id="hex_memory_wasm"></pre>
+<script src="chapter_bytes/js/hex_memory_wasm.js"></script>

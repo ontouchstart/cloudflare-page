@@ -7774,7 +7774,106 @@ load() : ${load()}
 </code></pre>
 <pre id="42_memory_wasm"></pre>
 <script src="chapter_bytes/js/42_memory_wasm.js"></script>
-<h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<h2 id="store-and-hex"><a class="header" href="#store-and-hex">store and hex</a></h2>
+<p><code>chapter_bytes/wat/hex_memory_wasm.wat</code></p>
+<pre><code>(module 
+  (memory (import &quot;js&quot; &quot;mem&quot;) 1)
+  (import &quot;js&quot; &quot;hex&quot; (func (param i32) ))
+  (func (export &quot;store&quot;) (param i32 i32) (result i32) 
+    local.get 0
+    local.get 1
+    i32.store
+    local.get 0
+    i32.load)
+  (export &quot;hex&quot; (func 0))
+)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm hex_memory_wasm.wat
+hexdump hex_memory_wasm.wasm
+0000000 00 61 73 6d 01 00 00 00 01 0b 02 60 01 7f 00 60
+0000010 02 7f 7f 01 7f 02 14 02 02 6a 73 03 6d 65 6d 02
+0000020 00 01 02 6a 73 03 68 65 78 00 00 03 02 01 01 07
+0000030 0f 02 05 73 74 6f 72 65 00 01 03 68 65 78 00 00
+0000040 0a 10 01 0e 00 20 00 20 01 36 02 00 20 00 28 02
+0000050 00 0b                                          
+0000052
+</code></pre>
+<p><code>chapter_bytes/js/hex_memory_wasm.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const wasm_bytes = [
+        0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+        0x01, 0x0b, 0x02, 0x60, 0x01, 0x7f, 0x00, 0x60,
+        0x02, 0x7f, 0x7f, 0x01, 0x7f, 0x02, 0x14, 0x02,
+        0x02, 0x6a, 0x73, 0x03, 0x6d, 0x65, 0x6d, 0x02,
+        0x00, 0x01, 0x02, 0x6a, 0x73, 0x03, 0x68, 0x65,
+        0x78, 0x00, 0x00, 0x03, 0x02, 0x01, 0x01, 0x07,
+        0x0f, 0x02, 0x05, 0x73, 0x74, 0x6f, 0x72, 0x65,
+        0x00, 0x01, 0x03, 0x68, 0x65, 0x78, 0x00, 0x00,
+        0x0a, 0x10, 0x01, 0x0e, 0x00, 0x20, 0x00, 0x20,
+        0x01, 0x36, 0x02, 0x00, 0x20, 0x00, 0x28, 0x02,
+        0x00, 0x0b
+    ];
+
+    const buffer = new ArrayBuffer(wasm_bytes.length);
+    const u8 = new Uint8Array(buffer);
+    const data = u8.map((d, i) =&gt; wasm_bytes[i]);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+    const importObject = {
+        js: {
+            mem,
+            hex: (length = 0) =&gt; {
+                const data = new Uint8Array(mem.buffer);
+                let output = '';
+                for (let i = 0; i &lt; length; i++) {
+                    if (data[i] &lt; 0x10) {
+                        output += `0${data[i].toString(16)}`;
+                    }
+                    else {
+                        output += `${data[i].toString(16)}`;
+                    }
+                    if ((i % 0x10) === 0x0f) {
+                        output += '\n';
+                    }
+                    else {
+                        output += ' ';
+                    }
+                }
+                document.getElementById('hex_memory_wasm').innerHTML += `
+hex(${length}):
+${output}`;
+            }
+        }
+    };
+
+    const wasm = await WebAssembly.instantiate(data.buffer, importObject);
+
+    const { instance, module } = wasm;
+    const { exports } = instance;
+    const { store, hex } = exports;
+
+    console.log({ wasm })
+    console.log({ instance, module, exports })
+
+    document.getElementById('hex_memory_wasm').innerHTML += `
+wasm:
+${JSON.stringify(wasm, null, 2)}
+store: ${store}
+store(0, 42) : ${store(0, 42)}
+`;
+    hex(0x10);
+    document.getElementById('hex_memory_wasm').innerHTML += `
+store(0xf, 42) : ${store(0xf, 42)}
+`
+    hex(0x10);
+
+    for (let i = 0; i &lt; 257; i++) {
+        store(i, i)
+        hex(i);
+    }
+})();
+</code></pre>
+<pre id="hex_memory_wasm"></pre>
+<script src="chapter_bytes/js/hex_memory_wasm.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>
