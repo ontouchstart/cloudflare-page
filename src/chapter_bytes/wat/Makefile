@@ -1,17 +1,21 @@
-all: 42 memory_empty 42_memory hex_memory_wasm
+all: empty 42 memory_empty 42_memory hex_memory_wasm
+
+empty:
+	wat2wasm empty.wat
+	hexdump -C empty.wasm
 
 42:
 	wat2wasm 42.wat
-	hexdump 42.wasm
+	hexdump -C 42.wasm
 
 memory_empty:
 	wat2wasm memory_empty.wat
-	hexdump memory_empty.wasm
+	hexdump -C memory_empty.wasm
 
 42_memory:
 	wat2wasm 42_memory.wat
-	hexdump 42_memory.wasm
+	hexdump -C 42_memory.wasm
 
 hex_memory_wasm:
 	wat2wasm hex_memory_wasm.wat
-	hexdump hex_memory_wasm.wasm
+	hexdump -C hex_memory_wasm.wasm
