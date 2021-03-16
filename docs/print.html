@@ -7561,14 +7561,8 @@ ${JSON.stringify(wasm, null, 2)}
 <p><code>chapter_bytes/wat/42.wat</code></p>
 <pre><code>(module (func (export &quot;42&quot;) (result i32) i32.const 42))
 </code></pre>
-<p><code>chapter_bytes/wat/Makefile</code></p>
-<pre><code class="language-makefile">all:
-	wat2wasm 42.wat
-	hexdump 42.wasm
-</code></pre>
-<pre><code class="language-console">$ make
-wat2wasm 42.wat
-hexdump 42.wasm
+<pre><code class="language-console">$ wat2wasm 42.wat
+$ hexdump 42.wasm
 0000000 00 61 73 6d 01 00 00 00 01 05 01 60 00 01 7f 03
 0000010 02 01 00 07 06 01 02 34 32 00 00 0a 06 01 04 00
 0000020 41 2a 0b                                       
@@ -7635,6 +7629,151 @@ ${answer()}
 </code></pre>
 <pre id="42_wasm"></pre>
 <script src="chapter_bytes/js/42_wasm.js"></script>
+<h2 id="memory"><a class="header" href="#memory">Memory</a></h2>
+<p>Now let's see how <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/Memory">WebAssembly.Memory</a> works.</p>
+<p>We add a page of memory to the empty wasm.</p>
+<p><code>chapter_bytes/wat/memory_empty.wat</code></p>
+<pre><code>(module (memory (import &quot;js&quot; &quot;mem&quot;) 1)) ;; 1 page = 64KB
+</code></pre>
+<pre><code class="language-console">$ wat2wasm memory_empty.wat
+$ hexdump memory_empty.wasm
+0000000 00 61 73 6d 01 00 00 00 02 0b 01 02 6a 73 03 6d
+0000010 65 6d 02 00 01                                 
+0000015
+</code></pre>
+<p><code>chapter_bytes/js/single_page_memory_empty_wasm.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const wasm_bytes = [
+        0x00, 0x61, 0x73, 0x6d,
+        0x01, 0x00, 0x00, 0x00,
+        0x02, 0x0b, 0x01, 0x02,
+        0x6a, 0x73, 0x03, 0x6d,
+        0x65, 0x6d, 0x02, 0x00,
+        0x01
+    ];
+
+    const buffer = new ArrayBuffer(wasm_bytes.length);
+    const u8 = new Uint8Array(buffer);
+    const data = u8.map((d, i) =&gt; wasm_bytes[i]);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+    const importObject = { js: { mem } };
+
+    window.wasm = await WebAssembly.instantiate(data.buffer, importObject);
+    console.log({ wasm });
+    const { instance, module } = wasm;
+    console.log({ instance, module })
+    const hex = (data) =&gt; {
+        let output = '';
+        for (let i = 0; i &lt; data.length; i++) {
+            if (data[i] &lt; 0x10) {
+                output += `0${data[i].toString(16)}`;
+            }
+            else {
+                output += `${data[i].toString(16)}`;
+            }
+            if ((i % 0x10) === 0x0f) {
+                output += '\n';
+            }
+            else {
+                output += ' ';
+            }
+        }
+        return output;
+    };
+
+    document.getElementById('single_page_memory_empty_wasm').innerHTML = `
+Data:
+${hex(data)}
+wasm:
+${JSON.stringify(wasm, null, 2)}
+`;
+})();
+</code></pre>
+<pre id="single_page_memory_empty_wasm"></pre>
+<script src="chapter_bytes/js/single_page_memory_empty_wasm.js"></script>
+<h2 id="42-memory"><a class="header" href="#42-memory">42 Memory</a></h2>
+<p>Now let's store 42 into the memory and then load it.</p>
+<p><code>chapter_bytes/wat/42_memory.wat</code></p>
+<pre><code>(module 
+  (memory (import &quot;js&quot; &quot;mem&quot;) 1)
+  (func (export &quot;store&quot;) i32.const 0 i32.const 42 i32.store)
+  (func (export &quot;load&quot;) (result i32) i32.const 0 i32.load)
+)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm 42_memory.wat
+$ hexdump 42_memory.wasm
+0000000 00 61 73 6d 01 00 00 00 01 08 02 60 00 00 60 00
+0000010 01 7f 02 0b 01 02 6a 73 03 6d 65 6d 02 00 01 03
+0000020 03 02 00 01 07 10 02 05 73 74 6f 72 65 00 00 04
+0000030 6c 6f 61 64 00 01 0a 13 02 09 00 41 00 41 2a 36
+0000040 02 00 0b 07 00 41 00 28 02 00 0b               
+000004b
+</code></pre>
+<p><code>chapter_bytes/js/42_memory_wasm.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const wasm_bytes = [
+        0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+        0x01, 0x08, 0x02, 0x60, 0x00, 0x00, 0x60, 0x00,
+        0x01, 0x7f, 0x02, 0x0b, 0x01, 0x02, 0x6a, 0x73,
+        0x03, 0x6d, 0x65, 0x6d, 0x02, 0x00, 0x01, 0x03,
+        0x03, 0x02, 0x00, 0x01, 0x07, 0x10, 0x02, 0x05,
+        0x73, 0x74, 0x6f, 0x72, 0x65, 0x00, 0x00, 0x04,
+        0x6c, 0x6f, 0x61, 0x64, 0x00, 0x01, 0x0a, 0x13,
+        0x02, 0x09, 0x00, 0x41, 0x00, 0x41, 0x2a, 0x36,
+        0x02, 0x00, 0x0b, 0x07, 0x00, 0x41, 0x00, 0x28,
+        0x02, 0x00, 0x0b
+    ];
+
+    const buffer = new ArrayBuffer(wasm_bytes.length);
+    const u8 = new Uint8Array(buffer);
+    const data = u8.map((d, i) =&gt; wasm_bytes[i]);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+    const importObject = { js: { mem } };
+
+    const wasm = await WebAssembly.instantiate(data.buffer, importObject);
+
+    const { instance, module } = wasm;
+    const { exports } = instance;
+    const { store, load } = exports;
+
+    console.log({ wasm })
+    console.log({ instance, module, exports })
+    const hex = (data) =&gt; {
+        let output = '';
+        for (let i = 0; i &lt; data.length; i++) {
+            if (data[i] &lt; 0x10) {
+                output += `0${data[i].toString(16)}`;
+            }
+            else {
+                output += `${data[i].toString(16)}`;
+            }
+            if ((i % 0x10) === 0x0f) {
+                output += '\n';
+            }
+            else {
+                output += ' ';
+            }
+        }
+        return output;
+    };
+
+
+    document.getElementById('42_memory_wasm').innerHTML += `
+Data:
+${hex(data)}
+wasm:
+${JSON.stringify(wasm, null, 2)}
+store: ${store}
+load: ${load}
+
+load() : ${load()}
+store() : ${store()}
+load() : ${load()}
+`;
+})();
+</code></pre>
+<pre id="42_memory_wasm"></pre>
+<script src="chapter_bytes/js/42_memory_wasm.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
