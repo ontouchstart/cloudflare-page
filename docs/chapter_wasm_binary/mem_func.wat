@@ -1,1 +1,1 @@
-(module (memory (import "js" "mem") 1) (func))
+(module (memory 1) (func))

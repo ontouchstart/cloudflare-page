@@ -8,3 +8,6 @@ all:
 	wat2wasm mem_func.wat
 	hexdump -C mem_func.wasm
 
+	wat2wasm import_mem_func.wat
+	hexdump -C import_mem_func.wasm
+
