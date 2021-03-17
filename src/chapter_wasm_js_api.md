@@ -8,6 +8,7 @@ An effective way to learn WASM from JS (or JS from WASM) is to go through the of
 
 [Reference](https://webassembly.github.io/spec/js-api/index.html#sample)
 
+### WebAssembly.instantiate
 `chapter_wasm_js_api/sample/sample.wat`
 ```
 {{#include chapter_wasm_js_api/sample/sample.wat}}
@@ -24,10 +25,24 @@ $ hexdump -C sample.wasm
 00000047
 ```
 
-`chapter_wasm_js_api/sample.js`
+`chapter_wasm_js_api/sample/sample.js`
 ```javascript
 {{#include chapter_wasm_js_api/sample/sample.js}}
 ```
 
 <script src="chapter_wasm_js_api/sample/sample.js"></script>
+
+The result is in console log.
+
+### WebAssembly.validate | compile | instantiate
+
+[Reference](https://webassembly.github.io/spec/js-api/index.html#webassembly-namespace)
+
+`chapter_wasm_js_api/sample/validate_compile_instantiate.js`
+```javascript
+{{#include chapter_wasm_js_api/sample/validate_compile_instantiate.js}}
+```
+
+<script src="chapter_wasm_js_api/sample/validate_compile_instantiate.js"></script>
+
 The result is in console log.

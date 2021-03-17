@@ -175,6 +175,7 @@
 <p><a href="https://webassembly.github.io/spec/js-api/">WebAssembly JavaScript Interface</a> defines JavaScript classes and objects for accessing WebAssembly from within JavaScript, including methods for validation, compilation, instantiation, and classes for representing and manipulating imports and exports as JavaScript objects.</p>
 <h2 id="sample"><a class="header" href="#sample">Sample</a></h2>
 <p><a href="https://webassembly.github.io/spec/js-api/index.html#sample">Reference</a></p>
+<h3 id="webassemblyinstantiate"><a class="header" href="#webassemblyinstantiate">WebAssembly.instantiate</a></h3>
 <p><code>chapter_wasm_js_api/sample/sample.wat</code></p>
 <pre><code>(module
     (import &quot;js&quot; &quot;import1&quot; (func $i1))
@@ -193,7 +194,7 @@ $ hexdump -C sample.wasm
 00000040  00 0b 04 00 10 01 0b                              |.......|
 00000047
 </code></pre>
-<p><code>chapter_wasm_js_api/sample.js</code></p>
+<p><code>chapter_wasm_js_api/sample/sample.js</code></p>
 <pre><code class="language-javascript">var importObj = {
     js: {
         import1: () =&gt; console.log(&quot;hello,&quot;),
@@ -209,6 +210,41 @@ fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt;
 );
 </code></pre>
 <script src="chapter_wasm_js_api/sample/sample.js"></script>
+<p>The result is in console log.</p>
+<h3 id="webassemblyvalidate--compile--instantiate"><a class="header" href="#webassemblyvalidate--compile--instantiate">WebAssembly.validate | compile | instantiate</a></h3>
+<p><a href="https://webassembly.github.io/spec/js-api/index.html#webassembly-namespace">Reference</a></p>
+<p><code>chapter_wasm_js_api/sample/validate_compile_instantiate.js</code></p>
+<pre><code class="language-javascript">var importObj = {
+    js: {
+        import1: () =&gt; console.log(&quot;hello,&quot;),
+        import2: () =&gt; console.log(&quot;world!&quot;)
+    }
+};
+
+fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt; {
+    console.log({ response });
+    return response.arrayBuffer();
+}).then(buffer =&gt; {
+    console.log({ buffer });
+    if (WebAssembly.validate(buffer)) {
+        return WebAssembly.compile(buffer);
+    }
+    else {
+        throw 'invalid WASM';
+    }
+}).then(module =&gt; {
+    console.log({ module });
+    return WebAssembly.instantiate(module, importObj);
+}).then(instance =&gt; {
+    console.log({ instance });
+    const { exports } = instance;
+    const { f } = exports;
+    f();
+}).catch((error) =&gt; {
+    console.error(error);
+});
+</code></pre>
+<script src="chapter_wasm_js_api/sample/validate_compile_instantiate.js"></script>
 <p>The result is in console log.</p>
 
                     </main>
