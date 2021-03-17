@@ -61,3 +61,28 @@ $ hexdump -C func.wasm
 
 <pre id="func"></pre>
 <script src="chapter_wasm_binary/func.js"></script>
+
+
+### (module (memory (import "js" "mem") 1) (func))
+
+`chapter_wasm_binary/mem_func.js`
+```javascript
+{{#include chapter_wasm_binary/mem_func.js}}
+```
+
+As a reference here is the `chapter_wasm_binary/mem_func.wat`
+```
+{{#include chapter_wasm_binary/mem_func.wat}}
+```
+
+```console
+$ wat2wasm mem_func.wat
+$ hexdump -C mem_func.wasm
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 02 0b  |.asm.......`....|
+00000010  01 02 6a 73 03 6d 65 6d  02 00 01 03 02 01 00 0a  |..js.mem........|
+00000020  04 01 02 00 0b                                    |.....|
+00000025
+```
+
+<pre id="mem_func"></pre>
+<script src="chapter_wasm_binary/mem_func.js"></script>

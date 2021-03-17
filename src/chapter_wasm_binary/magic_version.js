@@ -5,7 +5,6 @@
    const importObject = {};
    const module = await WebAssembly.compile(wasm.buffer);
    const instance = await WebAssembly.instantiate(module, importObject);
-   const nameSections = WebAssembly.Module.customSections(module, 'name');
    console.log({ module, instance });
    document.getElementById('magic_version').innerHTML = `
 ${JSON.stringify({ module, instance }, null, 2)}
