@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">6.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">7.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">8.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">9.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">10.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">11.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">7.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">8.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">9.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">10.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">11.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">12.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -7880,7 +7880,47 @@ store(0xf, 42) : ${store(0xf, 42)}
 })();
 </code></pre>
 <pre id="hex_memory_wasm"></pre>
-<script src="chapter_bytes/js/hex_memory_wasm.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<script src="chapter_bytes/js/hex_memory_wasm.js"></script><h1 id="webassembly-javascript-interface"><a class="header" href="#webassembly-javascript-interface">WebAssembly JavaScript Interface</a></h1>
+<p>An effective way to learn WASM from JS (or JS from WASM) is to go through the official specification in detail.</p>
+<p><a href="https://webassembly.github.io/spec/js-api/">WebAssembly JavaScript Interface</a> defines JavaScript classes and objects for accessing WebAssembly from within JavaScript, including methods for validation, compilation, instantiation, and classes for representing and manipulating imports and exports as JavaScript objects.</p>
+<h2 id="sample"><a class="header" href="#sample">Sample</a></h2>
+<p><a href="https://webassembly.github.io/spec/js-api/index.html#sample">Reference</a></p>
+<p><code>chapter_wasm_js_api/sample/sample.wat</code></p>
+<pre><code>(module
+    (import &quot;js&quot; &quot;import1&quot; (func $i1))
+    (import &quot;js&quot; &quot;import2&quot; (func $i2))
+    (func $main (call $i1))
+    (start $main)
+    (func (export &quot;f&quot;) (call $i2))
+)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm sample.wat
+$ hexdump -C sample.wasm
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 02 1b  |.asm.......`....|
+00000010  02 02 6a 73 07 69 6d 70  6f 72 74 31 00 00 02 6a  |..js.import1...j|
+00000020  73 07 69 6d 70 6f 72 74  32 00 00 03 03 02 00 00  |s.import2.......|
+00000030  07 05 01 01 66 00 03 08  01 02 0a 0b 02 04 00 10  |....f...........|
+00000040  00 0b 04 00 10 01 0b                              |.......|
+00000047
+</code></pre>
+<p><code>chapter_wasm_js_api/sample.js</code></p>
+<pre><code class="language-javascript">var importObj = {
+    js: {
+        import1: () =&gt; console.log(&quot;hello,&quot;),
+        import2: () =&gt; console.log(&quot;world!&quot;)
+    }
+};
+fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt;
+    response.arrayBuffer()
+).then(buffer =&gt;
+    WebAssembly.instantiate(buffer, importObj)
+).then(({ module, instance }) =&gt;
+    instance.exports.f()
+);
+</code></pre>
+<script src="chapter_wasm_js_api/sample/sample.js"></script>
+<p>The result is in console log.</p>
+<h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>
