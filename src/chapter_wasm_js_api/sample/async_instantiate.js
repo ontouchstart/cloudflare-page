@@ -22,11 +22,11 @@
         const module = await WebAssembly.compile(buffer);
         console.log({ module });
 
-        const instance1 = WebAssembly.instantiate(module, importObj1);
-        (await instance1).exports.f();
+        const instance1 = await WebAssembly.instantiate(module, importObj1);
+        instance1.exports.f();
 
-        const instance2 = WebAssembly.instantiate(module, importObj2);
-        (await instance2).exports.f();
+        const instance2 = await WebAssembly.instantiate(module, importObj2);
+        instance2.exports.f();
 
     }
     else {
