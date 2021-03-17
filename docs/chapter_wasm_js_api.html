@@ -246,6 +246,46 @@ fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt; {
 </code></pre>
 <script src="chapter_wasm_js_api/sample/validate_compile_instantiate.js"></script>
 <p>The result is in console log.</p>
+<h3 id="asyncawait-instantiate"><a class="header" href="#asyncawait-instantiate">Async/await instantiate</a></h3>
+<p><code>chapter_wasm_js_api/sample/async_instantiate.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const importObj1 = {
+        js: {
+            import1: () =&gt; console.log(&quot;From importObj1&quot;),
+            import2: () =&gt; console.log(&quot;hello world!&quot;)
+        }
+    };
+
+    const importObj2 = {
+        js: {
+            import1: () =&gt; console.log(&quot;From importObj2&quot;),
+            import2: () =&gt; console.log(&quot;hello world!&quot;)
+        }
+    };
+
+    const response = await fetch('/chapter_wasm_js_api/sample/sample.wasm');
+    console.log({ response });
+    const buffer = await response.arrayBuffer();
+    console.log({ buffer });
+
+    if (WebAssembly.validate(buffer)) {
+        const module = await WebAssembly.compile(buffer);
+        console.log({ module });
+
+        const instance1 = WebAssembly.instantiate(module, importObj1);
+        (await instance1).exports.f();
+
+        const instance2 = WebAssembly.instantiate(module, importObj2);
+        (await instance2).exports.f();
+
+    }
+    else {
+        console.error('invalid WASM');
+    }
+})();
+</code></pre>
+<script src="chapter_wasm_js_api/sample/async_instantiate.js"></script>
+<p>The result is in console log.</p>
 
                     </main>
 

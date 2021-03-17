@@ -46,3 +46,14 @@ The result is in console log.
 <script src="chapter_wasm_js_api/sample/validate_compile_instantiate.js"></script>
 
 The result is in console log.
+
+### Async/await instantiate
+
+`chapter_wasm_js_api/sample/async_instantiate.js`
+```javascript
+{{#include chapter_wasm_js_api/sample/async_instantiate.js}}
+```
+
+<script src="chapter_wasm_js_api/sample/async_instantiate.js"></script>
+
+The result is in console log.
