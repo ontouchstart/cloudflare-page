@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">7.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">8.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">9.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">10.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">11.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">12.</strong> Chapter 6</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">8.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">9.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="chapter_3.html"><strong aria-hidden="true">10.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="chapter_4.html"><strong aria-hidden="true">11.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="chapter_5.html"><strong aria-hidden="true">12.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="chapter_6.html"><strong aria-hidden="true">13.</strong> Chapter 6</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -7996,6 +7996,28 @@ fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt; {
 </code></pre>
 <script src="chapter_wasm_js_api/sample/async_instantiate.js"></script>
 <p>The result is in console log.</p>
+<h1 id="wasm-binary-format"><a class="header" href="#wasm-binary-format">WASM Binary Format</a></h1>
+<p><a href="https://webassembly.github.io/spec/core/binary/index.html">Reference</a></p>
+<h2 id="module-preamble"><a class="header" href="#module-preamble">Module preamble</a></h2>
+<p>Every module starts with a <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">preamble</a> of a magic and version. Let's use JS to create an empty module from binary data.</p>
+<p><code>chapter_wasm_binary/magic_version.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+   const magic = [0x00, 0x61, 0x73, 0x6d];
+   const version = [0x01, 0x00, 0x00, 0x00];
+   const module = magic.concat(version);
+   const buffer = new ArrayBuffer(module.length);
+   const u8 = new Uint8Array(buffer);
+   const data = u8.map((d, i) =&gt; module[i]);
+   const importObject = {};
+   const wasm = await WebAssembly.instantiate(data.buffer, importObject);
+   console.log({ wasm })
+   document.getElementById('magic_version').innerHTML = `
+${JSON.stringify({ wasm }, null, 2)}
+   `
+})();
+</code></pre>
+<pre id="magic_version"></pre>
+<script src="chapter_wasm_binary/magic_version.js"></script>
 <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>

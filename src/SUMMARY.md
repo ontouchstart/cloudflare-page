@@ -7,6 +7,7 @@
 - [C and WASM via llvm](./chapter_llvm.md)
 - [Programming with ArrayBuffer](./chapter_bytes.md)
 - [WebAssembly JavaScript Interface](./chapter_wasm_js_api.md)
+- [WASM Binary Format](./chapter_wasm_binary.md)
 - [Chapter 1](./chapter_1.md)
 - [Chapter 2](./chapter_2.md)
 - [Chapter 3](./chapter_3.md)
