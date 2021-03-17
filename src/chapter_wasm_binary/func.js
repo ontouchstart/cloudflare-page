@@ -9,12 +9,15 @@
     const func = [
         0x03, // func section
         0x02, // 2 bytes
-        0x01, 0x00,
-        0x0a, 0x04,
-        0x01, 0x02,
+        0x01, 0x00];
+    const code = [
+        0x0a, // code section 
+        0x04, // 4 bytes
+        0x01,
+        0x02, // 2 bytes
         0x00, 0x0b
     ];
-    const wasm = magic.concat(version).concat(type).concat(func);
+    const wasm = magic.concat(version).concat(type).concat(func).concat(code);
     const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
     const buffer = u8.map((d, i) => wasm[i]).buffer;
     const importObject = {};
