@@ -178,20 +178,80 @@
 <pre><code class="language-javascript">(async () =&gt; {
    const magic = [0x00, 0x61, 0x73, 0x6d];
    const version = [0x01, 0x00, 0x00, 0x00];
-   const module = magic.concat(version);
-   const buffer = new ArrayBuffer(module.length);
-   const u8 = new Uint8Array(buffer);
-   const data = u8.map((d, i) =&gt; module[i]);
+   const wasm = magic.concat(version);
+   const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
+   const buffer = u8.map((d, i) =&gt; wasm[i]).buffer;
    const importObject = {};
-   const wasm = await WebAssembly.instantiate(data.buffer, importObject);
-   console.log({ wasm })
+   const module = await WebAssembly.compile(buffer);
+   const instance = await WebAssembly.instantiate(module, importObject);
+   const nameSections = WebAssembly.Module.customSections(module, 'name');
+   console.log({ module, instance });
    document.getElementById('magic_version').innerHTML = `
-${JSON.stringify({ wasm }, null, 2)}
+${JSON.stringify({ module, instance }, null, 2)}
    `
 })();
 </code></pre>
+<p>As a reference here is the <code>chapter_wasm_binary/magic_version.wat</code></p>
+<pre><code>(module)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm magic_version.wat
+$ hexdump -C magic_version.wasm
+00000000  00 61 73 6d 01 00 00 00                           |.asm....|
+00000008
+</code></pre>
 <pre id="magic_version"></pre>
 <script src="chapter_wasm_binary/magic_version.js"></script>
+<h2 id="sections"><a class="header" href="#sections">Sections</a></h2>
+<p>Each <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-section">section</a> consists of</p>
+<ul>
+<li>a one-byte section id,</li>
+<li>the <code>u32</code> size of the contents, in bytes,</li>
+<li>the actual contents, whose structure is depended on the section id.</li>
+</ul>
+<p>Every section is optional; an omitted section is equivalent to the section being present with empty contents.</p>
+<p>Let's create modules from scratch by adding sections one by one.</p>
+<h3 id="module-func"><a class="header" href="#module-func">(module (func))</a></h3>
+<p><code>chapter_wasm_binary/func.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    const type = [
+        0x01, // type section 
+        0x04, // 4 bytes
+        0x01, 0x60, 0x00, 0x00 // func type that takes no param and return nothing
+    ];
+    const func = [
+        0x03, // func section
+        0x02, // 2 bytes
+        0x01, 0x00,
+        0x0a, 0x04,
+        0x01, 0x02,
+        0x00, 0x0b
+    ];
+    const wasm = magic.concat(version).concat(type).concat(func);
+    const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
+    const buffer = u8.map((d, i) =&gt; wasm[i]).buffer;
+    const importObject = {};
+    const module = await WebAssembly.compile(buffer);
+    const instance = await WebAssembly.instantiate(module, importObject);
+    const nameSections = WebAssembly.Module.customSections(module, 'name');
+    console.log({ module, instance });
+    document.getElementById('func').innerHTML = `
+ ${JSON.stringify({ module, instance }, null, 2)}
+    `
+})();
+</code></pre>
+<p>As a reference here is the <code>chapter_wasm_binary/func.wat</code></p>
+<pre><code>(module (func))
+</code></pre>
+<pre><code class="language-console">$ wat2wasm func.wat
+$ hexdump -C func.wasm
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 0a 04 01 02 00 0b                           |........|
+00000018
+</code></pre>
+<pre id="func"></pre>
+<script src="chapter_wasm_binary/func.js"></script>
 
                     </main>
 

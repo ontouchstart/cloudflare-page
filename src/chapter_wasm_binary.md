@@ -10,5 +10,54 @@ Every module starts with a [preamble](https://webassembly.github.io/spec/core/bi
 ```javascript
 {{#include chapter_wasm_binary/magic_version.js}}
 ```
+
+As a reference here is the `chapter_wasm_binary/magic_version.wat`
+
+```
+{{#include chapter_wasm_binary/magic_version.wat}}
+```
+
+```console
+$ wat2wasm magic_version.wat
+$ hexdump -C magic_version.wasm
+00000000  00 61 73 6d 01 00 00 00                           |.asm....|
+00000008
+```
+
 <pre id="magic_version"></pre>
 <script src="chapter_wasm_binary/magic_version.js"></script>
+
+## Sections
+
+Each [section](https://webassembly.github.io/spec/core/binary/modules.html#binary-section) consists of
+
+- a one-byte section id,
+- the `u32` size of the contents, in bytes,
+- the actual contents, whose structure is depended on the section id.
+
+Every section is optional; an omitted section is equivalent to the section being present with empty contents.
+
+Let's create modules from scratch by adding sections one by one.
+
+### (module (func))
+
+`chapter_wasm_binary/func.js`
+```javascript
+{{#include chapter_wasm_binary/func.js}}
+```
+
+As a reference here is the `chapter_wasm_binary/func.wat`
+```
+{{#include chapter_wasm_binary/func.wat}}
+```
+
+```console
+$ wat2wasm func.wat
+$ hexdump -C func.wasm
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 0a 04 01 02 00 0b                           |........|
+00000018
+```
+
+<pre id="func"></pre>
+<script src="chapter_wasm_binary/func.js"></script>
