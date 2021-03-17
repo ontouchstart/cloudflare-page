@@ -178,11 +178,9 @@
 <pre><code class="language-javascript">(async () =&gt; {
    const magic = [0x00, 0x61, 0x73, 0x6d];
    const version = [0x01, 0x00, 0x00, 0x00];
-   const wasm = magic.concat(version);
-   const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
-   const buffer = u8.map((d, i) =&gt; wasm[i]).buffer;
+   const wasm = new Uint8Array(magic.concat(version));
    const importObject = {};
-   const module = await WebAssembly.compile(buffer);
+   const module = await WebAssembly.compile(wasm.buffer);
    const instance = await WebAssembly.instantiate(module, importObject);
    const nameSections = WebAssembly.Module.customSections(module, 'name');
    console.log({ module, instance });
@@ -223,19 +221,20 @@ $ hexdump -C magic_version.wasm
     const func = [
         0x03, // func section
         0x02, // 2 bytes
-        0x01, 0x00];
+        0x01, // number of functions 
+        0x00  // type of the function
+    ];
     const code = [
         0x0a, // code section 
         0x04, // 4 bytes
-        0x01,
+        0x01, // number of function bodies.
         0x02, // 2 bytes
-        0x00, 0x0b
+        0x00, // number of local variables
+        0x0b // opcode for 𝖾𝗇𝖽
     ];
-    const wasm = magic.concat(version).concat(type).concat(func).concat(code);
-    const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
-    const buffer = u8.map((d, i) =&gt; wasm[i]).buffer;
+    const wasm = new Uint8Array(magic.concat(version).concat(type).concat(func).concat(code));
     const importObject = {};
-    const module = await WebAssembly.compile(buffer);
+    const module = await WebAssembly.compile(wasm.buffer);
     const instance = await WebAssembly.instantiate(module, importObject);
     const nameSections = WebAssembly.Module.customSections(module, 'name');
     console.log({ module, instance });

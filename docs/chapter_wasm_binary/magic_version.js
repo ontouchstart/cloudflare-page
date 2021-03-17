@@ -1,11 +1,9 @@
 (async () => {
    const magic = [0x00, 0x61, 0x73, 0x6d];
    const version = [0x01, 0x00, 0x00, 0x00];
-   const wasm = magic.concat(version);
-   const u8 = new Uint8Array(new ArrayBuffer(wasm.length));
-   const buffer = u8.map((d, i) => wasm[i]).buffer;
+   const wasm = new Uint8Array(magic.concat(version));
    const importObject = {};
-   const module = await WebAssembly.compile(buffer);
+   const module = await WebAssembly.compile(wasm.buffer);
    const instance = await WebAssembly.instantiate(module, importObject);
    const nameSections = WebAssembly.Module.customSections(module, 'name');
    console.log({ module, instance });
