@@ -116,13 +116,19 @@ ${output}
         0x00  // func id 
     ];
 
-    const section_0a = [
+    const section_0a_header = [
         0x0a, // code section 
         0x10, // 16 bytes
-        0x02, // number of function bodies
-        0x02, // the first func (f) does nothing yet
+        0x02  // number of function bodies
+    ]
+
+    const section_0a_f = [
+        0x02, // the first func (f) 
         0x00, // number of local variables
-        0x0b, // end
+        0x0b  // end
+    ]
+
+    const section_0a_s = [
         0x0b, // 11 bytes the second func (s)
         0x00, // number of local variables
         0x20, // local.get 
@@ -135,7 +141,12 @@ ${output}
         0x20, // local.get
         0x01, // 1 (return the stored i32)
         0x0b // opcode for 𝖾𝗇𝖽
-    ];
+    ]
+
+    const section_0a = section_0a_header
+        .concat(section_0a_f)
+        .concat(section_0a_s);
+
     const wasm = new Uint8Array(
         magic.concat(version)
             .concat(section_01)
