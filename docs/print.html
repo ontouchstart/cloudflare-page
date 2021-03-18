@@ -8385,6 +8385,7 @@ $ hexdump -C export_mem_func.wasm
 <pre id="export_mem_func"></pre>
 <script src="chapter_wasm_binary/export_mem_func.js"></script><h1 id="wasm-canvas"><a class="header" href="#wasm-canvas">WASM Canvas</a></h1>
 <p>We have build foundation to write binary WASM code with JavaScript and inspect memory as hexdump in the browser. Now let's visualize the memory via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API">Canvas API</a>.</p>
+<script src="chapter_wasm_binary/hexdump.js"></script>
 <h2 id="blank-canvas"><a class="header" href="#blank-canvas">Blank canvas</a></h2>
 <p><code>chapter_wasm_canvas/blank_canvas.js</code></p>
 <pre><code class="language-javascript">(async () =&gt; {
@@ -8395,7 +8396,32 @@ $ hexdump -C export_mem_func.wasm
 })();
 </code></pre>
 <p><canvas id="blank_canvas"></canvas></p>
-<script src="chapter_wasm_canvas/blank_canvas.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<script src="chapter_wasm_canvas/blank_canvas.js"></script>
+<h2 id="imagedata-of-a-blank-canvas"><a class="header" href="#imagedata-of-a-blank-canvas">ImageData of a Blank canvas</a></h2>
+<p><code>chapter_wasm_canvas/image_data_blank_canvas.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const canvas = document.getElementById('image_data_blank_canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    canvas.style.border = '1px solid black';
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    console.log({ data })
+    const canvas_data = document.getElementById('image_data_blank_canvas_data');
+    canvas_data.innerHTML = `
+First ${0x100}$ bytes of the canvas data
+
+hexdump({data: data.data, length: 0x100 })
+
+${hexdump({ data: data.data, length: 0x100 })}
+`
+
+})();
+</code></pre>
+<p><canvas id="image_data_blank_canvas"></canvas></p>
+<pre id="image_data_blank_canvas_data"></pre>
+<script src="chapter_wasm_canvas/image_data_blank_canvas.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>
