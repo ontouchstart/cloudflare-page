@@ -8649,12 +8649,15 @@ ${output}
     const version = [0x01, 0x00, 0x00, 0x00];
     const section_01 = [
         0x01, // type section 
-        0x0a, // 10 bytes
-        0x02, // number of functions
-        0x60, // func type imported output
+        0x0d, // 13 bytes
+        0x03, // number of functions
+        0x60, // first func type (output)
         0x00, // no input
         0x00, // no output
-        0x60, // func type (f)
+        0x60, // second func type (f)
+        0x00, // no input
+        0x00, // no output
+        0x60, // third func type (s)
         0x02, // takes two params 
         0x7f, 0x7f, // i32
         0x01, // return 1 result 
@@ -8680,9 +8683,10 @@ ${output}
     ]
     const section_03 = [
         0x03, // func section
-        0x02, // 2 bytes
-        0x01, // number of functions 
-        0x01  // type of the function
+        0x03, // 3 bytes
+        0x02, // number of functions 
+        0x01, // type of the first function (f)
+        0x02  // type of the second function (s)
     ];
     const section_05 = [
         0x05, // memory section
@@ -8693,8 +8697,8 @@ ${output}
     ];
     const section_07 = [
         0x07, // export section
-        0x12, // 18 bytes
-        0x03, // number of exports
+        0x16, // 22 bytes
+        0x04, // number of exports
         0x01,
         0x6d, // &quot;m&quot;
         0x02,
@@ -8703,6 +8707,10 @@ ${output}
         0x66, // &quot;f&quot;
         0x00,
         0x01, // func id
+        0x01,
+        0x73, // &quot;s&quot;
+        0x00,
+        0x02, // func id
         0x06, // 6 bytes
         0x6f, // o
         0x75, // u
@@ -8716,9 +8724,12 @@ ${output}
 
     const section_0a = [
         0x0a, // code section 
-        0x0d, // 13 bytes
-        0x01, // number of function bodies.
-        0x0b, // 11 bytes
+        0x10, // 16 bytes
+        0x02, // number of function bodies
+        0x02, // the first func (f) does nothing yet
+        0x00, // number of local variables
+        0x0b, // end
+        0x0b, // 11 bytes the second func (s)
         0x00, // number of local variables
         0x20, // local.get 
         0x00, // 0
@@ -8753,32 +8764,24 @@ ${output}
     const module = await WebAssembly.compile(wasm.buffer);
     const instance = await WebAssembly.instantiate(module, importObject);
     const { exports } = instance;
-    const { f, m, output } = exports;
+    const { f, s, m, output } = exports;
+    console.log({ exports })
     const memory_data = new Uint8Array(m.buffer);
 
-    for (let y = 0; y &lt; height; y++) {
-        for (let x = 0; x &lt; width; x++) {
-            const i = y * width + x;
-            const r = i * 4;
-            const g = i * 4 + 1;
-            const b = i * 4 + 2;
-            const a = i * 4 + 3;
-            f(g, 0xff);
-            f(a, 0xff);
-            const rx = x - width / 2;
-            const ry = y - height / 2;
-            const rr = rx * rx + ry * ry
-            if (rr &lt; width * width / 4) {
-                f(r, 0xff);
-                f(a, 0xff);
-            }
-        }
+    f(); // does nothing yet, to be written to replace the following block 
+    for (let i = 0; i &lt; width * height; i++) {
+        const r = i * 4;
+        const g = i * 4 + 1;
+        const b = i * 4 + 2;
+        const a = i * 4 + 3;
+        s(g, 0xff);
+        s(a, 0xff);
     }
 
     for (let i = 0; i &lt; imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];
     }
-    offset = imageData.data.length / 4;
+
     output();
 })();
 </code></pre>
