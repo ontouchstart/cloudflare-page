@@ -20,10 +20,9 @@
     const { data } = imageData;
     const canvas_data = document.getElementById('image_data_green_canvas_data');
     canvas_data.innerHTML = `
-First ${0x100}$ bytes of the canvas data
+First ${0x100} bytes of the canvas data
 
 hexdump({data, length: 0x100 })
-
 ${hexdump({ data, length: 0x100 })}
 `
 

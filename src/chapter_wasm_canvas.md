@@ -35,3 +35,15 @@ Now let's make a green canvas.
 <canvas id="image_data_green_canvas"></canvas>
 <pre id="image_data_green_canvas_data"></pre>
 <script src="chapter_wasm_canvas/image_data_green_canvas.js"></script>
+
+## WASM green canvas
+
+Now let's do it again with WASM.
+
+`chapter_wasm_canvas/wasm_image_data_green_canvas.js`
+```javascript
+{{#include chapter_wasm_canvas/wasm_image_data_green_canvas.js}}
+```
+<canvas id="wasm_image_data_green_canvas"></canvas>
+<pre id="wasm_image_data_green_canvas_data"></pre>
+<script src="chapter_wasm_canvas/wasm_image_data_green_canvas.js"></script>
