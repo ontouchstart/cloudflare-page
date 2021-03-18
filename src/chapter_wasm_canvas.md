@@ -14,6 +14,8 @@ We have build foundation to write binary WASM code with JavaScript and inspect m
 
 ## ImageData of a Blank canvas
 
+[getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)
+
 `chapter_wasm_canvas/image_data_blank_canvas.js`
 ```javascript
 {{#include chapter_wasm_canvas/image_data_blank_canvas.js}}
