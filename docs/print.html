@@ -8597,7 +8597,10 @@ ${hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })}
 </code></pre>
 <p><canvas id="wasm_image_data_green_canvas"></canvas></p>
 <pre id="wasm_image_data_green_canvas_data"></pre>
-<script src="chapter_wasm_canvas/wasm_image_data_green_canvas.js"></script><h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+<script src="chapter_wasm_canvas/wasm_image_data_green_canvas.js"></script>
+<p>Setting pixels in imageData via a loop calling an exported WASM function is definitely not an efficient way to draw on a canvas. We just showed that it is possible to pass WASM memory back to canvas. </p>
+<p>In the next step, we want to do computation in the WASM and &quot;read&quot; the memory out on Canvas.  </p>
+<h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <p>Hello World!</p>
 <h1 id="cloudflare-worker-test"><a class="header" href="#cloudflare-worker-test">Cloudflare Worker Test</a></h1>
 <p><a href="https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev">https://ontouchstart-rustwasm-markdown-parser.ontouchstart.workers.dev</a></p>

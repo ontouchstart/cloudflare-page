@@ -385,6 +385,9 @@ ${hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })}
 <p><canvas id="wasm_image_data_green_canvas"></canvas></p>
 <pre id="wasm_image_data_green_canvas_data"></pre>
 <script src="chapter_wasm_canvas/wasm_image_data_green_canvas.js"></script>
+<p>Setting pixels in imageData via a loop calling an exported WASM function is definitely not an efficient way to draw on a canvas. We just showed that it is possible to pass WASM memory back to canvas. </p>
+<p>In the next step, we want to do computation in the WASM and &quot;read&quot; the memory out on Canvas.  </p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

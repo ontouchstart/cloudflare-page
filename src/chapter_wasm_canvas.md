@@ -47,3 +47,7 @@ Now let's do it again with WASM.
 <canvas id="wasm_image_data_green_canvas"></canvas>
 <pre id="wasm_image_data_green_canvas_data"></pre>
 <script src="chapter_wasm_canvas/wasm_image_data_green_canvas.js"></script>
+
+Setting pixels in imageData via a loop calling an exported WASM function is definitely not an efficient way to draw on a canvas. We just showed that it is possible to pass WASM memory back to canvas. 
+
+In the next step, we want to do computation in the WASM and "read" the memory out on Canvas.  
