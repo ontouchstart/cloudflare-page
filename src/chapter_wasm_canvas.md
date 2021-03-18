@@ -50,4 +50,5 @@ Now let's do it again with WASM.
 
 Setting pixels in imageData via a loop calling an exported WASM function is definitely not an efficient way to draw on a canvas. We just showed that it is possible to pass WASM memory back to canvas. 
 
-In the next step, we want to do computation in the WASM and "read" the memory out on Canvas.  
+In the next step, we want to do computation in the WASM and "read" the memory out on Canvas.
+

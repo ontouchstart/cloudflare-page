@@ -9,6 +9,7 @@
 - [WebAssembly JavaScript Interface](./chapter_wasm_js_api.md)
 - [WASM Binary Format](./chapter_wasm_binary.md)
 - [WASM Canvas](./chapter_wasm_canvas.md)
+- [WASM Instructions](./chapter_wasm_instructions.md)
 - [Chapter 1](./chapter_1.md)
 - [Chapter 2](./chapter_2.md)
 - [Chapter 3](./chapter_3.md)
