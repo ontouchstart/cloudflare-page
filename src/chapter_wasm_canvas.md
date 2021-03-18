@@ -12,7 +12,7 @@ We have build foundation to write binary WASM code with JavaScript and inspect m
 <canvas id="blank_canvas"></canvas>
 <script src="chapter_wasm_canvas/blank_canvas.js"></script>
 
-## ImageData of a Blank canvas
+## ImageData of a blank canvas
 
 [getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)
 
@@ -23,3 +23,15 @@ We have build foundation to write binary WASM code with JavaScript and inspect m
 <canvas id="image_data_blank_canvas"></canvas>
 <pre id="image_data_blank_canvas_data"></pre>
 <script src="chapter_wasm_canvas/image_data_blank_canvas.js"></script>
+
+## ImageData of a green canvas
+
+Now let's make a green canvas.
+
+`chapter_wasm_canvas/image_data_green_canvas.js`
+```javascript
+{{#include chapter_wasm_canvas/image_data_green_canvas.js}}
+```
+<canvas id="image_data_green_canvas"></canvas>
+<pre id="image_data_green_canvas_data"></pre>
+<script src="chapter_wasm_canvas/image_data_green_canvas.js"></script>
