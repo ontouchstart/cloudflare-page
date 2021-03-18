@@ -7998,6 +7998,28 @@ fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt; {
 <p>The result is in console log.</p>
 <h1 id="wasm-binary-format"><a class="header" href="#wasm-binary-format">WASM Binary Format</a></h1>
 <p><a href="https://webassembly.github.io/spec/core/binary/index.html">Reference</a></p>
+<p>Here is a hexdump function to help us read byte code in the browser:</p>
+<p><code>chapter_wasm_binary/hexdump.js</code></p>
+<pre><code class="language-javascript">const hexdump = ({ data, length, offset = 0 }) =&gt; {
+    let output = '';
+    for (let i = offset; i &lt; offset + (length ? length : data.length); i++) {
+        if (data[i] &lt; 0x10) {
+            output += `0${data[i].toString(16)}`;
+        }
+        else {
+            output += `${data[i].toString(16)}`;
+        }
+        if ((i % 0x10) === 0x0f) {
+            output += '\n';
+        }
+        else {
+            output += ' ';
+        }
+    }
+    return output;
+};
+</code></pre>
+<script src="chapter_wasm_binary/hexdump.js"></script> 
 <h2 id="module-preamble"><a class="header" href="#module-preamble">Module preamble</a></h2>
 <p>Every module starts with a <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">preamble</a> of a magic and version. Let's use JS to create an empty module from binary data.</p>
 <p><code>chapter_wasm_binary/magic_version.js</code></p>
@@ -8005,31 +8027,16 @@ fetch('/chapter_wasm_js_api/sample/sample.wasm').then(response =&gt; {
    const magic = [0x00, 0x61, 0x73, 0x6d];
    const version = [0x01, 0x00, 0x00, 0x00];
    const wasm = new Uint8Array(magic.concat(version));
-   const hex = (data) =&gt; {
-      let output = '';
-      for (let i = 0; i &lt; data.length; i++) {
-         if (data[i] &lt; 0x10) {
-            output += `0${data[i].toString(16)}`;
-         }
-         else {
-            output += `${data[i].toString(16)}`;
-         }
-         if ((i % 0x10) === 0x0f) {
-            output += '\n';
-         }
-         else {
-            output += ' ';
-         }
-      }
-      return output;
-   };
+
    const importObject = {};
    const module = await WebAssembly.compile(wasm.buffer);
    const instance = await WebAssembly.instantiate(module, importObject);
    console.log({ module, instance });
    document.getElementById('magic_version').innerHTML = `
 WASM
-${hex(wasm)}
+
+hexdump({ data: wasm })
+${hexdump({ data: wasm })}
 
 ${JSON.stringify({ module, instance }, null, 2)}
 `
@@ -8059,18 +8066,21 @@ $ hexdump -C magic_version.wasm
 <pre><code class="language-javascript">(async () =&gt; {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
-    const type = [
+    const section_01 = [
         0x01, // type section 
         0x04, // 4 bytes
-        0x01, 0x60, 0x00, 0x00 // func type that takes no param and return nothing
+        0x01, // 1 type 
+        0x60, // func type 
+        0x00, // no input 
+        0x00  // no output
     ];
-    const func = [
+    const section_03 = [
         0x03, // func section
         0x02, // 2 bytes
         0x01, // number of functions 
         0x00  // type of the function
     ];
-    const code = [
+    const section_0a = [
         0x0a, // code section 
         0x04, // 4 bytes
         0x01, // number of function bodies.
@@ -8078,32 +8088,22 @@ $ hexdump -C magic_version.wasm
         0x00, // number of local variables
         0x0b  // opcode for 𝖾𝗇𝖽
     ];
-    const wasm = new Uint8Array(magic.concat(version).concat(type).concat(func).concat(code));
-    const hex = (data) =&gt; {
-        let output = '';
-        for (let i = 0; i &lt; data.length; i++) {
-            if (data[i] &lt; 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
-            }
-        }
-        return output;
-    };
+    const wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(section_01)
+            .concat(section_03)
+            .concat(section_0a)
+    );
+
     const importObject = {};
     const module = await WebAssembly.compile(wasm.buffer);
     const instance = await WebAssembly.instantiate(module, importObject);
     console.log({ module, instance });
     document.getElementById('func').innerHTML = `
 WASM:
-${hex(wasm)}
+
+hexdump({ data: wasm })
+${hexdump({ data: wasm })}
 
 ${JSON.stringify({ module, instance }, null, 2)}
     `
@@ -8125,25 +8125,28 @@ $ hexdump -C func.wasm
 <pre><code class="language-javascript">(async () =&gt; {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
-    const type = [
+    const section_01 = [
         0x01, // type section 
         0x04, // 4 bytes
-        0x01, 0x60, 0x00, 0x00 // func type that takes no param and return nothing
+        0x01, // 1 type
+        0x60, // func type
+        0x00, // no input
+        0x00  // no output
     ];
-    const func = [
+    const section_03 = [
         0x03, // func section
         0x02, // 2 bytes
         0x01, // number of functions 
         0x00  // type of the function
     ];
-    const memory = [
+    const section_05 = [
         0x05, // memory section
         0x03, // 3 bytes
         0x01, //
         0x00, // min
         0x01  // max
     ];
-    const code = [
+    const section_0a = [
         0x0a, // code section 
         0x04, // 4 bytes
         0x01, // number of function bodies.
@@ -8151,26 +8154,13 @@ $ hexdump -C func.wasm
         0x00, // number of local variables
         0x0b  // opcode for 𝖾𝗇𝖽
     ];
-    const wasm = new Uint8Array(magic.concat(version).concat(type).concat(func).concat(memory).concat(code));
-
-    const hex = (data) =&gt; {
-        let output = '';
-        for (let i = 0; i &lt; data.length; i++) {
-            if (data[i] &lt; 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
-            }
-        }
-        return output;
-    };
+    const wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(section_01)
+            .concat(section_03)
+            .concat(section_05)
+            .concat(section_0a)
+    );
 
     const importObject = {};
     const module = await WebAssembly.compile(wasm.buffer);
@@ -8178,7 +8168,9 @@ $ hexdump -C func.wasm
     console.log({ module, instance });
     document.getElementById('mem_func').innerHTML = `
 WASM:
-${hex(wasm)}   
+
+hexdump({ data: wasm })
+${hexdump({ data: wasm })}
 
 ${JSON.stringify({ module, instance }, null, 2)}
 `
@@ -8200,12 +8192,15 @@ $ hexdump -C mem_func.wasm
 <pre><code class="language-javascript">(async () =&gt; {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
-    const type = [
+    const section_01 = [
         0x01, // type section 
         0x04, // 4 bytes
-        0x01, 0x60, 0x00, 0x00 // func type that takes no param and return nothing
+        0x01, // 1 type
+        0x60, // func type
+        0x00, // no input
+        0x00  // no output
     ];
-    const memory = [
+    const section_02 = [
         0x02, // import section
         0x0b, // 11 (0x0b) bytes
         0x01, // number of imports
@@ -8216,17 +8211,17 @@ $ hexdump -C mem_func.wasm
         0x6d, // m
         0x65, // e
         0x6d, // m
-        0x02, // memtype
+        0x02, // 2 bytes
         0x00, // min
         0x01  // max
     ];
-    const func = [
+    const section_03 = [
         0x03, // func section
         0x02, // 2 bytes
         0x01, // number of functions 
         0x00  // type of the function
     ];
-    const code = [
+    const section_0a = [
         0x0a, // code section 
         0x04, // 4 bytes
         0x01, // number of function bodies.
@@ -8234,25 +8229,12 @@ $ hexdump -C mem_func.wasm
         0x00, // number of local variables
         0x0b // opcode for 𝖾𝗇𝖽
     ];
-    const wasm = new Uint8Array(magic.concat(version).concat(type).concat(memory).concat(func).concat(code));
-    const hex = (data) =&gt; {
-        let output = '';
-        for (let i = 0; i &lt; data.length; i++) {
-            if (data[i] &lt; 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
-            }
-        }
-        return output;
-    };
+    const wasm = new Uint8Array(magic
+        .concat(version)
+        .concat(section_01)
+        .concat(section_02)
+        .concat(section_03)
+        .concat(section_0a));
 
     const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
     const importObject = { js: { mem } };
@@ -8261,7 +8243,9 @@ $ hexdump -C mem_func.wasm
     console.log({ module, instance });
     document.getElementById('import_mem_func').innerHTML = `
 WASM
-${hex(wasm)}
+
+hexdump({ data: wasm })
+${hexdump({ data: wasm })}
 
 ${JSON.stringify({ module, instance }, null, 2)}
 `
@@ -8338,32 +8322,14 @@ $ hexdump -C import_mem_func.wasm
         0x01, // 1 (return the stored i32)
         0x0b // opcode for 𝖾𝗇𝖽
     ];
-    const wasm = new Uint8Array(magic
-        .concat(version)
-        .concat(section_01)
-        .concat(section_03)
-        .concat(section_05)
-        .concat(section_07)
-        .concat(section_0a)
+    const wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(section_01)
+            .concat(section_03)
+            .concat(section_05)
+            .concat(section_07)
+            .concat(section_0a)
     );
-    const hex = ({ data, length, offset = 0 }) =&gt; {
-        let output = '';
-        for (let i = offset; i &lt; offset + (length ? length : data.length); i++) {
-            if (data[i] &lt; 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
-            }
-        }
-        return output;
-    };
 
     const importObject = {};
     const module = await WebAssembly.compile(wasm.buffer);
@@ -8373,23 +8339,23 @@ $ hexdump -C import_mem_func.wasm
     document.getElementById('export_mem_func').innerHTML = `
 WASM
 
-hex({ data: wasm})
-${hex({ data: wasm })}
+hexdump({ data: wasm})
+${hexdump({ data: wasm })}
 
-hex({ data: wasm, length: 0x10})
-${hex({ data: wasm, length: 0x10 })}
+hexdump({ data: wasm, length: 0x10})
+${hexdump({ data: wasm, length: 0x10 })}
 
-hex({ data: wasm, length: 0x10, offset: 0x10})
-${hex({ data: wasm, length: 0x10, offset: 0x10 })}
+hexdump({ data: wasm, length: 0x10, offset: 0x10})
+${hexdump({ data: wasm, length: 0x10, offset: 0x10 })}
 
-hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
-${hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
+hexdump({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
+${hexdump({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
 
 exports.f(0x08, 42)
 ${exports.f(0x08, 42)}
 
-hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
-${hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
+hexdump({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
+${hexdump({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
 
 ${JSON.stringify({ module, instance }, null, 2)}
 `

@@ -2,6 +2,15 @@
 
 [Reference](https://webassembly.github.io/spec/core/binary/index.html)
 
+Here is a hexdump function to help us read byte code in the browser:
+
+`chapter_wasm_binary/hexdump.js`
+```javascript
+{{#include chapter_wasm_binary/hexdump.js}}
+```
+
+<script src="chapter_wasm_binary/hexdump.js"></script> 
+
 ## Module preamble
 
 Every module starts with a [preamble](https://webassembly.github.io/spec/core/binary/modules.html#binary-module) of a magic and version. Let's use JS to create an empty module from binary data.
