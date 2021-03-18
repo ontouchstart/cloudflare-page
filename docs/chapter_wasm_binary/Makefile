@@ -11,3 +11,6 @@ all:
 	wat2wasm import_mem_func.wat
 	hexdump -C import_mem_func.wasm
 
+	wat2wasm export_mem_func.wat
+	hexdump -C export_mem_func.wasm
+

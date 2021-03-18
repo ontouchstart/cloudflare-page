@@ -453,6 +453,145 @@ $ hexdump -C import_mem_func.wasm
 </code></pre>
 <pre id="import_mem_func"></pre>
 <script src="chapter_wasm_binary/import_mem_func.js"></script>
+<h3 id="export-memory-and-func"><a class="header" href="#export-memory-and-func">Export memory and func</a></h3>
+<p><code>chapter_wasm_binary/export_mem_func.js</code></p>
+<pre><code class="language-javascript">(async () =&gt; {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    const section_01 = [
+        0x01, // type section 
+        0x07, // 7 bytes
+        0x01, // number of functions
+        0x60, // function type
+        0x02, // takes two params 
+        0x7f, 0x7f, // i32
+        0x01, // return 1 result 
+        0x7f  // i32
+    ];
+    const section_03 = [
+        0x03, // func section
+        0x02, // 2 bytes
+        0x01, // number of functions 
+        0x00  // type of the function
+    ];
+    const section_05 = [
+        0x05, // memory section
+        0x03, // 3 bytes
+        0x01, // number of memory
+        0x00, // min
+        0x01  // max
+    ];
+    const section_07 = [
+        0x07, // export section
+        0x09, // 9 bytes
+        0x02, // number of exports
+        0x01,
+        0x6d, // &quot;m&quot;
+        0x02,
+        0x00,
+        0x01,
+        0x66, // &quot;f&quot;
+        0x00,
+        0x00
+    ];
+
+    const section_0a = [
+        0x0a, // code section 
+        0x0d, // 13 bytes
+        0x01, // number of function bodies.
+        0x0b, // 11 bytes
+        0x00, // number of local variables
+        0x20, // local.get 
+        0x00, // 0
+        0x20, // local.get
+        0x01, // 1
+        0x36, // i32.store 
+        0x02, // 2 bytes
+        0x00, // number of local variables
+        0x20, // local.get
+        0x01, // 1 (return the stored i32)
+        0x0b // opcode for 𝖾𝗇𝖽
+    ];
+    const wasm = new Uint8Array(magic
+        .concat(version)
+        .concat(section_01)
+        .concat(section_03)
+        .concat(section_05)
+        .concat(section_07)
+        .concat(section_0a)
+    );
+    const hex = ({ data, length, offset = 0 }) =&gt; {
+        let output = '';
+        for (let i = offset; i &lt; offset + (length ? length : data.length); i++) {
+            if (data[i] &lt; 0x10) {
+                output += `0${data[i].toString(16)}`;
+            }
+            else {
+                output += `${data[i].toString(16)}`;
+            }
+            if ((i % 0x10) === 0x0f) {
+                output += '\n';
+            }
+            else {
+                output += ' ';
+            }
+        }
+        return output;
+    };
+
+    const importObject = {};
+    const module = await WebAssembly.compile(wasm.buffer);
+    const instance = await WebAssembly.instantiate(module, importObject);
+    const { exports } = instance;
+    console.log({ module, instance, exports });
+    document.getElementById('export_mem_func').innerHTML = `
+WASM
+
+hex({ data: wasm})
+${hex({ data: wasm })}
+
+hex({ data: wasm, length: 0x10})
+${hex({ data: wasm, length: 0x10 })}
+
+hex({ data: wasm, length: 0x10, offset: 0x10})
+${hex({ data: wasm, length: 0x10, offset: 0x10 })}
+
+hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
+${hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
+
+exports.f(0x08, 42)
+${exports.f(0x08, 42)}
+
+hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10})
+${hex({ data: (new Uint8Array(exports.m.buffer)), length: 0x10 })}
+
+${JSON.stringify({ module, instance }, null, 2)}
+`
+})();
+</code></pre>
+<p>As a reference here is the <code>chapter_wasm_binary/export_mem_func.wat</code></p>
+<pre><code>(module 
+  (memory 1) 
+  (func (param i32 i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.store
+    local.get 1
+  ) 
+  (export &quot;m&quot; (memory 0 )) 
+  (export &quot;f&quot; (func 0 ))
+)
+</code></pre>
+<pre><code class="language-console">$ wat2wasm export_mem_func.wat
+$ hexdump -C export_mem_func.wasm
+00000000  00 61 73 6d 01 00 00 00  01 07 01 60 02 7f 7f 01  |.asm.......`....|
+00000010  7f 03 02 01 00 05 03 01  00 01 07 09 02 01 6d 02  |..............m.|
+00000020  00 01 66 00 00 0a 0d 01  0b 00 20 00 20 01 36 02  |..f....... . .6.|
+00000030  00 20 01 0b                                       |. ..|
+00000034
+</code></pre>
+<pre id="export_mem_func"></pre>
+<script src="chapter_wasm_binary/export_mem_func.js"></script>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

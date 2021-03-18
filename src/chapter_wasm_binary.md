@@ -109,3 +109,28 @@ $ hexdump -C import_mem_func.wasm
 
 <pre id="import_mem_func"></pre>
 <script src="chapter_wasm_binary/import_mem_func.js"></script>
+
+### Export memory and func
+
+`chapter_wasm_binary/export_mem_func.js`
+```javascript
+{{#include chapter_wasm_binary/export_mem_func.js}}
+```
+
+As a reference here is the `chapter_wasm_binary/export_mem_func.wat`
+```
+{{#include chapter_wasm_binary/export_mem_func.wat}}
+```
+
+```console
+$ wat2wasm export_mem_func.wat
+$ hexdump -C export_mem_func.wasm
+00000000  00 61 73 6d 01 00 00 00  01 07 01 60 02 7f 7f 01  |.asm.......`....|
+00000010  7f 03 02 01 00 05 03 01  00 01 07 09 02 01 6d 02  |..............m.|
+00000020  00 01 66 00 00 0a 0d 01  0b 00 20 00 20 01 36 02  |..f....... . .6.|
+00000030  00 20 01 0b                                       |. ..|
+00000034
+```
+
+<pre id="export_mem_func"></pre>
+<script src="chapter_wasm_binary/export_mem_func.js"></script>
