@@ -32,29 +32,46 @@
 
     let drawing = false;
 
-    canvas.addEventListener('mousedown', (e) => {
+    const start = (e) => {
         const rect = canvas.getBoundingClientRect();
         x = Math.floor(e.clientX - rect.left);
         y = Math.floor(e.clientY - rect.top);
         drawing = true;
         hexdump();
-    }, false)
+    };
 
-    canvas.addEventListener('mouseup', (e) => {
+    canvas.addEventListener('mousedown', start, false)
+    canvas.addEventListener('touchstart', start, false)
+
+    const end = (e) => {
         drawing = false;
         hexdump();
-    }, false)
+    }
+    canvas.addEventListener('mouseup', end, false)
+    canvas.addEventListener('touchend', end, false);
 
-    canvas.addEventListener('mousemove', (e) => {
+    const move = (e) => {
+        e.preventDefault();
         const rect = canvas.getBoundingClientRect();
-        x = Math.floor(e.clientX - rect.left);
-        y = Math.floor(e.clientY - rect.top);
+
+        const { changedTouches } = e;
+        if (changedTouches && changedTouches[0]) {
+            x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
+            y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
+        }
+        else {
+            x = Math.floor(e.clientX - rect.left);
+            y = Math.floor(e.clientY - rect.top);
+        }
         if (drawing) {
             draw();
             canvas_render();
         }
         hexdump();
-    }, false)
+    };
+
+    canvas.addEventListener('mousemove', move, false);
+    canvas.addEventListener('touchmove', move, false);
 
     canvas.addEventListener('mouseout', (e) => {
         x = 0;
@@ -203,7 +220,7 @@ ${output}
         0x20, // local.get
         0x01, // 1
         0x36, // i32.store 
-        0x02, // align
+        0x00, // align
         0x00, // offset
         0x20, // local.get
         0x01, // 1 (return the stored i32)
