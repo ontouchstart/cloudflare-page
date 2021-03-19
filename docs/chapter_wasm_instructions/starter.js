@@ -122,7 +122,6 @@ ${output}
         0x02  // number of function bodies
     ]
 
-    const center = width * height * 2;
     const section_0a_f = [
         0x0a, // the first func (f) 
         0x00, // number of local variables
@@ -132,8 +131,8 @@ ${output}
         0xff, // value 0xff
         0x01,
         0x36, // store to the memory
-        0x02,
-        0x00,
+        0x02, // align
+        0x00, // offset
         0x0b  // end
     ]
 
@@ -145,11 +144,11 @@ ${output}
         0x20, // local.get
         0x01, // 1
         0x36, // i32.store 
-        0x02, // 2 bytes
-        0x00, // number of local variables
+        0x02, // align
+        0x00, // offset
         0x20, // local.get
         0x01, // 1 (return the stored i32)
-        0x0b // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for 𝖾𝗇𝖽
     ]
 
     const section_0a = section_0a_header
@@ -183,16 +182,16 @@ ${output}
     const memory_data = new Uint8Array(m.buffer);
 
     f(); // does nothing yet, to be written to replace the following block 
-    /*
-        for (let i = 0; i < width * height; i++) {
-            const r = i * 4;
-            const g = i * 4 + 1;
-            const b = i * 4 + 2;
-            const a = i * 4 + 3;
-            s(g, 0xff);
-            s(a, 0xff);
-        }
-    */
+
+    for (let i = 0; i < width * height; i++) {
+        const r = i * 4;
+        const g = i * 4 + 1;
+        const b = i * 4 + 2;
+        const a = i * 4 + 3;
+        s(g, 0xff);
+        s(a, 0xff);
+    }
+
 
 
     for (let i = 0; i < imageData.data.length; i++) {

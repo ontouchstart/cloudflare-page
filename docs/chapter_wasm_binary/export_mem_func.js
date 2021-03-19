@@ -49,11 +49,11 @@
         0x20, // local.get
         0x01, // 1
         0x36, // i32.store 
-        0x02, // 2 bytes
-        0x00, // number of local variables
+        0x02, // align 2 bytes
+        0x00, // offset
         0x20, // local.get
         0x01, // 1 (return the stored i32)
-        0x0b // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for 𝖾𝗇𝖽
     ];
     const wasm = new Uint8Array(
         magic.concat(version)
