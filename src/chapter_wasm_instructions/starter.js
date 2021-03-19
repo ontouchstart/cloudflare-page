@@ -1,5 +1,4 @@
 (async () => {
-    let offset = 0;
     const canvas = document.getElementById('starter_canvas');
     const hex_output = document.getElementById('starter_hex');
     const width = 512;
@@ -12,12 +11,24 @@
     let imageData = ctx.getImageData(0, 0, width, height);
     let x = 0;
     let y = 0;
+    let offset = 0;
+
+    const check_boundary = () => {
+        if (x < 0) { x = 0 }
+        if (x > width - 1) { x = width - 1 }
+        if (y < 0) { y = 0 }
+        if (y > height - 1) { y = height - 1 }
+        offset = 4 * (y * width + x);
+        r = offset;
+        g = offset + 1;
+        b = offset + 2;
+        a = offset + 3;
+    }
 
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         x = Math.floor(e.clientX - rect.left);
         y = Math.floor(e.clientY - rect.top);
-        offset = 4 * (y * width + x);
         hexdump();
     }, false)
 
@@ -31,6 +42,7 @@
     const hexdump = () => {
         const { data } = imageData;
         let output = '';
+        check_boundary();
         for (let i = offset; i < offset + 0x100; i++) {
             if (data[i] < 0x10) {
                 output += `0${data[i].toString(16)}`;
@@ -145,7 +157,7 @@ ${output}
         0x0a, // the first func (f) 
         0x00, // number of local variables
         0x41,
-        0x02, // address 0x00
+        0x00, // address 0x00
         0x41,
         0xff, // value 0xff
         0x01,
@@ -200,27 +212,8 @@ ${output}
     console.log({ exports })
     const memory_data = new Uint8Array(m.buffer);
 
-    f(); // does nothing yet, to be written to replace the following block 
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const i = x + y * width;
-            const r = i * 4;
-            const g = i * 4 + 1;
-            const b = i * 4 + 2;
-            const a = i * 4 + 3;
-
-            s(a, 0xff);
-            if ((x > width / 2 - 8) &&
-                (x < width / 2 + 8) &&
-                (y > height / 2 - 8) &&
-                (y < height / 2 + 8)
-            ) {
-                s(r, 0xff);
-                s(a, 0xff);
-            }
-        }
-    }
+    f(); // a transparent red dot at (0, 0)
+    s(0x03, 0xff) // make it visible;
 
     for (let i = 0; i < imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];

@@ -1,6 +1,6 @@
 (async () => {
-    const canvas = document.getElementById('starter_canvas');
-    const hex_output = document.getElementById('starter_hex');
+    const canvas = document.getElementById('draw_canvas');
+    const hex_output = document.getElementById('draw_hex');
     const width = 512;
     const height = 512;
     canvas.width = width;
@@ -12,6 +12,11 @@
     let x = 0;
     let y = 0;
     let offset = 0;
+
+    let r = offset;
+    let g = offset + 1;
+    let b = offset + 2;
+    let a = offset + 3;
 
     const check_boundary = () => {
         if (x < 0) { x = 0 }
@@ -25,10 +30,29 @@
         a = offset + 3;
     }
 
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        x = Math.floor(e.clientX - rect.left);
+        y = Math.floor(e.clientY - rect.top);
+        drawing = true;
+        hexdump();
+    }, false)
+
+    canvas.addEventListener('mouseup', (e) => {
+        drawing = false;
+        hexdump();
+    }, false)
+
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         x = Math.floor(e.clientX - rect.left);
         y = Math.floor(e.clientY - rect.top);
+        if (drawing) {
+            draw();
+            canvas_render();
+        }
         hexdump();
     }, false)
 
@@ -36,13 +60,14 @@
         x = 0;
         y = 0;
         offset = 0;
+        drawing = false;
         hexdump();
     }, false)
 
     const hexdump = () => {
         const { data } = imageData;
-        let output = '';
         check_boundary();
+        let output = '';
         for (let i = offset; i < offset + 0x100; i++) {
             if (data[i] < 0x10) {
                 output += `0${data[i].toString(16)}`;
@@ -67,6 +92,9 @@ ${output}
     };
 
     const canvas_render = () => {
+        for (let i = 0; i < imageData.data.length; i++) {
+            imageData.data[i] = memory_data[i];
+        }
         ctx.putImageData(imageData, 0, 0);
     }
 
@@ -157,9 +185,9 @@ ${output}
         0x0a, // the first func (f) 
         0x00, // number of local variables
         0x41,
-        0x00, // address 0x00
+        0x02, // address 0x00
         0x41,
-        0xff, // value 0xff
+        0x00, // 0x00 // does nothing
         0x01,
         0x36, // store to the memory
         0x02, // align
@@ -212,11 +240,10 @@ ${output}
     console.log({ exports })
     const memory_data = new Uint8Array(m.buffer);
 
-    f(); // a transparent red dot at (0, 0)
-    s(0x03, 0xff) // make it visible;
-
-    for (let i = 0; i < imageData.data.length; i++) {
-        imageData.data[i] = memory_data[i];
+    const draw = () => {
+        check_boundary();
+        s(r, 0xff);
+        s(a, 0xff);
     }
 
     output();
