@@ -1,0 +1,488 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Canvas Draw - ontouchstart</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../favicon.png">
+        
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="../chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="../chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="../chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="../chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="../chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="../chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="../chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="../chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="../chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="../canvas_draw/index.html" class="active"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="../chapter_1.html"><strong aria-hidden="true">11.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../chapter_2.html"><strong aria-hidden="true">12.</strong> Chapter 2</a></li><li class="chapter-item expanded "><a href="../chapter_3.html"><strong aria-hidden="true">13.</strong> Chapter 3</a></li><li class="chapter-item expanded "><a href="../chapter_4.html"><strong aria-hidden="true">14.</strong> Chapter 4</a></li><li class="chapter-item expanded "><a href="../chapter_5.html"><strong aria-hidden="true">15.</strong> Chapter 5</a></li><li class="chapter-item expanded "><a href="../chapter_6.html"><strong aria-hidden="true">16.</strong> Chapter 6</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">ontouchstart</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/ontouchstart/cloudflare-page" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="canvas-draw"><a class="header" href="#canvas-draw">Canvas Draw</a></h1>
+<p>On destktop, mouse down to draw red dots on canvas. On mobile, touch to draw. The WASM program has 63 bytes.</p>
+<p><code>index.js</code></p>
+<pre><code>(async () =&gt; {
+    const canvas = document.getElementById('canvas');
+    canvas.style.width = &quot;100%&quot;;
+    const hex_output = document.getElementById('hex');
+    const width = 512;
+    const height = 512;
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.border = '1px solid black';
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(0, 0, width, height);
+    let imageData = ctx.getImageData(0, 0, width, height);
+    let x = 0;
+    let y = 0;
+    let offset = 0;
+
+    let r = offset;
+    let g = offset + 1;
+    let b = offset + 2;
+    let a = offset + 3;
+
+    const check_boundary = () =&gt; {
+        if (x &lt; 0) { x = 0 }
+        if (x &gt; width - 1) { x = width - 1 }
+        if (y &lt; 0) { y = 0 }
+        if (y &gt; height - 1) { y = height - 1 }
+        offset = 4 * (y * width + x);
+        r = offset;
+        g = offset + 1;
+        b = offset + 2;
+        a = offset + 3;
+    }
+
+    let drawing = false;
+
+    const start = (e) =&gt; {
+        const rect = canvas.getBoundingClientRect();
+        x = Math.floor(e.clientX - rect.left);
+        y = Math.floor(e.clientY - rect.top);
+        drawing = true;
+        hexdump();
+    };
+
+    canvas.addEventListener('mousedown', start, false)
+    canvas.addEventListener('touchstart', start, false)
+
+    const end = (e) =&gt; {
+        drawing = false;
+        hexdump();
+    }
+    canvas.addEventListener('mouseup', end, false)
+    canvas.addEventListener('touchend', end, false);
+
+    const move = (e) =&gt; {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const ratio = width / canvas.clientWidth;
+
+        const { changedTouches } = e;
+        if (changedTouches &amp;&amp; changedTouches[0]) {
+            x = Math.floor((changedTouches[0].pageX - canvas.offsetLeft) * ratio);
+            y = Math.floor((changedTouches[0].pageY - canvas.offsetTop) * ratio);
+        }
+        else {
+            x = Math.floor((e.clientX - rect.left) * ratio);
+            y = Math.floor((e.clientY - rect.top) * ratio);
+        }
+        if (drawing) {
+            draw();
+            canvas_render();
+        }
+        hexdump();
+    };
+
+    canvas.addEventListener('mousemove', move, false);
+    canvas.addEventListener('touchmove', move, false);
+
+    canvas.addEventListener('mouseout', (e) =&gt; {
+        x = 0;
+        y = 0;
+        offset = 0;
+        drawing = false;
+        hexdump();
+    }, false)
+
+    const hexdump = () =&gt; {
+        const { data } = imageData;
+        check_boundary();
+        let output = '';
+        for (let i = offset; i &lt; offset + 0x100; i++) {
+            if (i &lt; data.length) {
+                if (data[i] &lt; 0x10) {
+                    output += `0${data[i].toString(16)}`;
+                }
+                else {
+                    output += `${data[i].toString(16)}`;
+                }
+                if ((i % 0x10) === 0x0f) {
+                    output += '\n';
+                }
+                else {
+                    output += ' ';
+                }
+            }
+        }
+        hex_output.innerHTML = `
+x: ${parseInt(x)}
+y: ${parseInt(y)}        
+hexdump (offset: ${offset})
+
+${output}
+`;
+    };
+
+    const canvas_render = () =&gt; {
+        for (let i = 0; i &lt; imageData.data.length; i++) {
+            imageData.data[i] = memory_data[i];
+        }
+        //imageData.data = memory_data;
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    const section_01 = [
+        0x01, // type section 
+        0x09, // 9 bytes
+        0x02, // number of functions
+        0x60, // first func type (j.o)
+        0x00, // no input
+        0x00, // no output
+        0x60, // second func type (i)
+        0x02, // takes two params 
+        0x7f, 0x7f, // i32
+        0x00 // no return 
+    ];
+
+    const section_02 = [
+        0x02, // import section
+        0x07, // 7 bytes
+        0x01, // 1 import
+        0x01, // 1 byte
+        0x6a, // j
+        0x01, // 1 byte
+        0x6f, // o
+        0x00, // no input
+        0x00  // no output
+    ]
+    const section_03 = [
+        0x03, // func section
+        0x02, // 2 bytes
+        0x01, // number of functions 
+        0x01, // type of the function (i)
+    ];
+    const section_05 = [
+        0x05, // memory section
+        0x03, // 3 bytes
+        0x01, // number of memory
+        0x00, // min
+        0x10  // 16 pages of data
+    ];
+    const section_07 = [
+        0x07, // export section
+        0x09, // 9 bytes
+        0x02, // number of exports
+        0x01,
+        0x6d, // &quot;m&quot;
+        0x02,
+        0x00,
+        0x01,
+        0x69, // &quot;i&quot;
+        0x00,
+        0x01, // func id
+    ];
+
+    const section_0a_header = [
+        0x0a, // code section 
+        0x0d, // 13 bytes
+        0x01  // number of function bodies
+    ]
+
+    const section_0a_i = [ // input function i(memory_index, value)
+        0x0b, // 11 bytes 
+        0x00, // number of local variables
+        0x20, // local.get 
+        0x00, // 0
+        0x20, // local.get
+        0x01, // 1
+        0x36, // i32.store 
+        0x00, // align
+        0x00, // offset
+        0x10, // call
+        0x00, // function j.o() (imported)
+        0x0b  // opcode for 𝖾𝗇𝖽
+    ]
+
+    const section_0a = section_0a_header
+        .concat(section_0a_i);
+
+    const wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(section_01)
+            .concat(section_02)
+            .concat(section_03)
+            .concat(section_05)
+            .concat(section_07)
+            .concat(section_0a)
+    );
+
+    console.log({ wasm });
+    const importObject = {
+        j: {
+            o: () =&gt; {
+                canvas_render();
+                hexdump();
+            },
+        }
+    };
+
+    const module = await WebAssembly.compile(wasm.buffer);
+    const instance = await WebAssembly.instantiate(module, importObject);
+    const { exports } = instance;
+    const { i, m } = exports;
+    const memory_data = new Uint8ClampedArray(m.buffer);
+
+    const draw = () =&gt; {
+        check_boundary();
+        i(r, 0xff);
+        i(a, 0xff);
+    }
+})();
+</code></pre>
+<p><canvas id="canvas"></pre></p>
+<pre id="hex"></pre>
+<script src="index.js"></script>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../chapter_wasm_instructions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../chapter_wasm_instructions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_line_numbers = true;
+        </script>
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+        <script src="../ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
