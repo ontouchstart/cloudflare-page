@@ -10,6 +10,23 @@
     const ctx = canvas.getContext('2d');
     ctx.fillRect(0, 0, width, height);
     let imageData = ctx.getImageData(0, 0, width, height);
+    let x = 0;
+    let y = 0;
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        x = Math.floor(e.clientX - rect.left);
+        y = Math.floor(e.clientY - rect.top);
+        offset = 4 * (y * width + x);
+        hexdump();
+    }, false)
+
+    canvas.addEventListener('mouseout', (e) => {
+        x = 0;
+        y = 0;
+        offset = 0;
+        hexdump();
+    }, false)
 
     const hexdump = () => {
         const { data } = imageData;
@@ -29,6 +46,8 @@
             }
         }
         hex_output.innerHTML = `
+x: ${parseInt(x)}
+y: ${parseInt(y)}        
 hexdump (offset: ${offset})
 
 ${output}
@@ -126,7 +145,7 @@ ${output}
         0x0a, // the first func (f) 
         0x00, // number of local variables
         0x41,
-        0x00, // address 0x00
+        0x02, // address 0x00
         0x41,
         0xff, // value 0xff
         0x01,
@@ -183,16 +202,25 @@ ${output}
 
     f(); // does nothing yet, to be written to replace the following block 
 
-    for (let i = 0; i < width * height; i++) {
-        const r = i * 4;
-        const g = i * 4 + 1;
-        const b = i * 4 + 2;
-        const a = i * 4 + 3;
-        s(g, 0xff);
-        s(a, 0xff);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const i = x + y * width;
+            const r = i * 4;
+            const g = i * 4 + 1;
+            const b = i * 4 + 2;
+            const a = i * 4 + 3;
+
+            s(a, 0xff);
+            if ((x > width / 2 - 8) &&
+                (x < width / 2 + 8) &&
+                (y > height / 2 - 8) &&
+                (y < height / 2 + 8)
+            ) {
+                s(r, 0xff);
+                s(a, 0xff);
+            }
+        }
     }
-
-
 
     for (let i = 0; i < imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];
