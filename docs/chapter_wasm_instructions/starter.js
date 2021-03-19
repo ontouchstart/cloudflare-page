@@ -118,7 +118,7 @@ ${output}
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x11 // max: need 17 pages to cover 16 pages of data 512 * 512 * 4 = 16 * 64 * 1024
+        0x11 // max: need 17 pages to cover 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
