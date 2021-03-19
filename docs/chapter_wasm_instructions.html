@@ -407,6 +407,7 @@ ${output}
 <p><code>chapter_wasm_instructions/draw.js</code></p>
 <pre><code>(async () =&gt; {
     const canvas = document.getElementById('draw_canvas');
+    canvas.style.width = &quot;100%&quot;;
     const hex_output = document.getElementById('draw_hex');
     const width = 512;
     const height = 512;
@@ -460,15 +461,17 @@ ${output}
     const move = (e) =&gt; {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
+        const ratio = width / canvas.clientWidth;
+        //console.log(ratio)
 
         const { changedTouches } = e;
         if (changedTouches &amp;&amp; changedTouches[0]) {
-            x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
-            y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
+            x = Math.floor((changedTouches[0].pageX - canvas.offsetLeft) * ratio);
+            y = Math.floor((changedTouches[0].pageY - canvas.offsetTop) * ratio);
         }
         else {
-            x = Math.floor(e.clientX - rect.left);
-            y = Math.floor(e.clientY - rect.top);
+            x = Math.floor((e.clientX - rect.left) * ratio);
+            y = Math.floor((e.clientY - rect.top) * ratio);
         }
         if (drawing) {
             draw();

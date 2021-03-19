@@ -1,5 +1,6 @@
 (async () => {
     const canvas = document.getElementById('draw_canvas');
+    canvas.style.width = "100%";
     const hex_output = document.getElementById('draw_hex');
     const width = 512;
     const height = 512;
@@ -53,15 +54,17 @@
     const move = (e) => {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
+        const ratio = width / canvas.clientWidth;
+        //console.log(ratio)
 
         const { changedTouches } = e;
         if (changedTouches && changedTouches[0]) {
-            x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
-            y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
+            x = Math.floor((changedTouches[0].pageX - canvas.offsetLeft) * ratio);
+            y = Math.floor((changedTouches[0].pageY - canvas.offsetTop) * ratio);
         }
         else {
-            x = Math.floor(e.clientX - rect.left);
-            y = Math.floor(e.clientY - rect.top);
+            x = Math.floor((e.clientX - rect.left) * ratio);
+            y = Math.floor((e.clientY - rect.top) * ratio);
         }
         if (drawing) {
             draw();
