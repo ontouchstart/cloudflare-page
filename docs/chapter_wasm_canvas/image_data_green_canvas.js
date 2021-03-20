@@ -10,7 +10,9 @@
     let imageData = ctx.getImageData(0, 0, width, height);
 
     for (let i = 0; i < imageData.data.length / 4; i++) {
-        imageData.data[i] = 0xff00ff00; // AABBGGRR
+        // RRGGBBAA (big-endian)
+        imageData.data[4 * i + 1] = 0xff;
+        imageData.data[4 * i + 3] = 0xff;
     }
 
     ctx.putImageData(imageData, 0, 0);
