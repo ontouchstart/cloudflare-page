@@ -11,6 +11,7 @@
 - [WASM Canvas](./chapter_wasm_canvas.md)
 - [WASM Instructions](./chapter_wasm_instructions.md)
 - [Canvas Draw](./canvas_draw/index.md)
+- [What can you do with one page?](./onepage.md)
 - [Chapter 1](./chapter_1.md)
 - [Chapter 2](./chapter_2.md)
 - [Chapter 3](./chapter_3.md)
