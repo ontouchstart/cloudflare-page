@@ -189,21 +189,12 @@
     let y = 0;
     let offset = 0;
 
-    let r = offset;
-    let g = offset + 1;
-    let b = offset + 2;
-    let a = offset + 3;
-
     const check_boundary = () =&gt; {
         if (x &lt; 0) { x = 0 }
         if (x &gt; width - 1) { x = width - 1 }
         if (y &lt; 0) { y = 0 }
         if (y &gt; height - 1) { y = height - 1 }
         offset = 4 * (y * width + x);
-        r = offset;
-        g = offset + 1;
-        b = offset + 2;
-        a = offset + 3;
     }
 
     let drawing = false;
@@ -291,7 +282,6 @@ ${output}
         for (let i = 0; i &lt; imageData.data.length; i++) {
             imageData.data[i] = memory_data[i];
         }
-        //imageData.data = memory_data;
         ctx.putImageData(imageData, 0, 0);
     }
 
@@ -332,20 +322,20 @@ ${output}
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x10  // 16 pages of data
+        0x10  // max 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
         0x09, // 9 bytes
         0x02, // number of exports
-        0x01,
+        0x01, // 1 byte name
         0x6d, // &quot;m&quot;
-        0x02,
-        0x00,
-        0x01,
+        0x02, // memory
+        0x00, // memory id
+        0x01, // 1 byte name
         0x69, // &quot;i&quot;
-        0x00,
-        0x01, // func id
+        0x00, // function
+        0x01  // func id
     ];
 
     const section_0a_header = [
@@ -362,7 +352,7 @@ ${output}
         0x20, // local.get
         0x01, // 1
         0x36, // i32.store 
-        0x00, // align
+        0x02, // align
         0x00, // offset
         0x10, // call
         0x00, // function j.o() (imported)
@@ -400,8 +390,7 @@ ${output}
 
     const draw = () =&gt; {
         check_boundary();
-        i(r, 0xff);
-        i(a, 0xff);
+        i(offset, 0xff0000ff); // AABBGGRR
     }
 })();
 </code></pre>

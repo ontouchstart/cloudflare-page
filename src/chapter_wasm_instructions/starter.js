@@ -44,17 +44,19 @@
         let output = '';
         check_boundary();
         for (let i = offset; i < offset + 0x100; i++) {
-            if (data[i] < 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
+            if (i < data.length) {
+                if (data[i] < 0x10) {
+                    output += `0${data[i].toString(16)}`;
+                }
+                else {
+                    output += `${data[i].toString(16)}`;
+                }
+                if ((i % 0x10) === 0x0f) {
+                    output += '\n';
+                }
+                else {
+                    output += ' ';
+                }
             }
         }
         hex_output.innerHTML = `
@@ -118,7 +120,7 @@ ${output}
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x11 // max: need 17 pages to cover 16 pages of data
+        0x10  // max 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
@@ -159,7 +161,7 @@ ${output}
         0x41,
         0x00, // address 0x00
         0x41,
-        0xff, // value 0xff
+        0x00, // 
         0x01,
         0x36, // store to the memory
         0x02, // align
@@ -211,9 +213,6 @@ ${output}
     const { f, s, m, output } = exports;
     console.log({ exports })
     const memory_data = new Uint8Array(m.buffer);
-
-    f(); // a transparent red dot at (0, 0)
-    s(0x03, 0xff) // make it visible;
 
     for (let i = 0; i < imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];

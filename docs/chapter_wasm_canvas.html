@@ -222,10 +222,8 @@ ${hexdump({ data, length: 0x100 })}
     ctx.fillRect(0, 0, width, height);
     let imageData = ctx.getImageData(0, 0, width, height);
 
-    for (let i = 0; i &lt; imageData.data.length; i++) {
-        if (i % 4 === 1) {
-            imageData.data[i] = 0xff;
-        }
+    for (let i = 0; i &lt; imageData.data.length / 4; i++) {
+        imageData.data[i] = 0xff00ff00; // AABBGGRR
     }
 
     ctx.putImageData(imageData, 0, 0);
@@ -281,7 +279,7 @@ ${hexdump({ data, length: 0x100 })}
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x11 // max: need 17 pages to cover 16 pages of data 512 * 512 * 4 = 16 * 64 * 1024
+        0x10  // max: 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
@@ -329,16 +327,13 @@ ${hexdump({ data, length: 0x100 })}
     const { exports } = instance;
     const { f, m } = exports;
 
-    for (let i = 0; i &lt; imageData.data.length; i++) {
-        if ((i % 4 === 1)) {
-            f(i, 0xff); // green
-        }
-        if ((i % 4 === 3)) {
-            f(i, 0xff); // alpha
-        }
-    }
-
     const memory_data = new Uint8Array(m.buffer);
+    console.log({ imageData, memory_data })
+
+
+    for (let i = 0; i &lt; imageData.data.length / 4; i++) {
+        f(i * 4, 0xff00ff00); // green AAGGBBRR
+    }
 
     for (let i = 0; i &lt; imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];
@@ -357,26 +352,6 @@ First ${0x200} bytes of the canvas data
 
 hexdump({data, length: 0x200 })
 ${hexdump({ data, length: 0x200 })}
-
-
-Last ${0x200} bytes of the canvas data
-
-hexdump({data, length: 0x200, offset: data.length - 0x200 })
-${hexdump({ data, length: 0x200, offset: data.length - 0x200 })}
-
-Memory Data
-
-memory_data.length = ${memory_data.length} = ${memory_data.length / 64 / 1024} pages 
-
-First ${0x200} bytes
-
-hexdump({ data: memory_data, length: 0x200})
-${hexdump({ data: memory_data, length: 0x200 })}
-
-
-hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })
-${hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })}
-
 
 
 `

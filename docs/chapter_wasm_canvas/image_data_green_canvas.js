@@ -9,10 +9,8 @@
     ctx.fillRect(0, 0, width, height);
     let imageData = ctx.getImageData(0, 0, width, height);
 
-    for (let i = 0; i < imageData.data.length; i++) {
-        if (i % 4 === 1) {
-            imageData.data[i] = 0xff;
-        }
+    for (let i = 0; i < imageData.data.length / 4; i++) {
+        imageData.data[i] = 0xff00ff00; // AABBGGRR
     }
 
     ctx.putImageData(imageData, 0, 0);

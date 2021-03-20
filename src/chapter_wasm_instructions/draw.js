@@ -14,21 +14,12 @@
     let y = 0;
     let offset = 0;
 
-    let r = offset;
-    let g = offset + 1;
-    let b = offset + 2;
-    let a = offset + 3;
-
     const check_boundary = () => {
         if (x < 0) { x = 0 }
         if (x > width - 1) { x = width - 1 }
         if (y < 0) { y = 0 }
         if (y > height - 1) { y = height - 1 }
         offset = 4 * (y * width + x);
-        r = offset;
-        g = offset + 1;
-        b = offset + 2;
-        a = offset + 3;
     }
 
     let drawing = false;
@@ -55,7 +46,6 @@
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const ratio = width / canvas.clientWidth;
-        //console.log(ratio)
 
         const { changedTouches } = e;
         if (changedTouches && changedTouches[0]) {
@@ -89,17 +79,19 @@
         check_boundary();
         let output = '';
         for (let i = offset; i < offset + 0x100; i++) {
-            if (data[i] < 0x10) {
-                output += `0${data[i].toString(16)}`;
-            }
-            else {
-                output += `${data[i].toString(16)}`;
-            }
-            if ((i % 0x10) === 0x0f) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
+            if (i < data.length) {
+                if (data[i] < 0x10) {
+                    output += `0${data[i].toString(16)}`;
+                }
+                else {
+                    output += `${data[i].toString(16)}`;
+                }
+                if ((i % 0x10) === 0x0f) {
+                    output += '\n';
+                }
+                else {
+                    output += ' ';
+                }
             }
         }
         hex_output.innerHTML = `
@@ -166,23 +158,23 @@ ${output}
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x11 // max: need 17 pages to cover 16 pages of data
+        0x10  // max 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
         0x16, // 22 bytes
         0x04, // number of exports
-        0x01,
+        0x01, // 1 byte name
         0x6d, // "m"
-        0x02,
-        0x00,
-        0x01,
+        0x02, // memory 
+        0x00, // memory id
+        0x01, // 1 byte
         0x66, // "f"
-        0x00,
+        0x00, // function
         0x01, // func id
-        0x01,
+        0x01, // 1 byte
         0x73, // "s"
-        0x00,
+        0x00, // function 
         0x02, // func id
         0x06, // 6 bytes
         0x6f, // o
@@ -191,7 +183,7 @@ ${output}
         0x70, // p
         0x75, // u
         0x74, // t
-        0x00,
+        0x00, // function
         0x00  // func id 
     ];
 
@@ -244,6 +236,7 @@ ${output}
             .concat(section_0a)
     );
 
+    console.log({ wasm });
     const importObject = {
         js: {
             output: () => {
@@ -262,8 +255,7 @@ ${output}
 
     const draw = () => {
         check_boundary();
-        s(r, 0xff);
-        s(a, 0xff);
+        s(offset, 0xff0000ff); // AABBGGRR
     }
 
     output();

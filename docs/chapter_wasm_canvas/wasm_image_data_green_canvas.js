@@ -32,7 +32,7 @@
         0x03, // 3 bytes
         0x01, // number of memory
         0x00, // min
-        0x11 // max: need 17 pages to cover 16 pages of data 512 * 512 * 4 = 16 * 64 * 1024
+        0x10  // max: 16 pages of data
     ];
     const section_07 = [
         0x07, // export section
@@ -80,16 +80,13 @@
     const { exports } = instance;
     const { f, m } = exports;
 
-    for (let i = 0; i < imageData.data.length; i++) {
-        if ((i % 4 === 1)) {
-            f(i, 0xff); // green
-        }
-        if ((i % 4 === 3)) {
-            f(i, 0xff); // alpha
-        }
-    }
-
     const memory_data = new Uint8Array(m.buffer);
+    console.log({ imageData, memory_data })
+
+
+    for (let i = 0; i < imageData.data.length / 4; i++) {
+        f(i * 4, 0xff00ff00); // green AAGGBBRR
+    }
 
     for (let i = 0; i < imageData.data.length; i++) {
         imageData.data[i] = memory_data[i];
@@ -108,26 +105,6 @@ First ${0x200} bytes of the canvas data
 
 hexdump({data, length: 0x200 })
 ${hexdump({ data, length: 0x200 })}
-
-
-Last ${0x200} bytes of the canvas data
-
-hexdump({data, length: 0x200, offset: data.length - 0x200 })
-${hexdump({ data, length: 0x200, offset: data.length - 0x200 })}
-
-Memory Data
-
-memory_data.length = ${memory_data.length} = ${memory_data.length / 64 / 1024} pages 
-
-First ${0x200} bytes
-
-hexdump({ data: memory_data, length: 0x200})
-${hexdump({ data: memory_data, length: 0x200 })}
-
-
-hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })
-${hexdump({ data: memory_data, length: 0x200, offset: data.length - 0x100 })}
-
 
 
 `
