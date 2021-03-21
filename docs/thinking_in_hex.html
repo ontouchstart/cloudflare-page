@@ -199,6 +199,7 @@
     }
 
     const move = (e) =&gt; {
+        e.preventDefault();
         const rect = canvas.getBoundingClientRect();
 
         const { changedTouches } = e;
@@ -373,6 +374,7 @@ ${output}
   const code = document.getElementsByClassName('language-javascript')[0].innerText;
   eval(code);
 </script>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

@@ -32,6 +32,7 @@ Since we are going to do a lot of machine code programming, it is a good idea to
     }
 
     const move = (e) => {
+        e.preventDefault();
         const rect = canvas.getBoundingClientRect();
 
         const { changedTouches } = e;
