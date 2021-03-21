@@ -239,11 +239,13 @@
             }
         }
         hex_output.innerHTML = `
-x: ${parseInt(x)}
-y: ${parseInt(y)}
-offset: 0x${offset.toString(16)} (mouse point = upper left corner of hexdump)        
+x: 0x${parseInt(x).toString(16)}
+y: 0x${parseInt(y).toString(16)}
+offset: 0x${offset.toString(16)} 
+(mouse point = upper left corner of hexdump)        
+
 (8 x 8) i32 = 256 bytes (1/256 of the total memory of a 64K page)
-(${0x10000} = ${0x100} * ${0x100} = ${0x100 * 0x100} )
+(0x${0x10000.toString(16)} = 0x${0x100.toString(16)} * 0x${0x100.toString(16)} = ${0x100 * 0x100} )
 
 
 ${output}
