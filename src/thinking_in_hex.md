@@ -1,6 +1,8 @@
-# Inspect random memory with canvas and hexdump.
+# Thinking in hex
 
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/hex.md).
+This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/thinking_in_hex.md).
+
+Since we are going to do a lot of machine code programming, it is a good idea to learn to think in [hex](https://en.wikipedia.org/wiki/Hexadecimal).
 
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
@@ -70,8 +72,11 @@ This page and all the code it runs are in one page. You can view [the source cod
         }
         hex_output.innerHTML = `
 x: ${parseInt(x)}
-y: ${parseInt(y)}        
-1K (i32) hexdump (offset: ${offset})
+y: ${parseInt(y)}
+offset: 0x${offset.toString(16)} (mouse point = upper left corner of hexdump)        
+(8 x 8) i32 = 256 bytes (1/256 of the total memory of a 64K page)
+(${0x10000} = ${0x100} * ${0x100} = ${0x100 * 0x100} )
+
 
 ${output}
 `;
@@ -143,16 +148,16 @@ ${output}
         0x01  // number of function bodies
     ]
 
-    const section_0a_i = [ // input function i(memory_index, value)
+    const section_0a_i = [ // input function i(address, value)
         0x0c, // 12 bytes 
         0x00, // number of local variables
         0x20, // local.get 
-        0x00, // 0
+        0x00, // 0 (address)
         0x41, // i32.const
-        0x02, // 
+        0x02, // 2 (left shift value)
         0x74, // i32.shl address 2 = address * 4
         0x20, // local.get
-        0x01, // 1
+        0x01, // 1 (i32 value, takes 4 bytes of memory)
         0x36, // i32.store 
         0x02, // align
         0x00, // offset
