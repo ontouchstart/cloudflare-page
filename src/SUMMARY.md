@@ -12,3 +12,4 @@
 - [WASM Instructions](./chapter_wasm_instructions.md)
 - [Canvas Draw](./canvas_draw/index.md)
 - [What can you do with one page?](./onepage.md)
+- [Canvas and memory hexdump](./canvas_memory_hexdump.md)
