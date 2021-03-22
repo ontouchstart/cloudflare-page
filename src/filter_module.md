@@ -320,7 +320,7 @@ ${output}
             .concat(filter_module.section_07)
         );
 
-    const filter = () => {
+    const alpha_filter = () => {
         // following computation is done in JavaScript, we can (and should) implement it in WASM for performance
         // but the JS version is easy to write as a prototype.
 
@@ -337,7 +337,10 @@ ${output}
                 + r
             paint(i, data);
         }
+         canvas_render();
+    }
 
+    const grayscale_filter = () => {
         // turn the bottom 1/3 of the image into grayscale
         for (let i = Math.floor(2 * 0x80 * 0x80 / 3); i < 0x80 * 0x80; i++) {
             const r = heap[i * 4];
@@ -368,7 +371,7 @@ ${output}
     filter_module.importObject = {
         j: {
             m: mem,
-            f: filter
+            f: grayscale_filter
         }
     };
 
@@ -377,7 +380,7 @@ ${output}
     main_module.importObject = {
         j: {
             m: mem,
-            f: filter_module.instance.exports.filter
+            f: alpha_filter
         }
     };
 
@@ -387,7 +390,8 @@ ${output}
     paint = paint_module.instance.exports.paint;
 
     canvas_render();
-    setTimeout(filter_module.instance.exports.filter, 1000);
+    setTimeout(main_module.instance.exports.filter, 1000);
+    setTimeout(filter_module.instance.exports.filter, 2000);
 
     hexdump();
 
