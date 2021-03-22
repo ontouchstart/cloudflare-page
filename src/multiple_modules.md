@@ -1,8 +1,8 @@
-# Filter module
+# Multiple Modules
 
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/filter_module.md).
+This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules.md).
 
-Now let's move the filter function into a WASM module. We will create more than one WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespace.
+Now let's create three WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespaces (`main_module`, `paint_module` and `filter_module`).
 
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
