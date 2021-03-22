@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Thinking in hex - ontouchstart</title>
+        <title>Filter Module - ontouchstart</title>
         
         
 
@@ -98,7 +98,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html" class="active"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="filter_module.html"><strong aria-hidden="true">14.</strong> Filter Module</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="filter_module.html" class="active"><strong aria-hidden="true">14.</strong> Filter Module</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,9 +170,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="thinking-in-hex"><a class="header" href="#thinking-in-hex">Thinking in hex</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/thinking_in_hex.md">the source code</a>.</p>
-<p>Since we are going to do a lot of machine code programming, it is a good idea to learn to think in <a href="https://en.wikipedia.org/wiki/Hexadecimal">hex</a>.</p>
+                        <h1 id="filter-module"><a class="header" href="#filter-module">Filter module</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/filter_module.md">the source code</a>.</p>
+<p>Now let's move the filter function into a WASM module. We will create more than one WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects as namespace to wrap data and functions.</p>
 <p><canvas id="canvas"></canvas></p>
 <pre id="hex"></pre>
 <pre><code class="language-javascript">(async () =&gt; {
@@ -184,11 +184,60 @@
     canvas.height = height;
     canvas.style.border = '1px solid black';
     const ctx = canvas.getContext('2d');
-    ctx.fillRect(0, 0, width, height);
+
+    const avatar = new Image();
+    avatar.src = 'avatar.png';
+    await avatar.decode();
+    ctx.drawImage(avatar, 0, 0, 0x80, 0x80);
+
     let imageData = ctx.getImageData(0, 0, width, height);
     let x = 0;
     let y = 0;
     let offset = 0;
+
+    let paint;
+
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+    let heap = new Uint8ClampedArray(mem.buffer);
+
+    for (let index = 0; index &lt; 0x100000; index++) {
+        heap[index] = imageData.data[index];
+    };
+
+    const filter = () =&gt; {
+        // following computation is done in JavaScript, we can (and should) implement it in WASM for performance
+        // but the JS version is easy to write as a prototype.
+
+        // turn the middle third of the image half transparent
+        for (let i = Math.floor(0x80 * 0x80 / 3); i &lt; Math.floor(2 * 0x80 * 0x80 / 3); i++) {
+            const r = heap[i * 4];
+            const g = heap[i * 4 + 1];
+            const b = heap[i * 4 + 2];
+            const a = heap[i * 4 + 3];
+            const data =
+                0x80 * 0x1000000
+                + b * 0x10000
+                + g * 0x100
+                + r
+            paint(i, data);
+        }
+
+        // turn the bottom 1/3 of the image into grayscale
+        for (let i = Math.floor(2 * 0x80 * 0x80 / 3); i &lt; 0x80 * 0x80; i++) {
+            const r = heap[i * 4];
+            const g = heap[i * 4 + 1];
+            const b = heap[i * 4 + 2];
+            const a = heap[i * 4 + 3];
+            const intensity = Math.floor(0.2989 * r + 0.5870 * g + 0.1140 * b);
+            const data =
+                0xFF * 0x1000000
+                + intensity * 0x10000
+                + intensity * 0x100
+                + intensity
+            paint(i, data);
+        }
+        canvas_render();
+    }
 
     const check_boundary = () =&gt; {
         if (x &lt; 0) { x = 0 }
@@ -221,16 +270,16 @@
         const { data } = imageData;
         check_boundary();
         let output = '';
-        for (let i = offset; i &lt; offset + 0x100; i += 4) {            
-            if (i &lt; data.length - 4 ) {
-                for(let j = 3; j &gt; -1 ; j--) {
-                    if(data[i+j] &lt; 0x10) {
-                        output += `0${data[i+j].toString(16)}`;
+        for (let i = offset; i &lt; offset + 0x100; i += 4) {
+            if (i &lt; data.length - 4) {
+                for (let j = 3; j &gt; -1; j--) {
+                    if (data[i + j] &lt; 0x10) {
+                        output += `0${data[i + j].toString(16)}`;
                     } else {
-                        output += `${data[i+j].toString(16)}`;
+                        output += `${data[i + j].toString(16)}`;
                     }
                 }
-                if (((i - offset)% 0x20) === 0x1c) {
+                if (((i - offset) % 0x20) === 0x1c) {
                     output += '\n';
                 }
                 else {
@@ -254,119 +303,116 @@ ${output}
 
     const canvas_render = () =&gt; {
         for (let i = 0; i &lt; imageData.data.length; i++) {
-            imageData.data[i] = memory_data[i];
+            imageData.data[i] = heap[i];
         }
         ctx.putImageData(imageData, 0, 0);
     }
 
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
-    const section_01 = [
-        0x01, // type section 
-        0x09, // 9 bytes
-        0x02, // number of functions
-        0x60, // first func type (j.o)
-        0x00, // no input
-        0x00, // no output
-        0x60, // second func type (i)
-        0x02, // takes two params 
-        0x7f, 0x7f, // i32
-        0x00 // no return 
-    ];
 
-    const section_02 = [
-        0x02, // import section
-        0x07, // 7 bytes
-        0x01, // 1 import
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x6f, // o
-        0x00, // no input
-        0x00  // no output
-    ]
-    const section_03 = [
-        0x03, // func section
-        0x02, // 2 bytes
-        0x01, // number of functions 
-        0x01, // type of the function (i)
-    ];
-    const section_05 = [
-        0x05, // memory section
-        0x03, // 3 bytes
-        0x01, // number of memory
-        0x00, // min
-        0x01  // max one page of data
-    ];
-    const section_07 = [
-        0x07, // export section
-        0x09, // 9 bytes
-        0x02, // number of exports
-        0x01, // 1 byte name
-        0x6d, // &quot;m&quot;
-        0x02, // memory
-        0x00, // memory id
-        0x01, // 1 byte name
-        0x69, // &quot;i&quot;
-        0x00, // function
-        0x01  // func id
-    ];
+    const main = {
+        section_01: [
+            0x01, // type section
+            0x09, // 9 bytes
+            0x02, // number of functions
+            0x60, // j.f
+            0x00, // no input
+            0x00, // no output
+            0x60, // func type (paint)
+            0x02, // takes two params 
+            0x7f, // param i32
+            0x7f, // param i32
+            0x00  // no output 
+        ],
+        section_02: [
+            0x02, // import section
+            0x0e, // 14 bytes
+            0x02, // 2 imports
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x6d, // m
+            0x02, // mem import
+            0x00, // min pages
+            0x01, // max pages
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x66, // f
+            0x00, // func import
+            0x00  // first func
+        ],
+        section_03: [
+            0x03, // func section
+            0x02, // 3 bytes
+            0x01, // number of functions
+            0x01  // paint
+        ],
+        section_07: [
+            0x07, // export section
+            0x12, // 18 bytes
+            0x02, // number of exports
+            0x06, // 6 byte name
+            0x66, // f
+            0x69, // i
+            0x6c, // l
+            0x74, // t
+            0x65, // e
+            0x72, // r
+            0x00, // function
+            0x00,  // export j.f
+            0x05, // 5 byte name
+            0x70, // p
+            0x61, // a
+            0x69, // i
+            0x6e, // n
+            0x74, // t
+            0x00, // function
+            0x01  // export paint
+        ],
+        section_0a: [
+            0x0a, // code section 
+            0x0e, // 14 bytes
+            0x01,  // number of function bodies
+            0x0c, // 12 bytes 
+            0x00, // number of local variables
+            0x20, // local.get
+            0x00, // 0 (address)
+            0x41, // i32.const
+            0x02, // 2 (left shift value)
+            0x74, // i32.shl address 2 = address * 4
+            0x20, // local.get
+            0x01, // 1 (i32 value, takes 4 bytes of memory)
+            0x36, // i32.store 
+            0x02, // align
+            0x00, // offset
+            0x0b  // opcode for 𝖾𝗇𝖽
+        ]
+    };
 
-    const section_0a_header = [
-        0x0a, // code section 
-        0x0e, // 14 bytes
-        0x01  // number of function bodies
-    ]
-
-    const section_0a_i = [ // input function i(address, value)
-        0x0c, // 12 bytes 
-        0x00, // number of local variables
-        0x20, // local.get 
-        0x00, // 0 (address)
-        0x41, // i32.const
-        0x02, // 2 (left shift value)
-        0x74, // i32.shl address 2 = address * 4
-        0x20, // local.get
-        0x01, // 1 (i32 value, takes 4 bytes of memory)
-        0x36, // i32.store 
-        0x02, // align
-        0x00, // offset
-        0x0b  // opcode for 𝖾𝗇𝖽
-    ]
-
-    const section_0a = section_0a_header
-        .concat(section_0a_i);
-
-    const wasm = new Uint8Array(
+    main.wasm = new Uint8Array(
         magic.concat(version)
-            .concat(section_01)
-            .concat(section_02)
-            .concat(section_03)
-            .concat(section_05)
-            .concat(section_07)
-            .concat(section_0a)
+            .concat(main.section_01)
+            .concat(main.section_02)
+            .concat(main.section_03)
+            .concat(main.section_07)
+            .concat(main.section_0a)
     );
 
-    console.log({ wasm });
-    const importObject = {
+    main.importObject = {
         j: {
-            o: () =&gt; {
-                //canvas_render();
-                //hexdump();
-            },
+            m: mem,
+            f: filter
         }
     };
 
-    const module = await WebAssembly.compile(wasm.buffer);
-    const instance = await WebAssembly.instantiate(module, importObject);
-    const { exports } = instance;
-    const { i, m } = exports;
-    const memory_data = new Uint8ClampedArray(m.buffer);
-    
-    for(let index = 0; index &lt; 128 * 128; index++) {
-        i(index, Math.floor(Math.random() * 0xffffffff)); // AABBGGRR
-    }
+    main.module = await WebAssembly.compile(main.wasm.buffer);
+    main.instance = await WebAssembly.instantiate(main.module, main.importObject);
+    paint = main.instance.exports.paint;
     canvas_render();
+    setTimeout(main.instance.exports.filter, 1000);
+
     hexdump();
 
 })();
@@ -382,15 +428,11 @@ ${output}
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="onepage.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="memory_io.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="memory_io.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -400,15 +442,11 @@ ${output}
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="onepage.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="memory_io.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
-                
-                    <a rel="next" href="memory_io.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 

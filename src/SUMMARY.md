@@ -14,3 +14,4 @@
 - [What can you do with one page?](./onepage.md)
 - [Thinking in hex](./thinking_in_hex.md)
 - [Memory I/O](./memory_io.md)
+- [Filter Module](./filter_module.md)

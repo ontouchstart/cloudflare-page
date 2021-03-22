@@ -1,8 +1,8 @@
-# Memory I/O
+# Filter module
 
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/memory_io.md).
+This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/filter_module.md).
 
-This page is to demonstrate using memory for I/O.
+Now let's move the filter function into a WASM module. We will create more than one WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects as namespace to wrap data and functions.
 
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
@@ -71,13 +71,6 @@ This page is to demonstrate using memory for I/O.
         }
         canvas_render();
     }
-
-    const importObject = {
-        j: {
-            m: mem,
-            f: filter
-        }
-    };
 
     const check_boundary = () => {
         if (x < 0) { x = 0 }
@@ -150,110 +143,113 @@ ${output}
 
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
-    const section_01 = [
-        0x01, // type section
-        0x09, // 9 bytes
-        0x02, // number of functions
-        0x60, // j.f
-        0x00, // no input
-        0x00, // no output
-        0x60, // func type (paint)
-        0x02, // takes two params 
-        0x7f, // param i32
-        0x7f, // param i32
-        0x00  // no output 
-    ];
 
-    const section_02 = [
-        0x02, // import section
-        0x0e, // 14 bytes
-        0x02, // 2 imports
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x6d, // m
-        0x02, // mem import
-        0x00, // min pages
-        0x01, // max pages
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x66, // f
-        0x00, // func import
-        0x00  // first func
-    ]
+    const main = {
+        section_01: [
+            0x01, // type section
+            0x09, // 9 bytes
+            0x02, // number of functions
+            0x60, // j.f
+            0x00, // no input
+            0x00, // no output
+            0x60, // func type (paint)
+            0x02, // takes two params 
+            0x7f, // param i32
+            0x7f, // param i32
+            0x00  // no output 
+        ],
+        section_02: [
+            0x02, // import section
+            0x0e, // 14 bytes
+            0x02, // 2 imports
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x6d, // m
+            0x02, // mem import
+            0x00, // min pages
+            0x01, // max pages
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x66, // f
+            0x00, // func import
+            0x00  // first func
+        ],
+        section_03: [
+            0x03, // func section
+            0x02, // 3 bytes
+            0x01, // number of functions
+            0x01  // paint
+        ],
+        section_07: [
+            0x07, // export section
+            0x12, // 18 bytes
+            0x02, // number of exports
+            0x06, // 6 byte name
+            0x66, // f
+            0x69, // i
+            0x6c, // l
+            0x74, // t
+            0x65, // e
+            0x72, // r
+            0x00, // function
+            0x00,  // export j.f
+            0x05, // 5 byte name
+            0x70, // p
+            0x61, // a
+            0x69, // i
+            0x6e, // n
+            0x74, // t
+            0x00, // function
+            0x01  // export paint
+        ],
+        section_0a: [
+            0x0a, // code section 
+            0x0e, // 14 bytes
+            0x01,  // number of function bodies
+            0x0c, // 12 bytes 
+            0x00, // number of local variables
+            0x20, // local.get
+            0x00, // 0 (address)
+            0x41, // i32.const
+            0x02, // 2 (left shift value)
+            0x74, // i32.shl address 2 = address * 4
+            0x20, // local.get
+            0x01, // 1 (i32 value, takes 4 bytes of memory)
+            0x36, // i32.store 
+            0x02, // align
+            0x00, // offset
+            0x0b  // opcode for 𝖾𝗇𝖽
+        ]
+    };
 
-    const section_03 = [
-        0x03, // func section
-        0x02, // 3 bytes
-        0x01, // number of functions
-        0x01  // paint
-    ];
-
-    const section_07 = [
-        0x07, // export section
-        0x12, // 18 bytes
-        0x02, // number of exports
-        0x06, // 6 byte name
-        0x66, // f
-        0x69, // i
-        0x6c, // l
-        0x74, // t
-        0x65, // e
-        0x72, // r
-        0x00, // function
-        0x00,  // export j.f
-        0x05, // 5 byte name
-        0x70, // p
-        0x61, // a
-        0x69, // i
-        0x6e, // n
-        0x74, // t
-        0x00, // function
-        0x01  // export paint
-    ];
-
-    const section_0a = [
-        0x0a, // code section 
-        0x0e, // 14 bytes
-        0x01, // number of function bodies
-        0x0c, // 12 bytes 
-        0x00, // number of local variables
-        0x20, // local.get
-        0x00, // 0 (address)
-        0x41, // i32.const
-        0x02, // 2 (left shift value)
-        0x74, // i32.shl address 2 = address * 4
-        0x20, // local.get
-        0x01, // 1 (i32 value, takes 4 bytes of memory)
-        0x36, // i32.store 
-        0x02, // align
-        0x00, // offset
-        0x0b  // opcode for 𝖾𝗇𝖽
-    ]
-
-    const wasm = new Uint8Array(
+    main.wasm = new Uint8Array(
         magic.concat(version)
-            .concat(section_01)
-            .concat(section_02)
-            .concat(section_03)
-            .concat(section_07)
-            .concat(section_0a)
+            .concat(main.section_01)
+            .concat(main.section_02)
+            .concat(main.section_03)
+            .concat(main.section_07)
+            .concat(main.section_0a)
     );
 
-    console.log({ wasm });
+    main.importObject = {
+        j: {
+            m: mem,
+            f: filter
+        }
+    };
 
-    const module = await WebAssembly.compile(wasm.buffer);
-    const instance = await WebAssembly.instantiate(module, importObject);
-    const { exports } = instance;
-    paint = exports.paint;
+    main.module = await WebAssembly.compile(main.wasm.buffer);
+    main.instance = await WebAssembly.instantiate(main.module, main.importObject);
+    paint = main.instance.exports.paint;
     canvas_render();
-
-    setTimeout(exports.filter, 1000);
+    setTimeout(main.instance.exports.filter, 1000);
 
     hexdump();
 
 })();
+
 ```
 
 <script>
