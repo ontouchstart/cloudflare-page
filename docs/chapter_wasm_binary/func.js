@@ -21,7 +21,7 @@
         0x01, // number of function bodies.
         0x02, // 2 bytes
         0x00, // number of local variables
-        0x0b  // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for end
     ];
     const wasm = new Uint8Array(
         magic.concat(version)

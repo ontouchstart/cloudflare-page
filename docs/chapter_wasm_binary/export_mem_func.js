@@ -53,7 +53,7 @@
         0x00, // offset
         0x20, // local.get
         0x01, // 1 (return the stored i32)
-        0x0b  // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for end
     ];
     const wasm = new Uint8Array(
         magic.concat(version)

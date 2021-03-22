@@ -2,7 +2,7 @@
 
 This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules.md).
 
-Now let's create three WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespaces (`main_module`, `paint_module` and `filter_module`).
+Now let's implement `filter_module`  in WASM instead of calling `paint` from JavaScript.
 
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
@@ -273,16 +273,18 @@ ${output}
     const filter_module = {
         section_01: [
             0x01, // type section
-            0x04, // 4 bytes
+            0x06, // 6 bytes
             0x01, // number of functions
-            0x60, // j.f
-            0x00, // no input
+            0x60, // filter
+            0x02, // takes two params 
+            0x7f, // param i32
+            0x7f, // param i32
             0x00, // no output 
         ],
         section_02: [
             0x02, // import section
-            0x0e, // 14 bytes
-            0x02, // 2 imports
+            0x08, // 8 bytes
+            0x01, // 1 import
             0x01, // 1 byte
             0x6a, // j
             0x01, // 1 byte
@@ -290,12 +292,12 @@ ${output}
             0x02, // mem import
             0x00, // min pages
             0x01, // max pages
-            0x01, // 1 byte
-            0x6a, // j
-            0x01, // 1 byte
-            0x66, // f
-            0x00, // func import
-            0x00  // first func
+        ],
+        section_03: [
+            0x03, // func section
+            0x02, // 2 bytes
+            0x01, // number of functions
+            0x00  // filter
         ],
         section_07: [
             0x07, // export section
@@ -309,7 +311,15 @@ ${output}
             0x65, // e
             0x72, // r
             0x00, // function
-            0x00  // export j.f
+            0x00  // filter
+        ],
+        section_0a: [
+            0x0a, // code section 
+            0x04, // 4 bytes
+            0x01, // number of function bodies
+            0x02, // 3 byte
+            0x00, // local count = 0
+            0x0b  // opcode for end
         ]
     };
 
@@ -317,7 +327,9 @@ ${output}
         magic.concat(version)
             .concat(filter_module.section_01)
             .concat(filter_module.section_02)
+            .concat(filter_module.section_03)
             .concat(filter_module.section_07)
+            .concat(filter_module.section_0a)
         );
 
     const alpha_filter = () => {
@@ -370,8 +382,7 @@ ${output}
     filter_module.module = await WebAssembly.compile(filter_module.wasm.buffer);
     filter_module.importObject = {
         j: {
-            m: mem,
-            f: grayscale_filter
+            m: mem
         }
     };
 
@@ -391,7 +402,7 @@ ${output}
 
     canvas_render();
     setTimeout(main_module.instance.exports.filter, 1000);
-    setTimeout(filter_module.instance.exports.filter, 2000);
+    setTimeout(filter_module.instance.exports.filter, 2000); // does nothing yet
 
     hexdump();
 

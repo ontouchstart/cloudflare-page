@@ -219,7 +219,7 @@ ${output}
         0x00, // offset
         0x20, // local.get
         0x01, // 1 (return the stored i32)
-        0x0b  // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for end
     ]
 
     const section_0a = section_0a_header

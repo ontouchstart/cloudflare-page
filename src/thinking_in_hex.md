@@ -164,7 +164,7 @@ ${output}
         0x36, // i32.store 
         0x02, // align
         0x00, // offset
-        0x0b  // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for end
     ]
 
     const section_0a = section_0a_header

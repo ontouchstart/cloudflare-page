@@ -181,7 +181,7 @@ ${output}
         0x00, // offset
         0x10, // call
         0x00, // function j.o() (imported)
-        0x0b  // opcode for 𝖾𝗇𝖽
+        0x0b  // opcode for end
     ]
 
     const section_0a = section_0a_header
