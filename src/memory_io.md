@@ -38,7 +38,8 @@ This page is to demonstrate using memory for I/O.
     };
 
     const filter = () => {
-        // following computation is done in JavaScript, we can also implement it in WASM as well
+        // following computation is done in JavaScript, we can (and should) implement it in WASM for performance
+        // but the JS version is easy to write as a prototype.
      
         // turn the middle third of the image half transparent
         for(let i = Math.floor(0x80 * 0x80 / 3); i < Math.floor(2 * 0x80 * 0x80 / 3); i++) {
