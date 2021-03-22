@@ -10032,41 +10032,6 @@ ${output}
         heap[index] = imageData.data[index];
     };
 
-    const filter = () =&gt; {
-        // following computation is done in JavaScript, we can (and should) implement it in WASM for performance
-        // but the JS version is easy to write as a prototype.
-
-        // turn the middle third of the image half transparent
-        for (let i = Math.floor(0x80 * 0x80 / 3); i &lt; Math.floor(2 * 0x80 * 0x80 / 3); i++) {
-            const r = heap[i * 4];
-            const g = heap[i * 4 + 1];
-            const b = heap[i * 4 + 2];
-            const a = heap[i * 4 + 3];
-            const data =
-                0x80 * 0x1000000
-                + b * 0x10000
-                + g * 0x100
-                + r
-            paint(i, data);
-        }
-
-        // turn the bottom 1/3 of the image into grayscale
-        for (let i = Math.floor(2 * 0x80 * 0x80 / 3); i &lt; 0x80 * 0x80; i++) {
-            const r = heap[i * 4];
-            const g = heap[i * 4 + 1];
-            const b = heap[i * 4 + 2];
-            const a = heap[i * 4 + 3];
-            const intensity = Math.floor(0.2989 * r + 0.5870 * g + 0.1140 * b);
-            const data =
-                0xFF * 0x1000000
-                + intensity * 0x10000
-                + intensity * 0x100
-                + intensity
-            paint(i, data);
-        }
-        canvas_render();
-    }
-
     const check_boundary = () =&gt; {
         if (x &lt; 0) { x = 0 }
         if (x &gt; width - 1) { x = 0 }
@@ -10139,7 +10104,7 @@ ${output}
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
 
-    const main = {
+    const main_module = {
         section_01: [
             0x01, // type section
             0x09, // 9 bytes
@@ -10219,27 +10184,205 @@ ${output}
         ]
     };
 
-    main.wasm = new Uint8Array(
+    main_module.wasm = new Uint8Array(
         magic.concat(version)
-            .concat(main.section_01)
-            .concat(main.section_02)
-            .concat(main.section_03)
-            .concat(main.section_07)
-            .concat(main.section_0a)
+            .concat(main_module.section_01)
+            .concat(main_module.section_02)
+            .concat(main_module.section_03)
+            .concat(main_module.section_07)
+            .concat(main_module.section_0a)
     );
 
-    main.importObject = {
+    const paint_module = {
+        section_01: [
+            0x01, // type section
+            0x06, // 6 bytes
+            0x01, // number of functions
+            0x60, // func type (paint)
+            0x02, // takes two params 
+            0x7f, // param i32
+            0x7f, // param i32
+            0x00  // no output 
+        ],
+        section_02: [
+            0x02, // import section
+            0x08, // 8 bytes
+            0x01, // 1 imports
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x6d, // m
+            0x02, // mem import
+            0x00, // min pages
+            0x01  // max pages
+        ],
+        section_03: [
+            0x03, // func section
+            0x02, // 2 bytes
+            0x01, // number of functions
+            0x00  // paint
+        ],
+        section_07: [
+            0x07, // export section
+            0x09, // 9 bytes
+            0x01, // number of exports
+            0x05, // 5 byte name
+            0x70, // p
+            0x61, // a
+            0x69, // i
+            0x6e, // n
+            0x74, // t
+            0x00, // function
+            0x00  // export paint
+        ],
+        section_0a: [
+            0x0a, // code section 
+            0x0e, // 14 bytes
+            0x01,  // number of function bodies
+            0x0c, // 12 bytes 
+            0x00, // number of local variables
+            0x20, // local.get
+            0x00, // 0 (address)
+            0x41, // i32.const
+            0x02, // 2 (left shift value)
+            0x74, // i32.shl address 2 = address * 4
+            0x20, // local.get
+            0x01, // 1 (i32 value, takes 4 bytes of memory)
+            0x36, // i32.store 
+            0x02, // align
+            0x00, // offset
+            0x0b  // opcode for 𝖾𝗇𝖽
+        ]
+    };
+
+    paint_module.wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(paint_module.section_01)
+            .concat(paint_module.section_02)
+            .concat(paint_module.section_03)
+            .concat(paint_module.section_07)
+            .concat(paint_module.section_0a)
+    );
+
+
+    const filter_module = {
+        section_01: [
+            0x01, // type section
+            0x04, // 4 bytes
+            0x01, // number of functions
+            0x60, // j.f
+            0x00, // no input
+            0x00, // no output 
+        ],
+        section_02: [
+            0x02, // import section
+            0x0e, // 14 bytes
+            0x02, // 2 imports
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x6d, // m
+            0x02, // mem import
+            0x00, // min pages
+            0x01, // max pages
+            0x01, // 1 byte
+            0x6a, // j
+            0x01, // 1 byte
+            0x66, // f
+            0x00, // func import
+            0x00  // first func
+        ],
+        section_07: [
+            0x07, // export section
+            0x0a, // 10 bytes
+            0x01, // number of exports
+            0x06, // 6 byte name
+            0x66, // f
+            0x69, // i
+            0x6c, // l
+            0x74, // t
+            0x65, // e
+            0x72, // r
+            0x00, // function
+            0x00  // export j.f
+        ]
+    };
+
+    filter_module.wasm = new Uint8Array(
+        magic.concat(version)
+            .concat(filter_module.section_01)
+            .concat(filter_module.section_02)
+            .concat(filter_module.section_07)
+        );
+
+    const filter = () =&gt; {
+        // following computation is done in JavaScript, we can (and should) implement it in WASM for performance
+        // but the JS version is easy to write as a prototype.
+
+        // turn the middle third of the image half transparent
+        for (let i = Math.floor(0x80 * 0x80 / 3); i &lt; Math.floor(2 * 0x80 * 0x80 / 3); i++) {
+            const r = heap[i * 4];
+            const g = heap[i * 4 + 1];
+            const b = heap[i * 4 + 2];
+            const a = heap[i * 4 + 3];
+            const data =
+                0x80 * 0x1000000
+                + b * 0x10000
+                + g * 0x100
+                + r
+            paint(i, data);
+        }
+
+        // turn the bottom 1/3 of the image into grayscale
+        for (let i = Math.floor(2 * 0x80 * 0x80 / 3); i &lt; 0x80 * 0x80; i++) {
+            const r = heap[i * 4];
+            const g = heap[i * 4 + 1];
+            const b = heap[i * 4 + 2];
+            const a = heap[i * 4 + 3];
+            const intensity = Math.floor(0.2989 * r + 0.5870 * g + 0.1140 * b);
+            const data =
+                0xFF * 0x1000000
+                + intensity * 0x10000
+                + intensity * 0x100
+                + intensity
+            paint(i, data);
+        }
+        canvas_render();
+    }
+
+    paint_module.module = await WebAssembly.compile(paint_module.wasm.buffer);
+    paint_module.importObject = {
+        j: {
+            m: mem
+        }
+    };
+
+    paint_module.instance = await WebAssembly.instantiate(paint_module.module, paint_module.importObject);
+
+    filter_module.module = await WebAssembly.compile(filter_module.wasm.buffer);
+    filter_module.importObject = {
         j: {
             m: mem,
             f: filter
         }
     };
 
-    main.module = await WebAssembly.compile(main.wasm.buffer);
-    main.instance = await WebAssembly.instantiate(main.module, main.importObject);
-    paint = main.instance.exports.paint;
+    filter_module.instance = await WebAssembly.instantiate(filter_module.module, filter_module.importObject);
+
+    main_module.importObject = {
+        j: {
+            m: mem,
+            f: filter_module.instance.exports.filter
+        }
+    };
+
+    main_module.module = await WebAssembly.compile(main_module.wasm.buffer);
+    main_module.instance = await WebAssembly.instantiate(main_module.module, main_module.importObject);
+    
+    paint = paint_module.instance.exports.paint;
+
     canvas_render();
-    setTimeout(main.instance.exports.filter, 1000);
+    setTimeout(filter_module.instance.exports.filter, 1000);
 
     hexdump();
 
