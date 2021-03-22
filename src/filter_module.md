@@ -2,7 +2,7 @@
 
 This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/filter_module.md).
 
-Now let's move the filter function into a WASM module. We will create more than one WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects as namespace to wrap data and functions.
+Now let's move the filter function into a WASM module. We will create more than one WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespace.
 
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
