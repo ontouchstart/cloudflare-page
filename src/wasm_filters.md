@@ -1,14 +1,16 @@
 # WASM filters
 
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules.md).
+This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_filters.md).
 
-Now let's implement `filter_module`  in WASM instead of calling `paint` from JavaScript.
-
+## Output
 <canvas id="canvas"></canvas>
 <pre id="hex"></pre>
 
+## Code
+
+### Set up canvas
+
 ```javascript
-(async () => {
     const canvas = document.getElementById('canvas');
     const hex_output = document.getElementById('hex');
     const width = 128;
@@ -17,17 +19,24 @@ Now let's implement `filter_module`  in WASM instead of calling `paint` from Jav
     canvas.height = height;
     canvas.style.border = '1px solid black';
     const ctx = canvas.getContext('2d');
+```
 
+### Load avatar image to the canvas
+
+```javascript
     const avatar = new Image();
     avatar.src = 'avatar.png';
     await avatar.decode();
     ctx.drawImage(avatar, 0, 0, 0x80, 0x80);
+```
 
+### Global variables and fucntions
+
+```javascript
     let imageData = ctx.getImageData(0, 0, width, height);
     let x = 0;
     let y = 0;
     let offset = 0;
-
     let paint;
 
     const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
@@ -36,7 +45,9 @@ Now let's implement `filter_module`  in WASM instead of calling `paint` from Jav
     for (let index = 0; index < 0x100000; index++) {
         heap[index] = imageData.data[index];
     };
-
+```
+### Canvas UI
+```javascript
     const check_boundary = () => {
         if (x < 0) { x = 0 }
         if (x > width - 1) { x = 0 }
@@ -106,6 +117,11 @@ ${output}
         ctx.putImageData(imageData, 0, 0);
     }
 
+```
+
+### WASM
+
+```javascript
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
 
@@ -269,7 +285,6 @@ ${output}
             .concat(paint_module.section_0a)
     );
 
-
     const filter_module = {
         section_01: [
             0x01, // type section
@@ -391,6 +406,10 @@ ${output}
         canvas_render();
     }
 
+```
+### Instantiate WASM modules
+
+```javascript
     paint_module.module = await WebAssembly.compile(paint_module.wasm.buffer);
     paint_module.importObject = {
         j: {
@@ -427,12 +446,14 @@ ${output}
     //setTimeout(filter_module.instance.exports.filter, 2000); // does nothing yet
 
     hexdump();
-
-})();
-
 ```
 
 <script>
-  const code = document.getElementsByClassName('language-javascript')[0].innerText;
+  let code = '(async () => {';
+  const code_sections = document.getElementsByClassName('language-javascript');
+  for(let i = 0; i < code_sections.length; i++) {
+      code += code_sections[i].innerText;
+  }
+  code += '})()';
   eval(code);
 </script>
