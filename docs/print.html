@@ -10397,7 +10397,7 @@ ${output}
   const code = document.getElementsByClassName('language-javascript')[0].innerText;
   eval(code);
 </script>
-<h1 id="multiple-modules-1"><a class="header" href="#multiple-modules-1">Multiple Modules</a></h1>
+<h1 id="wasm-filters"><a class="header" href="#wasm-filters">WASM filters</a></h1>
 <p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules.md">the source code</a>.</p>
 <p>Now let's implement <code>filter_module</code>  in WASM instead of calling <code>paint</code> from JavaScript.</p>
 <p><canvas id="canvas"></canvas></p>
@@ -10667,12 +10667,10 @@ ${output}
     const filter_module = {
         section_01: [
             0x01, // type section
-            0x06, // 6 bytes
+            0x04, // 4 bytes
             0x01, // number of functions
             0x60, // filter
-            0x02, // takes two params 
-            0x7f, // param i32
-            0x7f, // param i32
+            0x00, // no input
             0x00, // no output 
         ],
         section_02: [
@@ -10709,13 +10707,36 @@ ${output}
         ],
         section_0a: [
             0x0a, // code section 
-            0x04, // 4 bytes
+            0x26, // 38 bytes
             0x01, // number of function bodies
-            0x02, // 3 byte
-            0x00, // local count = 0
+            0x24, // 36 bytes
+            0x02, // local count = 1
+            0x00, 0x7f,
+            0x01, 0x7f, 
+            0x41, 0x00, // i32.const address = 0 
+            0x21, 0x00, // save the address 
+            0x03, // loop
+            0x40, // block
+            0x20, 0x00, // get the address
+            //0x20, 0x01, // get the value 
+            0x41, 0x00, 
+            0x36, 0x02, 0x00, // store (paint)
+            //0x28, 0x20, 0x00, // i32.load the value
+            //0x21, 0x01, // save the value to the second local
+            0x20, 0x00, // local.get address
+            0x41, 0xff, // i32.const 65532 = 0x10000 - 4 
+            0x4b, // i32.gt_u compare
+            0x0d, 0x01, // br_if
+            0x20, 0x00, // get address
+            0x41, 0x04, // i32.const = 4
+            0x6a, // i32.add + 4
+            0x21, 0x00, // set new address
+            0x0c, 0x00, // br 0 
+            0x0b, // end block
             0x0b  // opcode for end
         ]
     };
+
 
     filter_module.wasm = new Uint8Array(
         magic.concat(version)
@@ -10785,7 +10806,7 @@ ${output}
     main_module.importObject = {
         j: {
             m: mem,
-            f: alpha_filter
+            f: grayscale_filter
         }
     };
 
@@ -10794,9 +10815,10 @@ ${output}
     
     paint = paint_module.instance.exports.paint;
 
+    filter_module.instance.exports.filter();
     canvas_render();
-    setTimeout(main_module.instance.exports.filter, 1000);
-    setTimeout(filter_module.instance.exports.filter, 2000); // does nothing yet
+    //setTimeout(main_module.instance.exports.filter, 1000);
+    //setTimeout(filter_module.instance.exports.filter, 2000); // does nothing yet
 
     hexdump();
 
