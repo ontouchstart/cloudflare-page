@@ -10711,9 +10711,9 @@ ${output}
         ],
         section_0a: [
             0x0a, // code section 
-            0x2d, // 45 bytes
+            0x29, // 41 bytes
             0x01, // number of function bodies
-            0x2b, // 43 bytes
+            0x27, // 39 bytes
             0x01, 
             0x02, 0x7f,
             0x41, 0x00, // i32.const address = 0 
@@ -10721,10 +10721,8 @@ ${output}
             0x03, // loop
             0x40, // block
             0x20, 0x00, // get the address
-            0x28, 0x02, 0x00, // i32.load the value
-            0x21, 0x01, // save the value to the second local
             0x20, 0x00, // get the address
-            0x20, 0x01, // get the value 
+            0x28, 0x02, 0x00, // i32.load the value
             0x36, 0x02, 0x00, // store (paint the same value back, nothing changed)
             0x20, 0x00, // local.get address
             0x41, 0xff, 0xff, 0x01,
