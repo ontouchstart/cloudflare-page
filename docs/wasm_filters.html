@@ -282,11 +282,13 @@ const version = [0x01, 0x00, 0x00, 0x00];
 const alpha_filter = {
     section_01: [
         0x01, // type section
-        0x04, // 4 bytes
+        0x06, // 6 bytes
         0x01, // number of functions
         0x60, // filter
-        0x00, // no input
-        0x00, // no output 
+        0x02, // takes two params (range)
+        0x7f, // param i32
+        0x7f, // param i32
+        0x00, // no output
     ],
     section_02: [
         0x02, // import section
@@ -322,22 +324,22 @@ const alpha_filter = {
     ],
     section_0a: [
         0x0a, // code section 
-        0x30, // 48 bytes
+        0x2a, // 42 bytes
         0x01, // number of function bodies
-        0x2e, // 46 bytes
+        0x28, // 40 bytes
         0x01, 0x02, 0x7f,
-        0x41, 0x00, // i32.const address = 0 
-        0x21, 0x00, // save the address
+        //0x41, 0x00, // i32.const address = 0 
+        //0x21, 0x00, // save the address
         0x03, // loop
         0x40, // block
-        0x20, 0x00, // get the address
+        0x20, 0x00, // get the address lower limit
         0x20, 0x00, // get the address
         0x28, 0x02, 0x00, // i32.load the value
         0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
         0x6b, // 0xff****** - 0x7f****** = 0x80******
-        0x36, 0x02, 0x00, // store (paint the same value back, nothing changed)
+        0x36, 0x02, 0x00, // store 
         0x20, 0x00, // local.get address
-        0x41, 0xff, 0xff, 0x01,
+        0x20, 0x01, // upper limit
         0x4b, // i32.gt_u compare
         0x0d, 0x01, // br_if
         0x20, 0x00, // get address
@@ -366,8 +368,11 @@ alpha_filter.wasm = new Uint8Array(
 alpha_filter.importObject = { j: { m: mem } };
 
 alpha_filter.instance = await WebAssembly.instantiate(alpha_filter.module, alpha_filter.importObject);
-alpha_filter.instance.exports.filter();
+
+// range has to be at address %4 = 0
+alpha_filter.instance.exports.filter(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
 canvas_render();
+
 hexdump();
 </code></pre>
 <script>
