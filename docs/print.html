@@ -10711,9 +10711,9 @@ ${output}
         ],
         section_0a: [
             0x0a, // code section 
-            0x29, // 41 bytes
+            0x30, // 48 bytes
             0x01, // number of function bodies
-            0x27, // 39 bytes
+            0x2e, // 46 bytes
             0x01, 
             0x02, 0x7f,
             0x41, 0x00, // i32.const address = 0 
@@ -10723,6 +10723,8 @@ ${output}
             0x20, 0x00, // get the address
             0x20, 0x00, // get the address
             0x28, 0x02, 0x00, // i32.load the value
+            0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
+            0x6b, // 0xff****** - 0x7f****** = 0x80******
             0x36, 0x02, 0x00, // store (paint the same value back, nothing changed)
             0x20, 0x00, // local.get address
             0x41, 0xff, 0xff, 0x01,
@@ -10821,9 +10823,6 @@ ${output}
 
     filter_module.instance.exports.filter();
     canvas_render();
-    //setTimeout(main_module.instance.exports.filter, 1000);
-    //setTimeout(filter_module.instance.exports.filter, 2000); // does nothing yet
-
     hexdump();
 </code></pre>
 <script>
