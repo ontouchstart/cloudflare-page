@@ -480,31 +480,31 @@ ${output}
         ],
         section_0a: [
             0x0a, // code section 
-            0x26, // 38 bytes
+            0x2d, // 45 bytes
             0x01, // number of function bodies
-            0x24, // 36 bytes
-            0x02, // local count = 1
-            0x00, 0x7f,
-            0x01, 0x7f, 
+            0x2b, // 43 bytes
+            0x01, 
+            0x02, 0x7f,
             0x41, 0x00, // i32.const address = 0 
-            0x21, 0x00, // save the address 
+            0x21, 0x00, // save the address
             0x03, // loop
             0x40, // block
             0x20, 0x00, // get the address
-            //0x20, 0x01, // get the value 
-            0x41, 0x00, 
-            0x36, 0x02, 0x00, // store (paint)
-            //0x28, 0x20, 0x00, // i32.load the value
-            //0x21, 0x01, // save the value to the second local
+            0x28, 0x02, 0x00, // i32.load the value
+            0x21, 0x01, // save the value to the second local
+            0x20, 0x00, // get the address
+            0x20, 0x01, // get the value 
+            0x36, 0x02, 0x00, // store (paint the same value back, nothing changed)
             0x20, 0x00, // local.get address
-            0x41, 0xff, // i32.const 65532 = 0x10000 - 4 
+            0x41, 0xff, 0xff, 0x01,
             0x4b, // i32.gt_u compare
             0x0d, 0x01, // br_if
             0x20, 0x00, // get address
             0x41, 0x04, // i32.const = 4
-            0x6a, // i32.add + 4
+            0x6a, // i32.add 
             0x21, 0x00, // set new address
-            0x0c, 0x00, // br 0 
+            0x0c, 
+            0x00, // br 0 
             0x0b, // end block
             0x0b  // opcode for end
         ]
