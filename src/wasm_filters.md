@@ -128,6 +128,103 @@ const magic = [0x00, 0x61, 0x73, 0x6d];
 const version = [0x01, 0x00, 0x00, 0x00];
 ```
 
+### main module
+
+```javascript
+const main = {
+    section_01: [
+        0x01, // type section
+        0x0b, // 11 bytes
+        0x02, // number of functions
+        0x60, // filter
+        0x01, // takes 1 param ()
+        0x7f, // param i32
+        0x01, 
+        0x7f, // result i32
+        0x60, // alpha
+        0x02, // takes two params (range)
+        0x7f, // param i32
+        0x7f, // param i32
+        0x00, // no output
+    ],
+    section_02: [
+        0x02, // import section
+        0x08, // 8 bytes
+        0x01, // 1 import
+        0x01, // 1 byte
+        0x6a, // j
+        0x01, // 1 byte
+        0x6d, // m
+        0x02, // mem import
+        0x00, // min pages
+        0x01, // max pages
+    ],
+    section_03: [
+        0x03, // func section
+        0x03, // 2 bytes
+        0x02, // number of functions
+        0x00, // filter
+        0x01, // alpha
+    ],
+    section_07: [
+        0x07, // export section
+        0x09, // 9 bytes
+        0x01, // number of exports
+        0x05, // 5 byte name
+        0x61, // a
+        0x6c, // l
+        0x70, // p
+        0x68, // h
+        0x61, // a
+        0x00, // function
+        0x01  // alpha
+    ],
+    section_0a: [
+        0x0a, // code section 
+        0x32, // 50 bytes
+        0x02, // number of function bodies
+        0x0f, // 15 bytes filter
+        0x00, // 
+        0x20, 0x00, // get the address
+        0x28, 0x02, 0x00, // i32.load the value
+        0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
+        0x6b, // 0xff****** - 0x7f****** = 0x80******
+        0x01,
+        0x0b,
+        0x20, // 32 bytes alpha
+        0x01, 0x02, 0x7f,
+        0x03, // loop
+        0x40, // block
+        0x20, 0x00, // get the address lower limit
+        0x20, 0x00, // get the address
+        0x10, 0x00, // call alpha
+        0x36, 0x02, 0x00, // store 
+        0x20, 0x00, // local.get address
+        0x20, 0x01, // upper limit
+        0x4b, // i32.gt_u compare
+        0x0d, 0x01, // br_if
+        0x20, 0x00, // get address
+        0x41, 0x04, // i32.const = 4
+        0x6a, // i32.add 
+        0x21, 0x00, // set new address
+        0x0c, 
+        0x00, // br 0 
+        0x0b, // end block
+        0x0b  // opcode for end
+    ]
+};
+
+main.wasm = new Uint8Array(
+    magic.concat(version)
+        .concat(main.section_01)
+        .concat(main.section_02)
+        .concat(main.section_03)
+        .concat(main.section_07)
+        .concat(main.section_0a)
+    );
+
+```
+
 ### alpha_filter
 
 ```javascript
@@ -306,8 +403,9 @@ alpha_filter.importObject = { j: { m: mem } };
 
 alpha_filter.instance = await WebAssembly.instantiate(alpha_filter.module, alpha_filter.importObject);
 
+
 // range has to be at address %4 = 0
-alpha_filter.instance.exports.filter(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
+// alpha_filter.instance.exports.filter(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
 
 
 grayscale_filter.module = await WebAssembly.compile(grayscale_filter.wasm.buffer);
@@ -316,8 +414,12 @@ grayscale_filter.importObject = { j: { m: mem } };
 grayscale_filter.instance = await WebAssembly.instantiate(grayscale_filter.module, grayscale_filter.importObject);
 
 // range has to be at address %4 = 0
-grayscale_filter.instance.exports.filter(4 * Math.floor(2 * 0x80 * 0x80 / 3), 4 * (0x80 * 0x80 - 2));
+// grayscale_filter.instance.exports.filter(4 * Math.floor(2 * 0x80 * 0x80 / 3), 4 * (0x80 * 0x80 - 2));
 
+main.module = await WebAssembly.compile(main.wasm.buffer);
+main.importObject = { j: { m: mem } };
+main.instance = await WebAssembly.instantiate(main.module, main.importObject);
+main.instance.exports.alpha(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
 canvas_render();
 hexdump();
 ```
