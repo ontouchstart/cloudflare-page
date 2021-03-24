@@ -15,5 +15,4 @@
 - [Thinking in hex](./thinking_in_hex.md)
 - [Memory I/O](./memory_io.md)
 - [Multiple Modules (JS)](./multiple_modules_js.md)
-- [WASM filters](./wasm_filters.md)
 - [Multiple Modules (WASM)](./multiple_modules_wasm.md)

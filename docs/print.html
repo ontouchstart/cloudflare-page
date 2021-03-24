@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules_js.html"><strong aria-hidden="true">14.</strong> Multiple Modules (JS)</a></li><li class="chapter-item expanded "><a href="wasm_filters.html"><strong aria-hidden="true">15.</strong> WASM filters</a></li><li class="chapter-item expanded "><a href="multiple_modules_wasm.html"><strong aria-hidden="true">16.</strong> Multiple Modules (WASM)</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules_js.html"><strong aria-hidden="true">14.</strong> Multiple Modules (JS)</a></li><li class="chapter-item expanded "><a href="multiple_modules_wasm.html"><strong aria-hidden="true">15.</strong> Multiple Modules (WASM)</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -10358,8 +10358,9 @@ ${output}
   const code = document.getElementsByClassName('language-javascript')[0].innerText;
   eval(code);
 </script>
-<h1 id="wasm-filters"><a class="header" href="#wasm-filters">WASM filters</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_filters.md">the source code</a>.</p>
+<h1 id="multiple-modules-in-wasm"><a class="header" href="#multiple-modules-in-wasm">Multiple Modules in WASM</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md">the source code</a>.</p>
+<p>This is a reimplementation of <a href="multiple_modules_js.html">Multiple Modules (JS)</a> where the filter computation is done in WASM.</p>
 <h2 id="output"><a class="header" href="#output">Output</a></h2>
 <p><canvas id="canvas"></canvas></p>
 <pre id="hex"></pre>
@@ -10464,308 +10465,11 @@ const canvas_render = () =&gt; {
 }
 </code></pre>
 <h3 id="wasm-1"><a class="header" href="#wasm-1">WASM</a></h3>
-<pre><code class="language-javascript">const magic = [0x00, 0x61, 0x73, 0x6d];
-const version = [0x01, 0x00, 0x00, 0x00];
-</code></pre>
-<h3 id="main-module"><a class="header" href="#main-module">main module</a></h3>
-<pre><code class="language-javascript">const main = {
-    section_01: [
-        0x01, // type section
-        0x0b, // 11 bytes
-        0x02, // number of functions
-        0x60, // filter
-        0x01, // takes 1 param ()
-        0x7f, // param i32
-        0x01, 
-        0x7f, // result i32
-        0x60, // alpha
-        0x02, // takes two params (range)
-        0x7f, // param i32
-        0x7f, // param i32
-        0x00, // no output
-    ],
-    section_02: [
-        0x02, // import section
-        0x12, // 18 bytes
-        0x02, // 2 imports
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x6d, // m
-        0x02, // mem import
-        0x00, // min pages
-        0x01, // max pages
-        0x01, // 1 byte
-        0x6a, // j
-        0x05, // 5 byte name
-        0x61, // a
-        0x6c, // l
-        0x70, // p
-        0x68, // h
-        0x61, // a
-        0x00, // func
-        0x00, // filter
-    ],
-    section_03: [
-        0x03, // func section
-        0x02, // 2 bytes
-        0x01, // number of functions
-        0x01, // alpha
-    ],
-    section_07: [
-        0x07, // export section
-        0x09, // 9 bytes
-        0x01, // number of exports
-        0x05, // 5 byte name
-        0x61, // a
-        0x6c, // l
-        0x70, // p
-        0x68, // h
-        0x61, // a
-        0x00, // function
-        0x01  // alpha
-    ],
-    section_0a: [
-        0x0a, // code section 
-        0x25, // 37 bytes
-        0x01, // number of function bodies
-        0x23, // 35 bytes alpha
-        0x01, 0x02, 0x7f,
-        0x03, // loop
-        0x40, // block
-        0x20, 0x00, // get the address lower limit
-        0x20, 0x00, // get the address
-        0x28, 0x02, 0x00, // i32.load the value
-        0x10, 0x00, // call alpha
-        0x36, 0x02, 0x00, // store 
-        0x20, 0x00, // local.get address
-        0x20, 0x01, // upper limit
-        0x4b, // i32.gt_u compare
-        0x0d, 0x01, // br_if
-        0x20, 0x00, // get address
-        0x41, 0x04, // i32.const = 4
-        0x6a, // i32.add 
-        0x21, 0x00, // set new address
-        0x0c, 
-        0x00, // br 0 
-        0x0b, // end block
-        0x0b  // opcode for end
-    ]
-};
-
-main.wasm = new Uint8Array(
-    magic.concat(version)
-        .concat(main.section_01)
-        .concat(main.section_02)
-        .concat(main.section_03)
-        .concat(main.section_07)
-        .concat(main.section_0a)
-    );
-
-</code></pre>
-<h3 id="alpha_filter"><a class="header" href="#alpha_filter">alpha_filter</a></h3>
-<pre><code class="language-javascript">const alpha_filter = {
-    section_01: [
-        0x01, // type section
-        0x06, // 6 bytes
-        0x01, // number of functions
-        0x60, // filter
-        0x01, // takes 1 param ()
-        0x7f, // param i32
-        0x01, 
-        0x7f // result i32
-    ],
-    section_03: [
-        0x03, // func section
-        0x02, // 2 bytes
-        0x01, // number of functions
-        0x00  // filter
-    ],
-    section_07: [
-        0x07, // export section
-        0x0a, // 10 bytes
-        0x01, // number of exports
-        0x06, // 6 byte name
-        0x66, // f
-        0x69, // i
-        0x6c, // l
-        0x74, // t
-        0x65, // e
-        0x72, // r
-        0x00, // function
-        0x00  // filter
-    ],
-    section_0a: [
-        0x0a, // code section
-        0x0e, // 14 bytes
-        0x01, // number of function
-        0x0c, // 12 bytes filter
-        0x00, // 
-        0x20, 0x00, // get the value
-        0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
-        0x6b, // 0xff****** - 0x7f****** = 0x80******
-        0x01,
-        0x0b // opcode for end
-    ]
-};
-
-alpha_filter.wasm = new Uint8Array(
-    magic.concat(version)
-        .concat(alpha_filter.section_01)
-        .concat(alpha_filter.section_03)
-        .concat(alpha_filter.section_07)
-        .concat(alpha_filter.section_0a)
-    );
-
-</code></pre>
-<h3 id="instantiate-wasm-modules"><a class="header" href="#instantiate-wasm-modules">Instantiate WASM modules</a></h3>
-<pre><code class="language-javascript">
-alpha_filter.module = await WebAssembly.compile(alpha_filter.wasm.buffer);
-alpha_filter.importObject = { };
-alpha_filter.instance = await WebAssembly.instantiate(
-    alpha_filter.module, 
-    alpha_filter.importObject);
-
-main.module = await WebAssembly.compile(main.wasm.buffer);
-main.importObject = { 
-    j: {
-         m: mem, 
-         alpha: alpha_filter.instance.exports.filter 
-    }
-};
-
-main.instance = await WebAssembly.instantiate(
-    main.module, 
-    main.importObject);
-
-main.instance.exports.alpha(
-    4 * Math.floor(0x80 * 0x80 / 3), 
-    4 * Math.floor(2 * 0x80 * 0x80 / 3));
-
-canvas_render();
-hexdump();
-</code></pre>
-<script>
-  let code = '(async () => {';
-  const code_sections = document.getElementsByClassName('language-javascript');
-  for(let i = 0; i < code_sections.length; i++) {
-      code += code_sections[i].innerText;
-  }
-  code += '})()';
-  eval(code);
-</script>
-<h1 id="multiple-modules-in-wasm"><a class="header" href="#multiple-modules-in-wasm">Multiple Modules in WASM</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md">the source code</a>.</p>
-<p>This is a reimplementation of <a href="multiple_modules_js.html">Multiple Modules (JS)</a> where the filter computation is done in WASM.</p>
-<h2 id="output-1"><a class="header" href="#output-1">Output</a></h2>
-<p><canvas id="canvas"></canvas></p>
-<pre id="hex"></pre>
-<h2 id="code-1"><a class="header" href="#code-1">Code</a></h2>
-<h3 id="set-up-canvas-1"><a class="header" href="#set-up-canvas-1">Set up canvas</a></h3>
-<pre><code class="language-javascript">const canvas = document.getElementById('canvas');
-const hex_output = document.getElementById('hex');
-const width = 128;
-const height = 128;
-canvas.width = width;
-canvas.height = height;
-canvas.style.border = '1px solid black';
-const ctx = canvas.getContext('2d');
-</code></pre>
-<h3 id="load-avatar-image-to-the-canvas-1"><a class="header" href="#load-avatar-image-to-the-canvas-1">Load avatar image to the canvas</a></h3>
-<pre><code class="language-javascript">const avatar = new Image();
-avatar.src = 'avatar.png';
-await avatar.decode();
-ctx.drawImage(avatar, 0, 0, 0x80, 0x80);
-</code></pre>
-<h3 id="global-variables-and-fucntions-1"><a class="header" href="#global-variables-and-fucntions-1">Global variables and fucntions</a></h3>
-<pre><code class="language-javascript">let imageData = ctx.getImageData(0, 0, width, height);
-let x = 0;
-let y = 0;
-let offset = 0;
-</code></pre>
-<h3 id="heap-and-imagedata-1"><a class="header" href="#heap-and-imagedata-1">Heap and imageData</a></h3>
-<pre><code class="language-javascript">const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
-let heap = new Uint8ClampedArray(mem.buffer);
-
-for (let index = 0; index &lt; 0x100000; index++) {
-    heap[index] = imageData.data[index];
-};
-</code></pre>
-<h3 id="canvas-ui-1"><a class="header" href="#canvas-ui-1">Canvas UI</a></h3>
-<pre><code class="language-javascript">const check_boundary = () =&gt; {
-    if (x &lt; 0) { x = 0 }
-    if (x &gt; width - 1) { x = 0 }
-    if (y &lt; 0) { y = 0 }
-    if (y &gt; height - 1) { y = 0 }
-    offset = 4 * (y * width + x);
-}
-
-const move = (e) =&gt; {
-    e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-
-    const { changedTouches } = e;
-    if (changedTouches &amp;&amp; changedTouches[0]) {
-        x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
-        y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
-    }
-    else {
-        x = Math.floor(e.clientX - rect.left);
-        y = Math.floor(e.clientY - rect.top);
-    }
-    check_boundary();
-    hexdump();
-};
-
-canvas.addEventListener('mousemove', move, false);
-canvas.addEventListener('touchmove', move, false);
-
-const hexdump = () =&gt; {
-    const { data } = imageData;
-    let output = '';
-    for (let i = offset; i &lt; offset + 0x100; i += 4) {
-        if (i &lt; data.length - 4) {
-            for (let j = 3; j &gt; -1; j--) {
-                if (data[i + j] &lt; 0x10) {
-                    output += `0${data[i + j].toString(16)}`;
-                } else {
-                    output += `${data[i + j].toString(16)}`;
-                }
-            }
-            if (((i - offset) % 0x20) === 0x1c) {
-                output += '\n';
-            }
-            else {
-                output += ' ';
-            }
-        }
-    }
-    hex_output.innerHTML = `
-x: 0x${parseInt(x).toString(16)}
-y: 0x${parseInt(y).toString(16)}
-offset: 0x${offset.toString(16)} 
-(mouse point = upper left corner of hexdump)        
-
-(8 x 8) i32 = 256 bytes (1/256 of the total memory of a 64K page)
-(0x${0x10000.toString(16)} = 0x${0x100.toString(16)} * 0x${0x100.toString(16)} = ${0x100 * 0x100} )
-
-${output}
-`;
-};
-
-const canvas_render = () =&gt; {
-    for (let i = 0; i &lt; imageData.data.length; i++) {
-        imageData.data[i] = heap[i];
-    }
-    ctx.putImageData(imageData, 0, 0);
-}
-</code></pre>
-<h3 id="wasm-2"><a class="header" href="#wasm-2">WASM</a></h3>
 <p><a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">RTFM</a></p>
 <pre><code class="language-javascript">const magic = [0x00, 0x61, 0x73, 0x6d];
 const version = [0x01, 0x00, 0x00, 0x00];
 </code></pre>
-<h3 id="main-module-1"><a class="header" href="#main-module-1">main module</a></h3>
+<h3 id="main-module"><a class="header" href="#main-module">main module</a></h3>
 <pre><code class="language-javascript">const main = {
     section_01: [
         0x01, // type section
@@ -10917,7 +10621,7 @@ main.wasm = new Uint8Array(
     );
 
 </code></pre>
-<h3 id="alpha_filter-1"><a class="header" href="#alpha_filter-1">alpha_filter</a></h3>
+<h3 id="alpha_filter"><a class="header" href="#alpha_filter">alpha_filter</a></h3>
 <pre><code class="language-javascript">const alpha_filter = {
     section_01: [
         0x01, // type section
@@ -11053,7 +10757,7 @@ grayscale_filter.wasm = new Uint8Array(
     );
 
 </code></pre>
-<h3 id="instantiate-wasm-modules-1"><a class="header" href="#instantiate-wasm-modules-1">Instantiate WASM modules</a></h3>
+<h3 id="instantiate-wasm-modules"><a class="header" href="#instantiate-wasm-modules">Instantiate WASM modules</a></h3>
 <pre><code class="language-javascript">
 alpha_filter.module = await WebAssembly.compile(alpha_filter.wasm.buffer);
 alpha_filter.importObject = { };
