@@ -149,8 +149,8 @@ const main = {
     ],
     section_02: [
         0x02, // import section
-        0x08, // 8 bytes
-        0x01, // 1 import
+        0x12, // 18 bytes
+        0x02, // 2 imports
         0x01, // 1 byte
         0x6a, // j
         0x01, // 1 byte
@@ -158,12 +158,21 @@ const main = {
         0x02, // mem import
         0x00, // min pages
         0x01, // max pages
+        0x01, // 1 byte
+        0x6a, // j
+        0x05, // 5 byte name
+        0x61, // a
+        0x6c, // l
+        0x70, // p
+        0x68, // h
+        0x61, // a
+        0x00, // func
+        0x00, // filter
     ],
     section_03: [
         0x03, // func section
-        0x03, // 2 bytes
-        0x02, // number of functions
-        0x00, // filter
+        0x02, // 2 bytes
+        0x01, // number of functions
         0x01, // alpha
     ],
     section_07: [
@@ -181,15 +190,8 @@ const main = {
     ],
     section_0a: [
         0x0a, // code section 
-        0x32, // 50 bytes
-        0x02, // number of function bodies
-        0x0c, // 12 bytes filter
-        0x00, // 
-        0x20, 0x00, // get the value
-        0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
-        0x6b, // 0xff****** - 0x7f****** = 0x80******
-        0x01,
-        0x0b,
+        0x25, // 37 bytes
+        0x01, // number of function bodies
         0x23, // 35 bytes alpha
         0x01, 0x02, 0x7f,
         0x03, // loop
@@ -234,22 +236,10 @@ const alpha_filter = {
         0x06, // 6 bytes
         0x01, // number of functions
         0x60, // filter
-        0x02, // takes two params (range)
+        0x01, // takes 1 param ()
         0x7f, // param i32
-        0x7f, // param i32
-        0x00, // no output
-    ],
-    section_02: [
-        0x02, // import section
-        0x08, // 8 bytes
-        0x01, // 1 import
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x6d, // m
-        0x02, // mem import
-        0x00, // min pages
-        0x01, // max pages
+        0x01, 
+        0x7f // result i32
     ],
     section_03: [
         0x03, // func section
@@ -272,38 +262,22 @@ const alpha_filter = {
         0x00  // filter
     ],
     section_0a: [
-        0x0a, // code section 
-        0x2a, // 42 bytes
-        0x01, // number of function bodies
-        0x28, // 40 bytes
-        0x01, 0x02, 0x7f,
-        0x03, // loop
-        0x40, // block
-        0x20, 0x00, // get the address lower limit
-        0x20, 0x00, // get the address
-        0x28, 0x02, 0x00, // i32.load the value
+        0x0a, // code section
+        0x0e, // 14 bytes
+        0x01, // number of function
+        0x0c, // 12 bytes filter
+        0x00, // 
+        0x20, 0x00, // get the value
         0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
         0x6b, // 0xff****** - 0x7f****** = 0x80******
-        0x36, 0x02, 0x00, // store 
-        0x20, 0x00, // local.get address
-        0x20, 0x01, // upper limit
-        0x4b, // i32.gt_u compare
-        0x0d, 0x01, // br_if
-        0x20, 0x00, // get address
-        0x41, 0x04, // i32.const = 4
-        0x6a, // i32.add 
-        0x21, 0x00, // set new address
-        0x0c, 
-        0x00, // br 0 
-        0x0b, // end block
-        0x0b  // opcode for end
+        0x01,
+        0x0b // opcode for end
     ]
 };
 
 alpha_filter.wasm = new Uint8Array(
     magic.concat(version)
         .concat(alpha_filter.section_01)
-        .concat(alpha_filter.section_02)
         .concat(alpha_filter.section_03)
         .concat(alpha_filter.section_07)
         .concat(alpha_filter.section_0a)
@@ -311,113 +285,16 @@ alpha_filter.wasm = new Uint8Array(
 
 ```
 
-### WASM grayscale_filter
-
-```javascript
-const grayscale_filter = {
-    section_01: [
-        0x01, // type section
-        0x06, // 6 bytes
-        0x01, // number of functions
-        0x60, // filter
-        0x02, // takes two params (range)
-        0x7f, // param i32
-        0x7f, // param i32
-        0x00, // no output
-    ],
-    section_02: [
-        0x02, // import section
-        0x08, // 8 bytes
-        0x01, // 1 import
-        0x01, // 1 byte
-        0x6a, // j
-        0x01, // 1 byte
-        0x6d, // m
-        0x02, // mem import
-        0x00, // min pages
-        0x01, // max pages
-    ],
-    section_03: [
-        0x03, // func section
-        0x02, // 2 bytes
-        0x01, // number of functions
-        0x00  // filter
-    ],
-    section_07: [
-        0x07, // export section
-        0x0a, // 10 bytes
-        0x01, // number of exports
-        0x06, // 6 byte name
-        0x66, // f
-        0x69, // i
-        0x6c, // l
-        0x74, // t
-        0x65, // e
-        0x72, // r
-        0x00, // function
-        0x00  // filter
-    ],
-    section_0a: [
-        0x0a, // code section 
-        0x23, // 35 bytes
-        0x01, // number of function bodies
-        0x21, // 33 bytes
-        0x01, 0x02, 0x7f,
-        0x03, // loop
-        0x40, // block
-        0x20, 0x00, // get the address lower limit
-        0x20, 0x00, // get the address
-        0x28, 0x02, 0x00, // i32.load the value 
-        0x36, 0x02, 0x00, // store 
-        0x20, 0x00, // local.get address
-        0x20, 0x01, // upper limit
-        0x4b, // i32.gt_u compare
-        0x0d, 0x01, // br_if
-        0x20, 0x00, // get address
-        0x41, 0x04, // i32.const = 4
-        0x6a, // i32.add 
-        0x21, 0x00, // set new address
-        0x0c, 
-        0x00, // br 0 
-        0x0b, // end block
-        0x0b  // opcode for end
-    ]
-};
-
-grayscale_filter.wasm = new Uint8Array(
-    magic.concat(version)
-        .concat(grayscale_filter.section_01)
-        .concat(grayscale_filter.section_02)
-        .concat(grayscale_filter.section_03)
-        .concat(grayscale_filter.section_07)
-        .concat(grayscale_filter.section_0a)
-    );
-
-```
-
 ### Instantiate WASM modules
 
 ```javascript
-alpha_filter.module = await WebAssembly.compile(alpha_filter.wasm.buffer);
-alpha_filter.importObject = { j: { m: mem } };
 
+alpha_filter.module = await WebAssembly.compile(alpha_filter.wasm.buffer);
+alpha_filter.importObject = { };
 alpha_filter.instance = await WebAssembly.instantiate(alpha_filter.module, alpha_filter.importObject);
 
-
-// range has to be at address %4 = 0
-// alpha_filter.instance.exports.filter(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
-
-
-grayscale_filter.module = await WebAssembly.compile(grayscale_filter.wasm.buffer);
-grayscale_filter.importObject = { j: { m: mem } };
-
-grayscale_filter.instance = await WebAssembly.instantiate(grayscale_filter.module, grayscale_filter.importObject);
-
-// range has to be at address %4 = 0
-// grayscale_filter.instance.exports.filter(4 * Math.floor(2 * 0x80 * 0x80 / 3), 4 * (0x80 * 0x80 - 2));
-
 main.module = await WebAssembly.compile(main.wasm.buffer);
-main.importObject = { j: { m: mem } };
+main.importObject = { j: { m: mem, alpha: alpha_filter.instance.exports.filter } };
 main.instance = await WebAssembly.instantiate(main.module, main.importObject);
 main.instance.exports.alpha(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
 canvas_render();
