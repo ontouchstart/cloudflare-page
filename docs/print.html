@@ -10661,12 +10661,26 @@ alpha_filter.wasm = new Uint8Array(
 <pre><code class="language-javascript">
 alpha_filter.module = await WebAssembly.compile(alpha_filter.wasm.buffer);
 alpha_filter.importObject = { };
-alpha_filter.instance = await WebAssembly.instantiate(alpha_filter.module, alpha_filter.importObject);
+alpha_filter.instance = await WebAssembly.instantiate(
+    alpha_filter.module, 
+    alpha_filter.importObject);
 
 main.module = await WebAssembly.compile(main.wasm.buffer);
-main.importObject = { j: { m: mem, alpha: alpha_filter.instance.exports.filter } };
-main.instance = await WebAssembly.instantiate(main.module, main.importObject);
-main.instance.exports.alpha(4 * Math.floor(0x80 * 0x80 / 3), 4 * Math.floor(2 * 0x80 * 0x80 / 3));
+main.importObject = { 
+    j: {
+         m: mem, 
+         alpha: alpha_filter.instance.exports.filter 
+    }
+};
+
+main.instance = await WebAssembly.instantiate(
+    main.module, 
+    main.importObject);
+
+main.instance.exports.alpha(
+    4 * Math.floor(0x80 * 0x80 / 3), 
+    4 * Math.floor(2 * 0x80 * 0x80 / 3));
+
 canvas_render();
 hexdump();
 </code></pre>
