@@ -16,3 +16,4 @@
 - [Memory I/O](./memory_io.md)
 - [Multiple Modules](./multiple_modules.md)
 - [WASM filters](./wasm_filters.md)
+- [More general WASM filters](./more_general_wasm_filters.md)

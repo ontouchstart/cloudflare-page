@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>WASM filters - ontouchstart</title>
+        <title>More general WASM filters - ontouchstart</title>
         
         
 
@@ -98,7 +98,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules.html"><strong aria-hidden="true">14.</strong> Multiple Modules</a></li><li class="chapter-item expanded "><a href="wasm_filters.html" class="active"><strong aria-hidden="true">15.</strong> WASM filters</a></li><li class="chapter-item expanded "><a href="more_general_wasm_filters.html"><strong aria-hidden="true">16.</strong> More general WASM filters</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules.html"><strong aria-hidden="true">14.</strong> Multiple Modules</a></li><li class="chapter-item expanded "><a href="wasm_filters.html"><strong aria-hidden="true">15.</strong> WASM filters</a></li><li class="chapter-item expanded "><a href="more_general_wasm_filters.html" class="active"><strong aria-hidden="true">16.</strong> More general WASM filters</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,8 +170,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="wasm-filters"><a class="header" href="#wasm-filters">WASM filters</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_filters.md">the source code</a>.</p>
+                        <h1 id="more-general-wasm-filters"><a class="header" href="#more-general-wasm-filters">More general WASM filters</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/more_general_wasm_filters.md">the source code</a>.</p>
 <h2 id="output"><a class="header" href="#output">Output</a></h2>
 <p><canvas id="canvas"></canvas></p>
 <pre id="hex"></pre>
@@ -276,6 +276,7 @@ const canvas_render = () =&gt; {
 }
 </code></pre>
 <h3 id="wasm"><a class="header" href="#wasm">WASM</a></h3>
+<p><a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-module">RTFM</a></p>
 <pre><code class="language-javascript">const magic = [0x00, 0x61, 0x73, 0x6d];
 const version = [0x01, 0x00, 0x00, 0x00];
 </code></pre>
@@ -339,18 +340,18 @@ const version = [0x01, 0x00, 0x00, 0x00];
     ],
     section_0a: [
         0x0a, // code section 
-        0x25, // 37 bytes
-        0x01, // number of function bodies
-        0x23, // 35 bytes alpha
-        0x01, 0x02, 0x7f,
+        0x23, // 35 bytes
+        0x01, // 1 function body
+        0x21, // 33 bytes
+        0x00, // no more local 
         0x03, // loop
         0x40, // block
-        0x20, 0x00, // get the address lower limit
-        0x20, 0x00, // get the address
+        0x20, 0x00, // get address
+        0x20, 0x00, // get address
         0x28, 0x02, 0x00, // i32.load the value
         0x10, 0x00, // call alpha
         0x36, 0x02, 0x00, // store 
-        0x20, 0x00, // local.get address
+        0x20, 0x00, // get address
         0x20, 0x01, // upper limit
         0x4b, // i32.gt_u compare
         0x0d, 0x01, // br_if
@@ -358,10 +359,9 @@ const version = [0x01, 0x00, 0x00, 0x00];
         0x41, 0x04, // i32.const = 4
         0x6a, // i32.add 
         0x21, 0x00, // set new address
-        0x0c, 
-        0x00, // br 0 
+        0x0c, 0x00, // br 0 
         0x0b, // end block
-        0x0b  // opcode for end
+        0x0b  // end code
     ]
 };
 
@@ -472,15 +472,11 @@ hexdump();
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="multiple_modules.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="wasm_filters.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="more_general_wasm_filters.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -490,15 +486,11 @@ hexdump();
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="multiple_modules.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="wasm_filters.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
-                
-                    <a rel="next" href="more_general_wasm_filters.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 
