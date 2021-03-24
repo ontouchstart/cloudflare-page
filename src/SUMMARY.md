@@ -14,6 +14,6 @@
 - [What can you do with one page?](./onepage.md)
 - [Thinking in hex](./thinking_in_hex.md)
 - [Memory I/O](./memory_io.md)
-- [Multiple Modules](./multiple_modules.md)
+- [Multiple Modules (JS)](./multiple_modules_js.md)
 - [WASM filters](./wasm_filters.md)
-- [More general WASM filters](./more_general_wasm_filters.md)
+- [Multiple Modules (WASM)](./multiple_modules_wasm.md)

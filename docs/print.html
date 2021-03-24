@@ -100,7 +100,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules.html"><strong aria-hidden="true">14.</strong> Multiple Modules</a></li><li class="chapter-item expanded "><a href="wasm_filters.html"><strong aria-hidden="true">15.</strong> WASM filters</a></li><li class="chapter-item expanded "><a href="more_general_wasm_filters.html"><strong aria-hidden="true">16.</strong> More general WASM filters</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules_js.html"><strong aria-hidden="true">14.</strong> Multiple Modules (JS)</a></li><li class="chapter-item expanded "><a href="wasm_filters.html"><strong aria-hidden="true">15.</strong> WASM filters</a></li><li class="chapter-item expanded "><a href="multiple_modules_wasm.html"><strong aria-hidden="true">16.</strong> Multiple Modules (WASM)</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -9998,8 +9998,8 @@ ${output}
   const code = document.getElementsByClassName('language-javascript')[0].innerText;
   eval(code);
 </script>
-<h1 id="multiple-modules"><a class="header" href="#multiple-modules">Multiple Modules</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules.md">the source code</a>.</p>
+<h1 id="multiple-modules-js"><a class="header" href="#multiple-modules-js">Multiple Modules (JS)</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_js.md">the source code</a>.</p>
 <p>Now let's create three WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespaces (<code>main_module</code>, <code>paint_module</code> and <code>filter_module</code>).</p>
 <p><canvas id="canvas"></canvas></p>
 <pre id="hex"></pre>
@@ -10693,8 +10693,9 @@ hexdump();
   code += '})()';
   eval(code);
 </script>
-<h1 id="more-general-wasm-filters"><a class="header" href="#more-general-wasm-filters">More general WASM filters</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/more_general_wasm_filters.md">the source code</a>.</p>
+<h1 id="multiple-modules-in-wasm"><a class="header" href="#multiple-modules-in-wasm">Multiple Modules in WASM</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md">the source code</a>.</p>
+<p>This is a reimplementation of <a href="multiple_modules_js.html">Multiple Modules (JS)</a> where the filter computation is done in WASM.</p>
 <h2 id="output-1"><a class="header" href="#output-1">Output</a></h2>
 <p><canvas id="canvas"></canvas></p>
 <pre id="hex"></pre>
@@ -11118,13 +11119,19 @@ main.instance = await WebAssembly.instantiate(
     main.module, 
     main.importObject);
 
-main.instance.exports.alpha(
-    4 * Math.floor(0x80 * 0x80 / 3), 
-    4 * Math.floor(2 * 0x80 * 0x80 / 3));
+setTimeout(() =&gt; {
+    main.instance.exports.alpha(
+        4 * Math.floor(0x80 * 0x80 / 3), 
+        4 * Math.floor(2 * 0x80 * 0x80 / 3));
+        canvas_render();
+    },  1000);
 
-main.instance.exports.grayscale(
-    4 * Math.floor(2 * 0x80 * 0x80 / 3), 
-    4 * Math.floor(0x80 * 0x80 - 2));
+setTimeout(() =&gt; {
+    main.instance.exports.grayscale(
+        4 * Math.floor(2 * 0x80 * 0x80 / 3), 
+        4 * Math.floor(0x80 * 0x80 - 2));
+    canvas_render();
+    }, 2000);
 
 canvas_render();
 hexdump();
