@@ -376,6 +376,106 @@ section = (i, data) => {
 } // end block namescape
 ```
 
+### Start section
+
+```
+$ cat start.wat
+(module (func) (start 0))
+$ hexdump -C start.wasm
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 08 01 00 0a 04 01  02 00 0b                 |...........|
+0000001b
+```
+
+```javascript
+section = (i, data) => {
+    if(i === 0x01) { // type
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x02) { // import
+        if(data[i].length === 5) {
+            const mod = data[i][0].split('');
+            const name = data[i][1].split('');
+            const type = data[i][2];
+            const min = data[i][3];
+            const max = data[i][4];
+            const total = mod.length + name.length + 6;
+            return [
+              i, 
+              total, 
+              0x01, 
+              mod.length, mod.map(d => (d.charCodeAt(0))),
+              name.length, name.map(d => (d.charCodeAt(0))),
+              type, 
+              min, 
+              max].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x03) { // func
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x07) { // export
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d => (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x08) { // start
+        if(data[i].length === 1) {
+          return [i, 0x01, data[i][0]];
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x0a) { // code
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+```
+
+### Test
+```javascript
+{ // begin block namespace
+    const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        ["js", "mem", 0x02, 0x00, 0x01], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        [], // 7 export section
+        [0x00], // 8 start section
+        [], // 9 element section
+        [], // 10 code section
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
+    const env = { js: { mem }};
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('import memory js.mem, with start but no export', instance);
+} // end block namescape
+```
+
 <script>
   let code = '(async () => {';
   const code_sections = document.getElementsByClassName('language-javascript');
