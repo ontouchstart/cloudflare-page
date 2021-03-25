@@ -39,6 +39,7 @@ input_ctx.fillRect(0, 0, width, height);
 const output_canvas = document.getElementById('output_canvas');
 output_canvas.width = width;
 output_canvas.height = height;
+output_canvas.style.background = 'url(avatar.png)';
 const output_ctx = output_canvas.getContext('2d');
 output_ctx.fillStyle = 'blue';
 output_ctx.fillRect(0, 0, width, height);
@@ -340,14 +341,39 @@ const alpha_filter = {
     ],
     section_0a: [
         0x0a, // code section
-        0x0e, // 14 bytes
+        0x39, // 57 bytes
         0x01, // number of function
-        0x0c, // 12 bytes filter
-        0x00, // 
-        0x20, 0x00, // get the value
-        0x41, 0x80, 0x80, 0x80, 0xf8, 0x07, // i32.const 0x7f000000
-        0x6b, // 0xff****** - 0x7f****** = 0x80******
-        0x01,
+        0x37, // 55 bytes filter
+        0x00, // no extra local var
+        0x20, 0x00, // local.get
+        0x41, 0xff, 0x01, // mask for r i32.const 0x000000ff
+        0x71, // i32.and
+        0x41, 0xe4, 0x00, //
+        0x4b, // i32.gt_u 
+        0x04, // r > 100
+        0x40, // block
+        0x20, 0x00, // local.get
+        0x41, 0x80, 0xfe, 0x03, // mask for g i32.const 0x0000ff00
+        0x71, // i32.and
+        0x41, 0x08, 0x76, // right shift two bytes
+        0x41, 0xe4, 0x00, //
+        0x4b, // i32.gt_u 
+        0x04, // g > 100
+        0x40, // block
+        0x20, 0x00, // local.get
+        0x41, 0x80, 0x80, 0xfc, 0x07, // mask for b i32.const 0x00ff0000
+        0x71, // i32.and
+        0x41, 0x10, 0x76, // right shift four bytes
+        0x41, 0x20, //
+        0x49, // i32.lt_u 
+        0x04, // b < 43
+        0x40, // block
+        0x41, 0x00,
+        0x21, 0x00, // set transparent pixel
+        0x0b,
+        0x0b,
+        0x0b,
+        0x20, 0x00, // local.get
         0x0b // opcode for end
     ]
 };
