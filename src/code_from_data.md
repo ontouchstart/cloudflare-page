@@ -9,11 +9,59 @@ Let's start from scratch again to see if we can find simple, straightforward, ea
 ## Empty module
 
 ### Generator
+
+We use mutable `let wasm = ` so that we can update it in future sections.
+
 ```javascript
-const wasm = async () => {
+let wasm = async () => {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
     const bytes = magic.concat(version);
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
+```
+
+### Test
+
+```javascript
+{ // begin block namespace
+    const module = await wasm(); 
+    const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+```
+
+## Module sections
+
+The binary encoding of modules is organized into [13 optional sections](https://webassembly.github.io/spec/core/binary/modules.html). 
+We can rewrite our wasm generate to take an array of 13 empty arrays.
+
+```javascript
+const empty_data = [
+    [], // 0 custom section
+    [], // 1 type section
+    [], // 2 import section
+    [], // 3 function section 
+    [], // 4 table section
+    [], // 5 memory section
+    [], // 6 global section
+    [], // 7 export section
+    [], // 8 start section
+    [], // 9 element section
+    [], // 10 code section
+    [], // 11 data section
+    [], // 12 data count section
+];
+
+wasm = async (data = empty_data) => {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    console.log({data});
+    for(let i = 0; i < data.length; i++ ) {
+        bytes = bytes.concat(data[i]);
+    }
     return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
 }
 ```

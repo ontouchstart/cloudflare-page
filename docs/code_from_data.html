@@ -170,7 +170,8 @@
 <p>Let's start from scratch again to see if we can find simple, straightforward, easy to understand way to construct WASM bytecode from data in JS without using advanced features like types. The goal is not to make a robust general purpose <a href="https://webassembly.github.io/spec/core/syntax/index.html#syntax">WASM AST</a> generator that covers all the cases but to make it easy to write small and simple WASM modules.</p>
 <h2 id="empty-module"><a class="header" href="#empty-module">Empty module</a></h2>
 <h3 id="generator"><a class="header" href="#generator">Generator</a></h3>
-<pre><code class="language-javascript">const wasm = async () =&gt; {
+<p>We use mutable <code>let wasm = </code> so that we can update it in future sections.</p>
+<pre><code class="language-javascript">let wasm = async () =&gt; {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
     const bytes = magic.concat(version);
@@ -178,6 +179,44 @@
 }
 </code></pre>
 <h3 id="test"><a class="header" href="#test">Test</a></h3>
+<pre><code class="language-javascript">{ // begin block namespace
+    const module = await wasm(); 
+    const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+</code></pre>
+<h2 id="module-sections"><a class="header" href="#module-sections">Module sections</a></h2>
+<p>The binary encoding of modules is organized into <a href="https://webassembly.github.io/spec/core/binary/modules.html">13 optional sections</a>. 
+We can rewrite our wasm generate to take an array of 13 empty arrays.</p>
+<pre><code class="language-javascript">const empty_data = [
+    [], // 0 custom section
+    [], // 1 type section
+    [], // 2 import section
+    [], // 3 function section 
+    [], // 4 table section
+    [], // 5 memory section
+    [], // 6 global section
+    [], // 7 export section
+    [], // 8 start section
+    [], // 9 element section
+    [], // 10 code section
+    [], // 11 data section
+    [], // 12 data count section
+];
+
+wasm = async (data = empty_data) =&gt; {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    console.log({data});
+    for(let i = 0; i &lt; data.length; i++ ) {
+        bytes = bytes.concat(data[i]);
+    }
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
+</code></pre>
+<h3 id="test-1"><a class="header" href="#test-1">Test</a></h3>
 <pre><code class="language-javascript">{ // begin block namespace
     const module = await wasm(); 
     const env = {}
