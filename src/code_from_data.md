@@ -78,13 +78,13 @@ wasm = async (data = empty_data) => {
 } // end block namescape
 ```
 
-## Think in arrays
+### Think in arrays
 
 Since WASM is an abstraction on stack machine and linear memory, one of the goals of this exercise of generating WASM bytecode from data is to help programming **think in arrays**. 
 
 Let's see if we can get rid of the noise of variable names or labels so that we focus on the basic concepts of array and index. 
 
-## Empty function
+### Empty function
 
 ```
 $ cat empty.wat
@@ -129,6 +129,46 @@ wasm = async (data = empty_data) => {
 { // begin block namespace
     const module = await wasm(); 
     const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+```
+
+### Import memory
+
+```
+$cat memory.wat 
+(memory (import "j" "m") 1)
+$ sam@Sams-MacBook-Pro Desktop % hexdump -C memory.wasm
+00000000  00 61 73 6d 01 00 00 00  02 08 01 01 6a 01 6d 02  |.asm........j.m.|
+00000010  00 01                                             |..|
+00000012
+```
+
+```javascript
+section = (i, data) => {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x02) {
+        return [i, 0x08, 0x01, 0x01, 0x6a, 0x01, 0x6d, 0x02, 0x00, 0x01];
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+```
+
+### Test
+```javascript
+{ // begin block namespace
+    const module = await wasm();
+    const m = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
+    const env = { j: { m }};
     const instance = await WebAssembly.instantiate(module, env);
     console.log('instance of an empty module', instance);
 } // end block namescape
