@@ -451,6 +451,7 @@ section = (i, data) => {
 ```
 
 ### Test
+
 ```javascript
 { // begin block namespace
     const data = [
@@ -476,9 +477,210 @@ section = (i, data) => {
 } // end block namescape
 ```
 
+### A minimum wasm program
+
+Set the first bye of the memory to `0x01`.
+
+<canvas id="minimum_canvas"></canvas>
+<pre id="minimum_hex"></pre>
+
+```javascript
+section = (i, data) => {
+    if(i === 0x01) { // type
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x02) { // import
+        if(data[i].length === 5) {
+            const mod = data[i][0].split('');
+            const name = data[i][1].split('');
+            const type = data[i][2];
+            const min = data[i][3];
+            const max = data[i][4];
+            const total = mod.length + name.length + 6;
+            return [
+              i, 
+              total, 
+              0x01, 
+              mod.length, mod.map(d => (d.charCodeAt(0))),
+              name.length, name.map(d => (d.charCodeAt(0))),
+              type, 
+              min, 
+              max].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x03) { // func
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x07) { // export
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d => (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x08) { // start
+        if(data[i].length === 1) {
+          return [i, 0x01, data[i][0]];
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x0a) { // code
+        if(data[i].length > 1 ) {
+            const total = data[i].length + 4;
+            return [i, total, 0x01, data[i].length + 2, 0x00, data[i], 0x0b].flat();
+           
+        }
+        else {
+          return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+        }
+    }
+    return [];
+}
+```
+
+```javascript
+{
+  const canvas = document.getElementById('minimum_canvas');
+  const hex = document.getElementById('minimum_hex');
+  const width = 0x80; // 128
+  const height = 0x80;
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.border = '1px solid black';
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#00000000';
+  ctx.fillRect(0, 0, width, height);
+  let imageData = ctx.getImageData(0, 0, width, height);
+  let x = 0;
+  let y = 0;
+  let offset = 0;
+  const length = imageData.data.length;
+  const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+  let heap = new Uint8ClampedArray(mem.buffer);
+  for (let index = 0; index < length; index++) {
+    heap[index] = imageData.data[index];
+  };
+
+  const check_boundary = () => {
+    if (x < 0) { x = 0 }
+    if (x > width - 1) { x = 0 }
+    if (y < 0) { y = 0 }
+    if (y > height - 1) { y = 0 }
+    offset = 4 * (y * width + x);
+  }
+
+  const move = (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+
+    const { changedTouches } = e;
+    if (changedTouches && changedTouches[0]) {
+        x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
+        y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
+    }
+    else {
+        x = Math.floor(e.clientX - rect.left);
+        y = Math.floor(e.clientY - rect.top);
+    }
+    check_boundary();
+    hexdump();
+  };
+
+  canvas.addEventListener('mousemove', move, false);
+  canvas.addEventListener('touchmove', move, false);
+  
+  const hexdump = () => {
+    const { data } = imageData;
+    let output = '';
+    for (let i = offset; i < offset + 0x100; i += 4) {
+        if (i < data.length - 4) {
+            for (let j = 3; j > -1; j--) {
+                if (data[i + j] < 0x10) {
+                    output += `0${data[i + j].toString(16)}`;
+                } else {
+                    output += `${data[i + j].toString(16)}`;
+                }
+            }
+            if (((i - offset) % 0x20) === 0x1c) {
+                output += '\n';
+            }
+            else {
+                output += ' ';
+            }
+        }
+    }
+    hex.innerHTML = `
+x: 0x${parseInt(x).toString(16)}
+y: 0x${parseInt(y).toString(16)}
+offset: 0x${offset.toString(16)} 
+(mouse point = upper left corner of hexdump)        
+
+(8 x 8) i32 = 256 bytes (1/256 of the total memory of a 64K page)
+(0x${0x10000.toString(16)} = 0x${0x100.toString(16)} * 0x${0x100.toString(16)} = ${0x100 * 0x100} )
+
+${output}
+`;
+};
+
+const canvas_render = () => {
+    for (let i = 0; i < length; i++) {
+        imageData.data[i] = heap[i];
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+  const code = [
+    0x41, 0x00, // address: i32.const 0x00
+    0x41, 0x01, // value: i32.const 0x01
+    0x36, 0x02, 0x00, // i32.store 
+  ];
+  
+  const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        ["js", "mem", 0x02, 0x00, 0x01], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        [], // 7 export section
+        [0x00], // 8 start section
+        [], // 9 element section
+        code, // 10 code section store 0x01 at the first byte
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data);
+    const env = { js: { mem }};
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('a minimum wasm program', instance);
+    
+    canvas_render();
+    hexdump();
+}
+
+```
+
 <script>
   let code = '(async () => {';
   const code_sections = document.getElementsByClassName('language-javascript');
+  
   for(let i = 0; i < code_sections.length; i++) {
       code += code_sections[i].innerText;
   }
