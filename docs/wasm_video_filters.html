@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Multiple Modules (WASM) - ontouchstart</title>
+        <title>WASM Video filters - ontouchstart</title>
         
         
 
@@ -98,7 +98,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules_js.html"><strong aria-hidden="true">14.</strong> Multiple Modules (JS)</a></li><li class="chapter-item expanded "><a href="multiple_modules_wasm.html" class="active"><strong aria-hidden="true">15.</strong> Multiple Modules (WASM)</a></li><li class="chapter-item expanded "><a href="wasm_video_filters.html"><strong aria-hidden="true">16.</strong> WASM Video filters</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="chapter_wat.html"><strong aria-hidden="true">1.</strong> WAT: WASM by Hand</a></li><li class="chapter-item expanded "><a href="chapter_rust.html"><strong aria-hidden="true">2.</strong> Rust and WASM</a></li><li class="chapter-item expanded "><a href="chapter_emcc.html"><strong aria-hidden="true">3.</strong> C and WASM via emcc</a></li><li class="chapter-item expanded "><a href="chapter_llvm.html"><strong aria-hidden="true">4.</strong> C and WASM via llvm</a></li><li class="chapter-item expanded "><a href="chapter_bytes.html"><strong aria-hidden="true">5.</strong> Programming with ArrayBuffer</a></li><li class="chapter-item expanded "><a href="chapter_wasm_js_api.html"><strong aria-hidden="true">6.</strong> WebAssembly JavaScript Interface</a></li><li class="chapter-item expanded "><a href="chapter_wasm_binary.html"><strong aria-hidden="true">7.</strong> WASM Binary Format</a></li><li class="chapter-item expanded "><a href="chapter_wasm_canvas.html"><strong aria-hidden="true">8.</strong> WASM Canvas</a></li><li class="chapter-item expanded "><a href="chapter_wasm_instructions.html"><strong aria-hidden="true">9.</strong> WASM Instructions</a></li><li class="chapter-item expanded "><a href="canvas_draw/index.html"><strong aria-hidden="true">10.</strong> Canvas Draw</a></li><li class="chapter-item expanded "><a href="onepage.html"><strong aria-hidden="true">11.</strong> What can you do with one page?</a></li><li class="chapter-item expanded "><a href="thinking_in_hex.html"><strong aria-hidden="true">12.</strong> Thinking in hex</a></li><li class="chapter-item expanded "><a href="memory_io.html"><strong aria-hidden="true">13.</strong> Memory I/O</a></li><li class="chapter-item expanded "><a href="multiple_modules_js.html"><strong aria-hidden="true">14.</strong> Multiple Modules (JS)</a></li><li class="chapter-item expanded "><a href="multiple_modules_wasm.html"><strong aria-hidden="true">15.</strong> Multiple Modules (WASM)</a></li><li class="chapter-item expanded "><a href="wasm_video_filters.html" class="active"><strong aria-hidden="true">16.</strong> WASM Video filters</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,41 +170,53 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="multiple-modules-in-wasm"><a class="header" href="#multiple-modules-in-wasm">Multiple Modules in WASM</a></h1>
-<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md">the source code</a>.</p>
-<p>This is a reimplementation of <a href="multiple_modules_js.html">Multiple Modules (JS)</a> where the filter computation is done in WASM.</p>
+                        <h1 id="wasm-video-filters"><a class="header" href="#wasm-video-filters">WASM video filters</a></h1>
+<p>This page and all the code it runs are in one page. You can view <a href="https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_video_filters.md">the source code</a>.</p>
+<p>Now let's see if we can use the same filters on video. Our demo will be based on the MDN tutorial from <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Manipulating_video_using_canvas">Manipulating video using canvas</a>.</p>
+<h2 id="input"><a class="header" href="#input">Input</a></h2>
+<p><video id="video" controls="true" src="https://mdn.github.io/dom-examples/canvas/chroma-keying/media/video.mp4" crossorigin="anonymous"></video></p>
 <h2 id="output"><a class="header" href="#output">Output</a></h2>
-<p><canvas id="canvas"></canvas></p>
+<p><canvas id="input_canvas"></canvas>
+<canvas id="output_canvas"></canvas></p>
 <pre id="hex"></pre>
 <h2 id="code"><a class="header" href="#code">Code</a></h2>
-<h3 id="set-up-canvas"><a class="header" href="#set-up-canvas">Set up canvas</a></h3>
-<pre><code class="language-javascript">const canvas = document.getElementById('canvas');
-const hex_output = document.getElementById('hex');
-const width = 128;
-const height = 128;
-canvas.width = width;
-canvas.height = height;
-canvas.style.border = '1px solid black';
-const ctx = canvas.getContext('2d');
+<h3 id="get-video-information"><a class="header" href="#get-video-information">Get video information</a></h3>
+<pre><code class="language-javascript">const video = document.getElementById('video');
+const width = 320;
+const height = 192;
 </code></pre>
-<h3 id="load-avatar-image-to-the-canvas"><a class="header" href="#load-avatar-image-to-the-canvas">Load avatar image to the canvas</a></h3>
-<pre><code class="language-javascript">const avatar = new Image();
-avatar.src = 'avatar.png';
-await avatar.decode();
-ctx.drawImage(avatar, 0, 0, 0x80, 0x80);
+<h3 id="set-up-canvas"><a class="header" href="#set-up-canvas">Set up canvas</a></h3>
+<pre><code class="language-javascript">const hex_output = document.getElementById('hex');
+
+const input_canvas = document.getElementById('input_canvas');
+input_canvas.width = width;
+input_canvas.height = height;
+const input_ctx = input_canvas.getContext('2d');
+input_ctx.fillStyle = 'green';
+input_ctx.fillRect(0, 0, width, height);
+</code></pre>
+<pre><code class="language-javascript">const output_canvas = document.getElementById('output_canvas');
+output_canvas.width = width;
+output_canvas.height = height;
+const output_ctx = output_canvas.getContext('2d');
+output_ctx.fillStyle = 'blue';
+output_ctx.fillRect(0, 0, width, height);
+
 </code></pre>
 <h3 id="global-variables-and-fucntions"><a class="header" href="#global-variables-and-fucntions">Global variables and fucntions</a></h3>
-<pre><code class="language-javascript">let imageData = ctx.getImageData(0, 0, width, height);
+<pre><code class="language-javascript">let input_imageData = input_ctx.getImageData(0, 0, width, height);
+let output_imageData = output_ctx.getImageData(0, 0, width, height);
+const length = input_imageData.data.length;
 let x = 0;
 let y = 0;
 let offset = 0;
 </code></pre>
 <h3 id="heap-and-imagedata"><a class="header" href="#heap-and-imagedata">Heap and imageData</a></h3>
-<pre><code class="language-javascript">const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
+<pre><code class="language-javascript">const mem = new WebAssembly.Memory({ initial: 4, maximum: 4 });
 let heap = new Uint8ClampedArray(mem.buffer);
 
-for (let index = 0; index &lt; 0x100000; index++) {
-    heap[index] = imageData.data[index];
+for (let index = 0; index &lt; length; index++) {
+    heap[index] = input_imageData.data[index];
 };
 </code></pre>
 <h3 id="canvas-ui"><a class="header" href="#canvas-ui">Canvas UI</a></h3>
@@ -218,12 +230,12 @@ for (let index = 0; index &lt; 0x100000; index++) {
 
 const move = (e) =&gt; {
     e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
+    const rect = output_canvas.getBoundingClientRect();
 
     const { changedTouches } = e;
     if (changedTouches &amp;&amp; changedTouches[0]) {
-        x = Math.floor(changedTouches[0].pageX - canvas.offsetLeft);
-        y = Math.floor(changedTouches[0].pageY - canvas.offsetTop);
+        x = Math.floor(changedTouches[0].pageX - output_canvas.offsetLeft);
+        y = Math.floor(changedTouches[0].pageY - output_canvas.offsetTop);
     }
     else {
         x = Math.floor(e.clientX - rect.left);
@@ -233,11 +245,11 @@ const move = (e) =&gt; {
     hexdump();
 };
 
-canvas.addEventListener('mousemove', move, false);
-canvas.addEventListener('touchmove', move, false);
+output_canvas.addEventListener('mousemove', move, false);
+output_canvas.addEventListener('touchmove', move, false);
 
 const hexdump = () =&gt; {
-    const { data } = imageData;
+    const { data } = output_imageData;
     let output = '';
     for (let i = offset; i &lt; offset + 0x100; i += 4) {
         if (i &lt; data.length - 4) {
@@ -270,10 +282,10 @@ ${output}
 };
 
 const canvas_render = () =&gt; {
-    for (let i = 0; i &lt; imageData.data.length; i++) {
-        imageData.data[i] = heap[i];
+    for (let i = 0; i &lt; length; i++) {
+        output_imageData.data[i] = heap[i];
     }
-    ctx.putImageData(imageData, 0, 0);
+    output_ctx.putImageData(output_imageData, 0, 0);
 }
 </code></pre>
 <h3 id="wasm"><a class="header" href="#wasm">WASM</a></h3>
@@ -596,21 +608,34 @@ main.instance = await WebAssembly.instantiate(
     main.module, 
     main.importObject);
 
-setTimeout(() =&gt; {
+
+
+const play = () =&gt;{
+    if (video.paused || video.ended) {
+      return;
+    }
+
+    input_ctx.drawImage(video, 0, 0, width, height);
+    input_imageData = input_ctx.getImageData(0, 0, width, height);
+    
+    for (let index = 0; index &lt; length; index++) {
+       heap[index] = input_imageData.data[index];
+    };
+
     main.instance.exports.alpha(
-        4 * Math.floor(0x80 * 0x80 / 3), 
-        4 * Math.floor(2 * 0x80 * 0x80 / 3));
-        canvas_render();
-    },  1000);
-
-setTimeout(() =&gt; {
+        4 * Math.floor(length / 12),
+        4 * Math.floor(length / 6));
+    
     main.instance.exports.grayscale(
-        4 * Math.floor(2 * 0x80 * 0x80 / 3), 
-        4 * Math.floor(0x80 * 0x80 - 2));
-    canvas_render();
-    }, 2000);
+        4 * Math.floor(length / 6), 
+        4 * Math.floor(length / 4 -  2));
 
-canvas_render();
+    canvas_render();
+    setTimeout(() =&gt; { play()}, 0); // loop
+};
+
+video.addEventListener('play', play, false);
+
 hexdump();
 </code></pre>
 <script>
@@ -628,15 +653,11 @@ hexdump();
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="multiple_modules_js.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="multiple_modules_wasm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="wasm_video_filters.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -646,15 +667,11 @@ hexdump();
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="multiple_modules_js.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="multiple_modules_wasm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
-                
-                    <a rel="next" href="wasm_video_filters.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 
