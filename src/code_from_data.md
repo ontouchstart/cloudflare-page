@@ -29,7 +29,7 @@ let wasm = async () => {
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty module', instance);
 } // end block namescape
 ```
 
@@ -74,7 +74,7 @@ wasm = async (data = empty_data) => {
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty sections module', instance);
 } // end block namescape
 ```
 
@@ -87,10 +87,10 @@ Let's see if we can get rid of the noise of variable names or labels so that we 
 ### Empty function
 
 ```
-$ cat empty.wat
-(module (func))
-$ wat2wasm empty.wat
-$ hexdump -C empty.wasm 
+$ cat empty_func.wat
+(func)
+$ wat2wasm empty_func.wat
+$ hexdump -C empty_func.wasm 
 00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
 00000010  01 00 0a 04 01 02 00 0b                           |........|
 00000018
@@ -131,9 +131,94 @@ wasm = async (data = empty_data) => {
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty_func', instance);
 } // end block namescape
 ```
+
+### Empty function export
+
+```
+$ cat empty_func_export.wat  
+(func (export "f"))
+$ hexdump -C empty_func_export.wasm 
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 07 05 01 01 66 00  00 0a 04 01 02 00 0b     |......f........|
+0000001f
+
+```
+
+```javascript
+section = (i, data) => {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d => (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+
+wasm = async (data = empty_data) => {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    for(let i = 0; i < data.length; i++) {
+        console.log('section', i, section(i, data));
+        bytes = bytes.concat(section(i, data));
+    }
+    console.log({ bytes });
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
+```
+
+### Test
+
+```javascript
+{ // begin block namespace
+    const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        [], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        ["f"], // 7 export section
+        [], // 8 start section
+        [], // 9 element section
+        [], // 10 code section
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data); 
+    const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    const { exports } = instance;
+    console.log('empty_func_export', instance, exports);
+} // end block namescape
+```
+
 
 ### Import memory
 
@@ -158,6 +243,24 @@ section = (i, data) => {
     if(i === 0x03) {
         return [i, 0x02, 0x01, 0x00];
     }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d => (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
     if(i === 0x0a) {
         return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
     }
@@ -172,7 +275,7 @@ section = (i, data) => {
     const m = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { j: { m }};
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('memory', instance);
 } // end block namescape
 ```
 
@@ -220,6 +323,24 @@ section = (i, data) => {
     if(i === 0x03) {
         return [i, 0x02, 0x01, 0x00];
     }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d => (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
     if(i === 0x0a) {
         return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
     }
@@ -238,7 +359,7 @@ section = (i, data) => {
         [], // 4 table section
         [], // 5 memory section
         [], // 6 global section
-        [], // 7 export section
+        ["fun"], // 7 export section
         [], // 8 start section
         [], // 9 element section
         [], // 10 code section
@@ -249,7 +370,9 @@ section = (i, data) => {
     const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { js: { mem }};
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    const { exports } = instance;
+    console.log('import memory js.mem', instance, exports);
+    exports.fun();
 } // end block namescape
 ```
 

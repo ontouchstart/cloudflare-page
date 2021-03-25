@@ -184,7 +184,7 @@
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty module', instance);
 } // end block namescape
 </code></pre>
 <h2 id="module-sections"><a class="header" href="#module-sections">Module sections</a></h2>
@@ -222,17 +222,17 @@ wasm = async (data = empty_data) =&gt; {
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty sections module', instance);
 } // end block namescape
 </code></pre>
 <h3 id="think-in-arrays"><a class="header" href="#think-in-arrays">Think in arrays</a></h3>
 <p>Since WASM is an abstraction on stack machine and linear memory, one of the goals of this exercise of generating WASM bytecode from data is to help programming <strong>think in arrays</strong>. </p>
 <p>Let's see if we can get rid of the noise of variable names or labels so that we focus on the basic concepts of array and index. </p>
 <h3 id="empty-function"><a class="header" href="#empty-function">Empty function</a></h3>
-<pre><code>$ cat empty.wat
-(module (func))
-$ wat2wasm empty.wat
-$ hexdump -C empty.wasm 
+<pre><code>$ cat empty_func.wat
+(func)
+$ wat2wasm empty_func.wat
+$ hexdump -C empty_func.wasm 
 00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
 00000010  01 00 0a 04 01 02 00 0b                           |........|
 00000018
@@ -268,7 +268,83 @@ wasm = async (data = empty_data) =&gt; {
     const module = await wasm(); 
     const env = {}
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('empty_func', instance);
+} // end block namescape
+</code></pre>
+<h3 id="empty-function-export"><a class="header" href="#empty-function-export">Empty function export</a></h3>
+<pre><code>$ cat empty_func_export.wat  
+(func (export &quot;f&quot;))
+$ hexdump -C empty_func_export.wasm 
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 07 05 01 01 66 00  00 0a 04 01 02 00 0b     |......f........|
+0000001f
+
+</code></pre>
+<pre><code class="language-javascript">section = (i, data) =&gt; {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d =&gt; (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+
+wasm = async (data = empty_data) =&gt; {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    for(let i = 0; i &lt; data.length; i++) {
+        console.log('section', i, section(i, data));
+        bytes = bytes.concat(section(i, data));
+    }
+    console.log({ bytes });
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
+</code></pre>
+<h3 id="test-3"><a class="header" href="#test-3">Test</a></h3>
+<pre><code class="language-javascript">{ // begin block namespace
+    const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        [], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        [&quot;f&quot;], // 7 export section
+        [], // 8 start section
+        [], // 9 element section
+        [], // 10 code section
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data); 
+    const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    const { exports } = instance;
+    console.log('empty_func_export', instance, exports);
 } // end block namescape
 </code></pre>
 <h3 id="import-memory"><a class="header" href="#import-memory">Import memory</a></h3>
@@ -290,19 +366,37 @@ $ hexdump -C memory.wasm
     if(i === 0x03) {
         return [i, 0x02, 0x01, 0x00];
     }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d =&gt; (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
     if(i === 0x0a) {
         return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
     }
     return [];
 }
 </code></pre>
-<h3 id="test-3"><a class="header" href="#test-3">Test</a></h3>
+<h3 id="test-4"><a class="header" href="#test-4">Test</a></h3>
 <pre><code class="language-javascript">{ // begin block namespace
     const module = await wasm();
     const m = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { j: { m }};
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    console.log('memory', instance);
 } // end block namescape
 </code></pre>
 <h3 id="import-memory-with-a-pair-of-mod-and-name"><a class="header" href="#import-memory-with-a-pair-of-mod-and-name">Import memory with a pair of mod and name</a></h3>
@@ -344,13 +438,31 @@ $ hexdump -C memory.wasm
     if(i === 0x03) {
         return [i, 0x02, 0x01, 0x00];
     }
+    if(i === 0x07) {
+        if(data[i].length === 1) {
+            count = 0x01;
+            const name = data[i][0].split('');
+            const total = name.length + 4;
+            return [
+              i, 
+              total, 
+              count, 
+              name.length, name.map(d =&gt; (d.charCodeAt(0))),
+              0x00,  
+              0x00
+            ].flat();
+        }
+        else {
+            return [];
+        }
+    }
     if(i === 0x0a) {
         return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
     }
     return [];
 }
 </code></pre>
-<h3 id="test-4"><a class="header" href="#test-4">Test</a></h3>
+<h3 id="test-5"><a class="header" href="#test-5">Test</a></h3>
 <pre><code class="language-javascript">{ // begin block namespace
     const data = [
         [], // 0 custom section
@@ -360,7 +472,7 @@ $ hexdump -C memory.wasm
         [], // 4 table section
         [], // 5 memory section
         [], // 6 global section
-        [], // 7 export section
+        [&quot;fun&quot;], // 7 export section
         [], // 8 start section
         [], // 9 element section
         [], // 10 code section
@@ -371,7 +483,9 @@ $ hexdump -C memory.wasm
     const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { js: { mem }};
     const instance = await WebAssembly.instantiate(module, env);
-    console.log('instance of an empty module', instance);
+    const { exports } = instance;
+    console.log('import memory js.mem', instance, exports);
+    exports.fun();
 } // end block namescape
 </code></pre>
 <script>
