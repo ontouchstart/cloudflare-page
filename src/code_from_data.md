@@ -89,6 +89,7 @@ Let's see if we can get rid of the noise of variable names or labels so that we 
 ```
 $ cat empty.wat
 (module (func))
+$ wat2wasm empty.wat
 $ hexdump -C empty.wasm 
 00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
 00000010  01 00 0a 04 01 02 00 0b                           |........|
@@ -139,7 +140,8 @@ wasm = async (data = empty_data) => {
 ```
 $cat memory.wat 
 (memory (import "j" "m") 1)
-$ sam@Sams-MacBook-Pro Desktop % hexdump -C memory.wasm
+$ wat2wasm memory.wat
+$ hexdump -C memory.wasm
 00000000  00 61 73 6d 01 00 00 00  02 08 01 01 6a 01 6d 02  |.asm........j.m.|
 00000010  00 01                                             |..|
 00000012
@@ -169,6 +171,83 @@ section = (i, data) => {
     const module = await wasm();
     const m = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { j: { m }};
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+```
+
+### Import memory with a pair of mod and name
+
+[Import Section](https://webassembly.github.io/spec/core/binary/modules.html#binary-importsec)
+
+```
+$ cat memory.wat        
+(memory (import "js" "mem") 1 )
+$ wat2wasm memory.wat
+$ hexdump -C memory.wasm 
+00000000  00 61 73 6d 01 00 00 00  02 0b 01 02 6a 73 03 6d  |.asm........js.m|
+00000010  65 6d 02 00 01                                    |em...|
+00000015
+```
+
+```javascript
+section = (i, data) => {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x02) {
+        if(data[i].length === 5) {
+            const mod = data[i][0].split('');
+            const name = data[i][1].split('');
+            const type = data[i][2];
+            const min = data[i][3];
+            const max = data[i][4];
+            const total = mod.length + name.length + 6;
+            return [
+              i, 
+              total, 
+              0x01, 
+              mod.length, mod.map(d => (d.charCodeAt(0))),
+              name.length, name.map(d => (d.charCodeAt(0))),
+              type, 
+              min, 
+              max].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+```
+
+### Test
+```javascript
+{ // begin block namespace
+    const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        ["js", "mem", 0x02, 0x00, 0x01], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        [], // 7 export section
+        [], // 8 start section
+        [], // 9 element section
+        [], // 10 code section
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
+    const env = { js: { mem }};
     const instance = await WebAssembly.instantiate(module, env);
     console.log('instance of an empty module', instance);
 } // end block namescape

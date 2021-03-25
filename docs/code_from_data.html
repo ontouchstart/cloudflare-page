@@ -231,6 +231,7 @@ wasm = async (data = empty_data) =&gt; {
 <h3 id="empty-function"><a class="header" href="#empty-function">Empty function</a></h3>
 <pre><code>$ cat empty.wat
 (module (func))
+$ wat2wasm empty.wat
 $ hexdump -C empty.wasm 
 00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
 00000010  01 00 0a 04 01 02 00 0b                           |........|
@@ -273,7 +274,8 @@ wasm = async (data = empty_data) =&gt; {
 <h3 id="import-memory"><a class="header" href="#import-memory">Import memory</a></h3>
 <pre><code>$cat memory.wat 
 (memory (import &quot;j&quot; &quot;m&quot;) 1)
-$ sam@Sams-MacBook-Pro Desktop % hexdump -C memory.wasm
+$ wat2wasm memory.wat
+$ hexdump -C memory.wasm
 00000000  00 61 73 6d 01 00 00 00  02 08 01 01 6a 01 6d 02  |.asm........j.m.|
 00000010  00 01                                             |..|
 00000012
@@ -299,6 +301,75 @@ $ sam@Sams-MacBook-Pro Desktop % hexdump -C memory.wasm
     const module = await wasm();
     const m = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
     const env = { j: { m }};
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+</code></pre>
+<h3 id="import-memory-with-a-paire-of-mod-and-name"><a class="header" href="#import-memory-with-a-paire-of-mod-and-name">Import memory with a paire of mod and name</a></h3>
+<p><a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-importsec">Import Section</a></p>
+<pre><code>$ cat memory.wat        
+(memory (import &quot;js&quot; &quot;mem&quot;) 1 )
+$ wat2wasm memory.wat
+$ hexdump -C memory.wasm 
+00000000  00 61 73 6d 01 00 00 00  02 0b 01 02 6a 73 03 6d  |.asm........js.m|
+00000010  65 6d 02 00 01                                    |em...|
+00000015
+</code></pre>
+<pre><code class="language-javascript">section = (i, data) =&gt; {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x02) {
+        if(data[i].length === 5) {
+            const mod = data[i][0].split('');
+            const name = data[i][1].split('');
+            const type = data[i][2];
+            const min = data[i][3];
+            const max = data[i][4];
+            const total = mod.length + name.length + 6;
+            return [
+              i, 
+              total, 
+              0x01, 
+              mod.length, mod.map(d =&gt; (d.charCodeAt(0))),
+              name.length, name.map(d =&gt; (d.charCodeAt(0))),
+              type, 
+              min, 
+              max].flat();
+        }
+        else {
+            return [];
+        }
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+</code></pre>
+<h3 id="test-4"><a class="header" href="#test-4">Test</a></h3>
+<pre><code class="language-javascript">{ // begin block namespace
+    const data = [
+        [], // 0 custom section
+        [], // 1 type section
+        [&quot;js&quot;, &quot;mem&quot;, 0x02, 0x00, 0x01], // 2 import section memory type
+        [], // 3 function section 
+        [], // 4 table section
+        [], // 5 memory section
+        [], // 6 global section
+        [], // 7 export section
+        [], // 8 start section
+        [], // 9 element section
+        [], // 10 code section
+        [], // 11 data section
+        [], // 12 data count section
+    ];
+    const module = await wasm(data);
+    const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 }); 
+    const env = { js: { mem }};
     const instance = await WebAssembly.instantiate(module, env);
     console.log('instance of an empty module', instance);
 } // end block namescape
