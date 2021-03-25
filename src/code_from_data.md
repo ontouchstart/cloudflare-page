@@ -17,6 +17,7 @@ let wasm = async () => {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
     const bytes = magic.concat(version);
+    console.log({ bytes });
     return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
 }
 ```
@@ -58,10 +59,66 @@ wasm = async (data = empty_data) => {
     const magic = [0x00, 0x61, 0x73, 0x6d];
     const version = [0x01, 0x00, 0x00, 0x00];
     let bytes = magic.concat(version);
-    console.log({data});
     for(let i = 0; i < data.length; i++ ) {
         bytes = bytes.concat(data[i]);
     }
+    console.log({ bytes });
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
+```
+
+### Test
+
+```javascript
+{ // begin block namespace
+    const module = await wasm(); 
+    const env = {}
+    const instance = await WebAssembly.instantiate(module, env);
+    console.log('instance of an empty module', instance);
+} // end block namescape
+```
+
+## Think in arrays
+
+Since WASM is an abstraction on stack machine and linear memory, one of the goals of this exercise of generating WASM bytecode from data is to help programming **think in arrays**. 
+
+Let's see if we can get rid of the noise of variable names or labels so that we focus on the basic concepts of array and index. 
+
+## Empty function
+
+```
+$ cat empty.wat
+(module (func))
+$ hexdump -C empty.wasm 
+00000000  00 61 73 6d 01 00 00 00  01 04 01 60 00 00 03 02  |.asm.......`....|
+00000010  01 00 0a 04 01 02 00 0b                           |........|
+00000018
+$ 
+```
+
+```javascript
+let section = (i, data) => {
+    if(i === 0x01) {
+        return [i, 0x04, 0x01, 0x60, 0x00, 0x00];
+    }
+    if(i === 0x03) {
+        return [i, 0x02, 0x01, 0x00];
+    }
+    if(i === 0x0a) {
+        return [i, 0x04, 0x01, 0x02, 0x00, 0x0b];
+    }
+    return [];
+}
+
+wasm = async (data = empty_data) => {
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    for(let i = 0; i < data.length; i++) {
+        console.log('section', i, section(i, data));
+        bytes = bytes.concat(section(i, data));
+    }
+    console.log({ bytes });
     return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
 }
 ```
