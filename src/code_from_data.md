@@ -371,7 +371,7 @@ section = (i, data) => {
     const env = { js: { mem }};
     const instance = await WebAssembly.instantiate(module, env);
     const { exports } = instance;
-    console.log('import memory js.mem', instance, exports);
+    console.log('import memory js.mem, export fun()', instance, exports);
     exports.fun();
 } // end block namescape
 ```
