@@ -23,4 +23,4 @@ copy-js = true
 line-numbers = true
 
 [output.html.print]
-enable = true
+enable = false

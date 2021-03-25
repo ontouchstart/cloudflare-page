@@ -17,3 +17,4 @@
 - [Multiple Modules (JS)](./multiple_modules_js.md)
 - [Multiple Modules (WASM)](./multiple_modules_wasm.md)
 - [WASM Video filters](./wasm_video_filters.md)
+- [Code from Data](./code_from_data.md)
