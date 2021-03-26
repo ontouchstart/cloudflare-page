@@ -44,7 +44,7 @@ const hexdump = ({ hex, data } ) => {
         if (i < data.length - 4) {
             // the byte order is different from canvas version 
             // because we do not group 4 byte as a representation of an i32 
-            for (let j = 0; j < 3; j++) {  
+            for (let j = 0; j < 4; j++) {  
                 if (data[i + j] < 0x10) {
                     output += `0${data[i + j].toString(16)}`;
                 } else {
@@ -122,19 +122,8 @@ const section = (i, data) => {
     return [];
 }
 
-const wasm = async (data) => {
-    const magic = [0x00, 0x61, 0x73, 0x6d];
-    const version = [0x01, 0x00, 0x00, 0x00];
-    let bytes = magic.concat(version);
-    for(let i = 0; i < data.length; i++) {
-        console.log('section', i, section(i, data));
-        bytes = bytes.concat(section(i, data));
-    }
-    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
-}
-
-  
-const data = [
+const wasm = async ({ code }) => {
+    const data = [
     [], // 0 custom section
     [], // 1 type section
     ["js", "mem", 0x02, 0x00, 0x01], // 2 import section memory type
@@ -149,8 +138,17 @@ const data = [
     [], // 11 data section
     [], // 12 data count section
 ];
+    const magic = [0x00, 0x61, 0x73, 0x6d];
+    const version = [0x01, 0x00, 0x00, 0x00];
+    let bytes = magic.concat(version);
+    for(let i = 0; i < data.length; i++) {
+        console.log('section', i, section(i, data));
+        bytes = bytes.concat(section(i, data));
+    }
+    return await WebAssembly.compile((new Uint8Array(bytes)).buffer);
+}
 
-const module = await wasm(data);
+const module = await wasm({ code });
 const mem = new WebAssembly.Memory({ initial: 1, maximum: 1 });
 const heap = new Uint8Array(mem.buffer);
 
@@ -170,6 +168,27 @@ const instance = await WebAssembly.instantiate(module, env);
 }
 
 ```
+
+## More code
+
+We can reuse the same heap memory and create more WASM stack machines in their own namespaces. Here is a complete example
+
+```javascript
+{
+    const code = [
+        0x00, // no local
+        0x41, 0x01, // address: i32.const 0x01
+        0x41, 0xff, 0x01, // value: i32.const 0xff
+        0x36, 0x02, 0x00, // i32.store 
+    ];
+    const module = await wasm({ code } );
+    const env = { js: { mem }};
+    const instance = await WebAssembly.instantiate(module, env);
+    const hex = document.getElementById('more_hex');
+    hexdump({hex, data: heap});
+}
+```
+<pre id="more_hex"><pre>
 
 <script>
   let code = '(async () => {';
