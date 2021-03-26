@@ -1,6 +1,5 @@
 # Code from Data
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/code_from_data.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/code_from_data.md)
 
 [WASM bytecode](https://webassembly.github.io/spec/core/binary/modules.html#binary-module) is just a byte array that can be [validated](https://webassembly.github.io/spec/core/valid/index.html). If we want to write simple valid bytecode without relying [WASM Text Format](https://webassembly.github.io/spec/core/text/index.html) or even higher level [toolchains](https://emscripten.org/), attention need to be paid to the details. 
 

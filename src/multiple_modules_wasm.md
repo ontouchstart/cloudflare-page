@@ -1,6 +1,5 @@
 # Multiple Modules in WASM
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_wasm.md)
 
 This is a reimplementation of [Multiple Modules (JS)](multiple_modules_js.html) where the filter computation is done in WASM.
 

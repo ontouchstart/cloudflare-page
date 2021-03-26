@@ -1,6 +1,5 @@
 # Multiple Modules (JS)
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_js.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/multiple_modules_js.md)
 
 Now let's create three WASM modules and share func/memory via import/export. To make the code easy to manage, we use JavaScript objects to wrap data and functions with namespaces (`main_module`, `paint_module` and `filter_module`).
 

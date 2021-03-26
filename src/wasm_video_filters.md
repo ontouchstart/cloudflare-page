@@ -1,6 +1,5 @@
 # WASM video filters
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_video_filters.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/wasm_video_filters.md)
 
 Now let's see if we can use the same filters on video. Our demo will be based on the MDN tutorial from [Manipulating video using canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Manipulating_video_using_canvas).
 

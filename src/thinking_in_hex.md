@@ -1,6 +1,5 @@
 # Thinking in hex
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/thinking_in_hex.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/thinking_in_hex.md)
 
 Since we are going to do a lot of machine code programming, it is a good idea to learn to think in [hex](https://en.wikipedia.org/wiki/Hexadecimal).
 

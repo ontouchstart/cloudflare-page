@@ -1,6 +1,5 @@
 # Memory I/O
-
-This page and all the code it runs are in one page. You can view [the source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/memory_io.md).
+[source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/memory_io.md)
 
 This page is to demonstrate using memory for I/O.
 
