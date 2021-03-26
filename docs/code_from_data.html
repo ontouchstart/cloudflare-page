@@ -582,7 +582,7 @@ $ hexdump -C start.wasm
 } // end block namescape
 </code></pre>
 <h3 id="a-minimum-wasm-program"><a class="header" href="#a-minimum-wasm-program">A minimum wasm program</a></h3>
-<p>Set the first byte of the memory to <code>0x01</code>.</p>
+<p>Set the first 4 byte of the memory to i32 <code>0x01</code>.</p>
 <p><canvas id="minimum_canvas"></canvas></p>
 <pre id="minimum_hex"></pre>
 <pre><code class="language-javascript">section = (i, data) =&gt; {

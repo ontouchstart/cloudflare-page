@@ -479,7 +479,7 @@ section = (i, data) => {
 
 ### A minimum wasm program
 
-Set the first byte of the memory to `0x01`.
+Set the first 4 byte of the memory to i32 `0x01`.
 
 <canvas id="minimum_canvas"></canvas>
 <pre id="minimum_hex"></pre>
