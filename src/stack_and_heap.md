@@ -2,7 +2,6 @@
 [source code](https://github.com/ontouchstart/cloudflare-page/blob/master/src/stack_and_heap.md)
 
 ## Chrome DevTools
-
 The latest Chrome browser allows us to [debug native WebAssembly in Chrome DevTools](https://developers.google.com/web/updates/2020/12/webassembly). To see this page in action, you need to step through the WASM in DevTools.
 
 ![](/stack_and_heap/screenshot1.png)
