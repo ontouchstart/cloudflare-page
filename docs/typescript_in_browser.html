@@ -165,14 +165,40 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="typescript-in-the-browser"><a class="header" href="#typescript-in-the-browser">TypeScript in the Browser</a></h1>
-<pre id="output"></pre>
-<pre><code class="language-typescript">let num: number = 123;
-const output = document.getElementById('output')! as HTMLPreElement;
-output.innerHTML = `
+<h2 id="version"><a class="header" href="#version">Version</a></h2>
+<pre><code class="language-typescript">{
+  const output = document.getElementById('version_output')! as HTMLPreElement;
+  output.innerHTML = `
 ts.version: ${ts.version}
 `
-output.innerHTML += JSON.stringify({num});
+}
 </code></pre>
+<pre id="version_output"></pre>
+<h2 id="number-test"><a class="header" href="#number-test">number test</a></h2>
+<pre><code class="language-typescript">let num: number = 123;
+{
+  const output = document.getElementById('number_output')! as HTMLPreElement;
+  output.innerHTML += JSON.stringify({num});
+}
+</code></pre>
+<pre id="number_output"></pre>
+<h3 id="greeter-test"><a class="header" href="#greeter-test">greeter test</a></h3>
+<pre><code class="language-typescript">interface Person {
+  firstName: string;
+  lastName: string;
+}
+
+function greeter(person: Person) {
+  return &quot;Hello, &quot; + person.firstName + &quot; &quot; + person.lastName;
+}
+
+let user = { firstName: &quot;Jane&quot;, lastName: &quot;User&quot; };
+{
+  const output = document.getElementById('greeter_output')! as HTMLPreElement;
+  output.textContent += greeter(user);
+}
+</code></pre>
+<pre id="greeter_output"></pre>
 <script src="https://unpkg.com/typescript@latest/lib/typescriptServices.js"></script>
 <script>
   let ts_code = '';

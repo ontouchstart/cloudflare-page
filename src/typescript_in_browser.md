@@ -1,14 +1,46 @@
 # TypeScript in the Browser
 
-<pre id="output"></pre>
+## Version
+
 ```typescript
-let num: number = 123;
-const output = document.getElementById('output')! as HTMLPreElement;
-output.innerHTML = `
+{
+  const output = document.getElementById('version_output')! as HTMLPreElement;
+  output.innerHTML = `
 ts.version: ${ts.version}
 `
-output.innerHTML += JSON.stringify({num});
+}
 ```
+<pre id="version_output"></pre>
+
+## number test
+
+```typescript
+let num: number = 123;
+{
+  const output = document.getElementById('number_output')! as HTMLPreElement;
+  output.innerHTML += JSON.stringify({num});
+}
+```
+<pre id="number_output"></pre>
+
+### greeter test
+```typescript
+interface Person {
+  firstName: string;
+  lastName: string;
+}
+
+function greeter(person: Person) {
+  return "Hello, " + person.firstName + " " + person.lastName;
+}
+
+let user = { firstName: "Jane", lastName: "User" };
+{
+  const output = document.getElementById('greeter_output')! as HTMLPreElement;
+  output.textContent += greeter(user);
+}
+```
+<pre id="greeter_output"></pre>
 
 <script src="https://unpkg.com/typescript@latest/lib/typescriptServices.js"></script>
 <script>
