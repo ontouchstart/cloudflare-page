@@ -21,3 +21,4 @@
 - [Stack and Heap](./stack_and_heap.md)
 - [LEB128](./leb128.md)
 - [TypeScript in the Browser](./typescript_in_browser.md)
+- [Include TypeScript](./include_ts.md)
