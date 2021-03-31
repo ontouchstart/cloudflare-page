@@ -11,20 +11,20 @@ To use TypeScript in the mdBook, it is a good idea to put TS snippets in to sepa
 ## Version
 
 ```typescript
-{{#include ts/ts_version.ts}}
+{{#include include_ts/ts/ts_version.ts}}
 ```
 <pre id="version_output"></pre>
 
 ## number test
 
 ```typescript
-{{#include ts/number_test.ts}}
+{{#include include_ts/ts/number_test.ts}}
 ```
 <pre id="number_output"></pre>
 
 ### greeter test
 ```typescript
-{{#include ts/greeter.ts}}
+{{#include include_ts/ts/greeter.ts}}
 ```
 <pre id="greeter_output"></pre>
 
