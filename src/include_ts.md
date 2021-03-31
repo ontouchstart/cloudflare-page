@@ -28,7 +28,7 @@ To use TypeScript in the mdBook, it is a good idea to put TS snippets in to sepa
 ```
 <pre id="greeter_output"></pre>
 
-<script src="https://unpkg.com/typescript@latest/lib/typescriptServices.js"></script>
+<script src="/typescript/lib/typescriptServices.js"></script>
 <script>
   let ts_code = '';
   const ts_code_sections = document.getElementsByClassName('language-typescript');
