@@ -28,14 +28,14 @@
         0x07, // export section
         0x09, // 9 bytes
         0x02, // number of exports
-        0x01,
+        0x01, // field length
         0x6d, // "m"
-        0x02,
-        0x00,
-        0x01,
+        0x02, // type: memory
+        0x00, // memory index
+        0x01, // field length
         0x66, // "f"
-        0x00,
-        0x00
+        0x00, // type: function
+        0x00  // function index
     ];
 
     const section_0a = [
