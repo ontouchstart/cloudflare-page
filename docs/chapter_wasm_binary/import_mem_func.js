@@ -13,14 +13,14 @@
         0x02, // import section
         0x0b, // 11 (0x0b) bytes
         0x01, // number of imports
-        0x02, // memtype
+        0x02, // module string length
         0x6a, // j
         0x73, // s
-        0x03, // .
+        0x03, // field string length
         0x6d, // m
         0x65, // e
         0x6d, // m
-        0x02, // 2 bytes
+        0x02, // memory type
         0x00, // min
         0x01  // max
     ];
